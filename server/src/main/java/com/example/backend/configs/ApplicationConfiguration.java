@@ -1,5 +1,7 @@
 package com.example.backend.configs;
 
+import com.cloudinary.Cloudinary;
+import com.example.backend.commons.AppConstants;
 import com.example.backend.modules.user.constant.UserConstant;
 import com.example.backend.modules.user.services.UserService;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -59,5 +64,15 @@ public class ApplicationConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public Cloudinary cloudinary(){
+        Map<String,String> config = new HashMap<>();
+        config.put("cloud_name", AppConstants.CLOUD_NAME);
+        config.put("api_key", AppConstants.API_KEY);
+        config.put("api_secret", AppConstants.API_SECRET);
+
+        return new Cloudinary(config);
     }
 }

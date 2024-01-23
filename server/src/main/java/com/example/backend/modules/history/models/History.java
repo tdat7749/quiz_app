@@ -1,6 +1,7 @@
 package com.example.backend.modules.history.models;
 
 
+import com.example.backend.modules.quiz.models.Quiz;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.user.models.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -52,8 +53,13 @@ public class History {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "room_id",nullable = false)
+    @JoinColumn(name = "room_id",nullable = true)
     private Room room;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "quiz_id",nullable = true)
+    private Quiz quiz;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "history")
     @JsonManagedReference

@@ -1,6 +1,7 @@
 package com.example.backend.modules.quiz.models;
 
 import com.example.backend.modules.collection.models.Collection;
+import com.example.backend.modules.history.models.History;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.user.models.User;
@@ -75,4 +76,8 @@ public class Quiz {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "quiz")
     @JsonManagedReference
     private List<Question> questions;
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "quiz")
+    @JsonManagedReference
+    private List<History> histories;
 }

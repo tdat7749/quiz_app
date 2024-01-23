@@ -3,6 +3,7 @@ package com.example.backend.modules.collection.services;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.collection.constant.CollectionConstants;
 import com.example.backend.modules.collection.exceptions.CollectedException;
+import com.example.backend.modules.collection.exceptions.NotYetCollectedException;
 import com.example.backend.modules.collection.models.Collection;
 import com.example.backend.modules.collection.repositories.CollectionRepository;
 import com.example.backend.modules.quiz.constant.QuizConstants;
@@ -63,7 +64,19 @@ public class CollectionServiceImpl implements CollectionService{
 
     @Override
     public ResponseSuccess<Boolean> removeFromCollection(User user, int quizId) {
-        return null;
+        var quiz = quizService.findById(quizId);
+        if(quiz.isEmpty()){
+            throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
+        }
+        var collection = collectionRepository.findByUserAndQuiz(user,quiz.get());
+        if(collection.isEmpty()){
+            throw new NotYetCollectedException(CollectionConstants.NOT_YET_COLLECTED);
+        }
+
+        collectionRepository.delete(collection.get());
+
+        return new ResponseSuccess<>(CollectionConstants.REMOVE_FROM_COLLECTION,true);
+
     }
 
     private boolean isCollected(User user, Quiz quiz){
