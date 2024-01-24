@@ -4,6 +4,8 @@ import com.example.backend.modules.quiz.models.Quiz;
 import com.example.backend.modules.quiz.viewmodels.QuizVm;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.viewmodels.RoomVm;
+import com.example.backend.modules.topic.models.Topic;
+import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserVm;
 
@@ -49,6 +51,19 @@ public class Utilities {
                 .build();
 
         return roomVm;
+    }
+
+    public static TopicVm getTopicVm(Topic topic){
+        TopicVm topicVm = TopicVm.builder()
+                .id(topic.getId())
+                .thumbnail(topic.getThumbnail())
+                .slug(topic.getSlug())
+                .title(topic.getTitle())
+                .createdAt(topic.getCreatedAt().toString())
+                .updatedAt(topic.getUpdatedAt().toString())
+                .build();
+
+        return topicVm;
     }
 }
 
