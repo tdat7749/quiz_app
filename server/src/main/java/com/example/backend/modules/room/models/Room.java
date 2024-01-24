@@ -38,6 +38,9 @@ public class Room {
     @Column(name = "time_end",nullable = true)
     private Date timeEnd;
 
+    @Column(name = "is_closed",nullable = false)
+    private boolean isClosed;
+
     @ManyToOne
     @JoinColumn(name = "host_id",nullable = false)
     @JsonBackReference
