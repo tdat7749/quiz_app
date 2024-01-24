@@ -2,11 +2,11 @@ package com.example.backend.commons;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Data
 public class ResponsePaging <T>{
     private int totalPage;
