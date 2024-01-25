@@ -13,6 +13,7 @@ import com.example.backend.modules.quiz.exceptions.QuestionNotFoundException;
 import com.example.backend.modules.quiz.services.QuestionService;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.utils.Utilities;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class HistoryAnswerServiceImpl implements HistoryAnswerService{
     public HistoryAnswerServiceImpl(
             HistoryAnswerRepository historyAnswerRepository,
             QuestionService questionService,
-            HistoryService historyService
+            @Lazy HistoryService historyService
     ){
         this.historyAnswerRepository = historyAnswerRepository;
         this.questionService = questionService;
