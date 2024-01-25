@@ -1,6 +1,7 @@
 package com.example.backend.modules.quiz.models;
 
 
+import com.example.backend.modules.history.models.HistoryAnswer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -58,4 +59,8 @@ public class Question {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "question")
     @JsonManagedReference
     private List<Answer> answers;
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "question")
+    @JsonManagedReference
+    private List<HistoryAnswer> historyAnswers;
 }

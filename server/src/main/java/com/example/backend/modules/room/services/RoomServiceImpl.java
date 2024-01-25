@@ -21,10 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+
+@Service
 public class RoomServiceImpl implements RoomService{
     private final QuizService quizService;
     private final RoomRepository roomRepository;
@@ -35,6 +39,11 @@ public class RoomServiceImpl implements RoomService{
     ){
         this.quizService = quizService;
         this.roomRepository = roomRepository;
+    }
+
+    @Override
+    public Optional<Room> findById(int id) {
+        return roomRepository.findById(id);
     }
 
     @Override

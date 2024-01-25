@@ -1,6 +1,7 @@
 package com.example.backend.modules.history.models;
 
 import com.example.backend.modules.quiz.models.Answer;
+import com.example.backend.modules.quiz.models.Question;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,6 @@ public class HistoryAnswer {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "answer_id",nullable = false)
-    private Answer answer;
+    @JoinColumn(name = "question_id",nullable = false)
+    private Question question;
 }

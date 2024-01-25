@@ -1,6 +1,15 @@
 package com.example.backend.utils;
 
+import com.example.backend.modules.history.models.History;
+import com.example.backend.modules.history.models.HistoryAnswer;
+import com.example.backend.modules.history.viewmodels.HistoryAnswerVm;
+import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
+import com.example.backend.modules.history.viewmodels.HistorySingleVm;
+import com.example.backend.modules.quiz.models.Answer;
+import com.example.backend.modules.quiz.models.Question;
 import com.example.backend.modules.quiz.models.Quiz;
+import com.example.backend.modules.quiz.viewmodels.AnswerVm;
+import com.example.backend.modules.quiz.viewmodels.QuestionVm;
 import com.example.backend.modules.quiz.viewmodels.QuizVm;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.viewmodels.RoomVm;
@@ -9,6 +18,8 @@ import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserVm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Utilities {
@@ -64,6 +75,81 @@ public class Utilities {
                 .build();
 
         return topicVm;
+    }
+
+    public static HistoryRoomVm getHistoryRoomVm(History history){
+        HistoryRoomVm historyRoomVm = HistoryRoomVm.builder()
+                .id(history.getId())
+                .timeStart(history.getStartedAt().toString())
+                .timeEnd(history.getFinishedAt().toString())
+                .room(getRoomVm(history.getRoom()))
+                .user(getUserVm(history.getUser()))
+                .totalScore(history.getScore())
+                .totalCorrect(history.getTotalCorrect())
+                .build();
+
+        return historyRoomVm;
+    }
+
+    public static HistorySingleVm getHistorySingleVm(History history){
+        HistorySingleVm historySingleVm = HistorySingleVm.builder()
+                .id(history.getId())
+                .timeStart(history.getStartedAt().toString())
+                .timeEnd(history.getFinishedAt().toString())
+                .quiz(getQuizVm(history.getQuiz()))
+                .user(getUserVm(history.getUser()))
+                .totalScore(history.getScore())
+                .totalCorrect(history.getTotalCorrect())
+                .build();
+
+        return historySingleVm;
+    }
+
+    public static AnswerVm getAnswerVm(Answer answer){
+        AnswerVm answerVm = AnswerVm.builder()
+                .id(answer.getId())
+                .title(answer.getTitle())
+                .isCorrect(answer.getIsCorrect())
+                .build();
+
+        return answerVm;
+    }
+
+    public static List<AnswerVm> getListAnswerVm(List<Answer> answers){
+        List<AnswerVm> answerVmList = new ArrayList<>();
+
+        for(Answer answer : answers){
+            AnswerVm answerVm = AnswerVm.builder()
+                    .id(answer.getId())
+                    .title(answer.getTitle())
+                    .isCorrect(answer.getIsCorrect())
+                    .build();
+
+            answerVmList.add(answerVm);
+        }
+
+        return answerVmList;
+    }
+
+    public static QuestionVm getQuestionVm(Question question){
+        QuestionVm questionVm = QuestionVm.builder()
+                .score(question.getScore())
+                .id(question.getId())
+                .title(question.getTitle())
+                .answers(getListAnswerVm(question.getAnswers()))
+                .build();
+
+        return questionVm;
+    }
+
+    public static HistoryAnswerVm getHistoryAnswer(HistoryAnswer historyAnswer){
+        HistoryAnswerVm historyAnswerVm = HistoryAnswerVm.builder()
+                .id(historyAnswer.getId())
+                .isCorrect(historyAnswer.getIsCorrect())
+                .question(getQuestionVm(historyAnswer.getQuestion()))
+                .build();
+
+        return  historyAnswerVm;
     }
 }
 
