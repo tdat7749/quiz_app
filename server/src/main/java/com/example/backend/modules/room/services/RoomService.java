@@ -7,10 +7,15 @@ import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.models.User;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public interface RoomService {
+
+    Optional<Room> findById(int id);
 
     boolean isRoomOwner(User user, int roomId);
 
