@@ -20,7 +20,9 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "rooms")
+@Table(name = "rooms",indexes = {
+        @Index(name="idx_room_pin",columnList = "roomPin")
+})
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
