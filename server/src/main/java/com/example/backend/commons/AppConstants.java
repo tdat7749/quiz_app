@@ -10,4 +10,6 @@ public class AppConstants {
     public static final long MAX_FILE = 1024 * 1024 * 3;
 
     public static final String[] MIME_TYPES = {"image/png","image/jpeg","image/webp","image/gif"};
+
+    public static final int PAGE_SIZE = 15;
 }

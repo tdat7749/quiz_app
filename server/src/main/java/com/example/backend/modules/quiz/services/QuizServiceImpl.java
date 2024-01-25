@@ -7,6 +7,7 @@ import com.example.backend.modules.quiz.dtos.CreateQuizDTO;
 import com.example.backend.modules.quiz.dtos.EditQuizDTO;
 import com.example.backend.modules.quiz.models.Quiz;
 import com.example.backend.modules.quiz.repositories.QuizRepository;
+import com.example.backend.modules.quiz.viewmodels.QuizDetailVm;
 import com.example.backend.modules.quiz.viewmodels.QuizVm;
 import com.example.backend.modules.user.models.User;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,11 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     public ResponseSuccess<ResponsePaging<List<QuizVm>>> getListPublicQuizzes(String keyword, String sortBy, int pageIndex, int topicId, User user) {
+        return null;
+    }
+
+    @Override
+    public ResponseSuccess<QuizDetailVm> getQuizDetail(int quizId) {
         return null;
     }
 

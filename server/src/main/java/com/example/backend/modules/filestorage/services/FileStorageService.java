@@ -8,5 +8,5 @@ import java.io.IOException;
 
 @Service
 public interface FileStorageService {
-    public ResponseSuccess<String> uploadFile(MultipartFile multipartFile) throws IOException;
+    public String uploadFile(MultipartFile multipartFile) throws IOException;
 }

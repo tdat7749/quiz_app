@@ -9,6 +9,7 @@ import com.example.backend.modules.filestorage.exceptions.FileTooLargeException;
 import com.example.backend.modules.filestorage.exceptions.NotAllowMimeTypeException;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,8 +25,10 @@ public class FileStorageServiceImpl  implements  FileStorageService{
     public FileStorageServiceImpl(Cloudinary cloudinary){
         this.cloudinary = cloudinary;
     }
+
     @Override
-    public ResponseSuccess<String> uploadFile(MultipartFile multipartFile) throws IOException {
+    @Transactional
+    public String uploadFile(MultipartFile multipartFile) throws IOException {
         if(multipartFile.isEmpty()){
             throw new FileIsEmptyException("File trống !");
         }
@@ -46,6 +49,6 @@ public class FileStorageServiceImpl  implements  FileStorageService{
                 .get("url")
                 .toString();
 
-        return new ResponseSuccess<>("Thành công",fileUrl);
+        return fileUrl;
     }
 }

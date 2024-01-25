@@ -10,6 +10,4 @@ public class AnswerVm {
     private int id;
     private String title;
     private boolean isCorrect;
-    private String createdAt;
-    private String updatedAt;
 }
