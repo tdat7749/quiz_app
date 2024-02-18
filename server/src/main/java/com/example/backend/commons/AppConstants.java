@@ -12,4 +12,6 @@ public class AppConstants {
     public static final String[] MIME_TYPES = {"image/png","image/jpeg","image/webp","image/gif"};
 
     public static final int PAGE_SIZE = 15;
+
+    public static final String SORT_BY_CREATED_AT = "createdAt";
 }
