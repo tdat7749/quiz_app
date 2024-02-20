@@ -22,4 +22,34 @@ public class QuizExceptionHandler {
     public ResponseError questionNotFoundExceptionHandler(QuestionNotFoundException ex){
         return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
     }
+
+    @ExceptionHandler(QuizNotPublicException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError quizNotPublicExceptionHandler(QuizNotPublicException ex){
+        return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
+    }
+
+    @ExceptionHandler(QuizSlugUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError quizSlugUsedExceptionHandler(QuizSlugUsedException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
+
+    @ExceptionHandler(QuestionTypeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError questionTypeNotFoundExceptionHandler(QuestionTypeNotFoundException ex){
+        return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
+    }
+
+    @ExceptionHandler(NotOwnerQuizException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError notOwnerQuizExceptionHandler(NotOwnerQuizException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
+
+    @ExceptionHandler(AnswerNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError answerNotFoundExceptionHandler(AnswerNotFoundException ex){
+        return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
+    }
 }

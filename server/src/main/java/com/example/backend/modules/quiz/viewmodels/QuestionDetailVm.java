@@ -13,7 +13,7 @@ public class QuestionDetailVm {
     private String title;
     private QuestionTypeVm questionType;
     private String thumbnail;
-    private int order;
+    private Integer order;
     private int score;
     private int timeLimit;
     private List<AnswerVm> answers;
