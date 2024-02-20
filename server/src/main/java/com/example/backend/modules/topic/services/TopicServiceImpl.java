@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TopicServiceImpl implements TopicService{
@@ -98,5 +99,10 @@ public class TopicServiceImpl implements TopicService{
         topicRepository.delete(topic.get());
 
         return new ResponseSuccess<>(TopicConstants.DELETE_TOPIC,true);
+    }
+
+    @Override
+    public Optional<Topic> findById(int topicId) {
+        return topicRepository.findById(topicId);
     }
 }
