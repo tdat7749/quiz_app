@@ -7,22 +7,23 @@ import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
 import com.example.backend.modules.history.viewmodels.HistorySingleVm;
 import com.example.backend.modules.quiz.models.Answer;
 import com.example.backend.modules.quiz.models.Question;
+import com.example.backend.modules.quiz.models.QuestionType;
 import com.example.backend.modules.quiz.models.Quiz;
-import com.example.backend.modules.quiz.viewmodels.AnswerVm;
-import com.example.backend.modules.quiz.viewmodels.QuestionVm;
-import com.example.backend.modules.quiz.viewmodels.QuizVm;
+import com.example.backend.modules.quiz.viewmodels.*;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserVm;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Utilities {
+
     public static String generateCode() {
         Random rnd = new Random();
         int number = rnd.nextInt(9999999);
@@ -48,6 +49,24 @@ public class Utilities {
                 .build();
 
         return quizVm;
+    }
+
+    public static QuizDetailVm getQuizDetailVm(Quiz quiz){
+        QuizDetailVm quizDetailVm = QuizDetailVm.builder()
+                .id(quiz.getId())
+                .title(quiz.getTitle())
+                .slug(quiz.getSlug())
+                .thumbnail(quiz.getThumbnail())
+                .description(quiz.getDescription())
+                .summary(quiz.getSummary())
+                .updatedAt(quiz.getUpdatedAt().toString())
+                .createdAt(quiz.getCreatedAt().toString())
+                .user(getUserVm(quiz.getUser()))
+                .topic(getTopicVm(quiz.getTopic()))
+                .build();
+
+        // còn thiếu get cái totalScore của quiz
+        return quizDetailVm;
     }
 
     public static RoomVm getRoomVm(Room room){
@@ -140,6 +159,30 @@ public class Utilities {
                 .build();
 
         return questionVm;
+    }
+
+    public static QuestionDetailVm getQuestionDetailVm(Question question){
+        QuestionDetailVm questionDetailVm = QuestionDetailVm.builder()
+                .score(question.getScore())
+                .id(question.getId())
+                .title(question.getTitle())
+                .answers(getListAnswerVm(question.getAnswers()))
+                .order(question.getOrder())
+                .timeLimit(question.getTimeLimit())
+                .thumbnail(question.getThumbnail())
+                .questionType(getQuestionTypeVm(question.getQuestionType()))
+                .build();
+
+        return questionDetailVm;
+    }
+
+    public static QuestionTypeVm getQuestionTypeVm(QuestionType questionType){
+        QuestionTypeVm questionTypeVm = QuestionTypeVm.builder()
+                .id(questionType.getId())
+                .title(questionType.getTitle())
+                .build();
+
+        return  questionTypeVm;
     }
 
     public static HistoryAnswerVm getHistoryAnswer(HistoryAnswer historyAnswer){

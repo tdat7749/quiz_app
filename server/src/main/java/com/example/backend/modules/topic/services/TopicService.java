@@ -3,12 +3,14 @@ package com.example.backend.modules.topic.services;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.topic.dtos.CreateTopicDTO;
 import com.example.backend.modules.topic.dtos.EditTopicDTO;
+import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface TopicService {
@@ -19,4 +21,6 @@ public interface TopicService {
     ResponseSuccess<TopicVm> editTopic(EditTopicDTO dto) throws IOException;
 
     ResponseSuccess<Boolean> deleteTopic(int topicId);
+
+    Optional<Topic> findById(int topicId);
 }

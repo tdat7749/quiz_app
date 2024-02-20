@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class EditQuizDTO {
+    private int quizId;
     private String summary;
     private String description;
     private String title;
     private String slug;
-    private int topicId;
+    private Integer topicId;
 }
