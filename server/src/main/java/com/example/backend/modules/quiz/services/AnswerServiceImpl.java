@@ -10,9 +10,11 @@ import com.example.backend.modules.quiz.repositories.AnswerRepository;
 import com.example.backend.modules.quiz.viewmodels.AnswerVm;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.utils.Utilities;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+@Service
 public class AnswerServiceImpl implements AnswerService{
 
     private final AnswerRepository answerRepository;
