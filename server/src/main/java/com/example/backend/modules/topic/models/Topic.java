@@ -30,7 +30,7 @@ public class Topic {
     @Column(columnDefinition = "MEDIUMTEXT",nullable = false)
     private String thumbnail;
 
-    @Column(length = 170,nullable = false)
+    @Column(length = 170,nullable = false,unique = true)
     private String slug;
 
     @Column(name = "created_at",nullable = false)

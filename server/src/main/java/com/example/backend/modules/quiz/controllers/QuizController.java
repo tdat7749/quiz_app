@@ -71,7 +71,7 @@ public class QuizController {
     @ResponseBody
     public ResponseEntity<ResponseSuccess<QuizVm>> createQuiz(
             @AuthenticationPrincipal User user,
-            @RequestBody @Valid CreateQuizDTO dto
+            @ModelAttribute @Valid CreateQuizDTO dto
             ) throws IOException {
         var result = quizService.createQuiz(user,dto);
 
@@ -94,7 +94,7 @@ public class QuizController {
     @ResponseBody
     public ResponseEntity<ResponseSuccess<String>> editThumbnail(
             @AuthenticationPrincipal User user,
-            @RequestBody @Valid EditQuizThumbnail dto
+            @ModelAttribute @Valid EditQuizThumbnail dto
     ) throws IOException {
         var result = quizService.editThumbnail(user,dto);
 

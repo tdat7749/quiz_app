@@ -11,7 +11,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -66,6 +68,27 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError dataIntegrityViolationExceptionHandler(DataIntegrityViolationException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST, 400,
+                "Lỗi xảy ra, vui lòng thử lại sau");
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError ioExceptionHandler(IOException ex) {
+        return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
+                "Lỗi xảy ra, vui lòng thử lại sau");
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError nullPointerExceptionHandler(NullPointerException ex) {
+        return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
+                "Lỗi xảy ra, vui lòng thử lại sau");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError missingServletRequestPartExceptionHandler(MissingServletRequestPartException ex) {
+        return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
                 "Lỗi xảy ra, vui lòng thử lại sau");
     }
 }

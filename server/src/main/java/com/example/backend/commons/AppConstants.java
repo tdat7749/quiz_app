@@ -1,6 +1,8 @@
 package com.example.backend.commons;
 
 public class AppConstants {
+
+    public static final String FROM_EMAIL = "noreply@quizapp.hell";
     public static final String CLOUD_NAME = "dafpvnxnf";
 
     public static final String API_KEY = "361155637793245";
