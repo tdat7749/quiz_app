@@ -47,6 +47,12 @@ public class QuizExceptionHandler {
         return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
 
+    @ExceptionHandler(NotOwnerAnswerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError notOwnerAnswerExceptionHandler(NotOwnerAnswerException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
+
     @ExceptionHandler(AnswerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseError answerNotFoundExceptionHandler(AnswerNotFoundException ex){

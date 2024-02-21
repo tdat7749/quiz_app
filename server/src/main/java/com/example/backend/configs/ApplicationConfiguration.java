@@ -2,7 +2,7 @@ package com.example.backend.configs;
 
 import com.cloudinary.Cloudinary;
 import com.example.backend.commons.AppConstants;
-import com.example.backend.modules.user.constant.UserConstant;
+import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userService.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(UserConstant.USER_NOT_FOUND));
+        return username -> userService.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(UserConstants.USER_NOT_FOUND));
     }
 
     @Bean

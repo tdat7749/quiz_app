@@ -34,4 +34,16 @@ public class AuthExceptionHandler {
     public ResponseError loginExceptionHandler(AuthenticationException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST, 400, ex.getMessage());
     }
+
+    @ExceptionHandler(VerifyEmailException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError verifyEmailExceptionHandler(VerifyEmailException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST, 400, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError emailNotFoundExceptionHandler(EmailNotFoundException ex) {
+        return new ResponseError(HttpStatus.NOT_FOUND, 404, ex.getMessage());
+    }
 }
