@@ -14,4 +14,22 @@ public class UserExceptionHandler {
     public ResponseError userNotFoundExceptionHandler(UserNotFoundException ex){
         return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
     }
+
+    @ExceptionHandler(PasswordIncorrectException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError changePasswordExceptionHandler(PasswordIncorrectException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError invalidCodeExceptionHandler(InvalidTokenException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400, ex.getMessage());
+    }
+
+    @ExceptionHandler(PasswordNotMatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError forgotPasswordExceptionHandler(PasswordNotMatchException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400, ex.getMessage());
+    }
 }

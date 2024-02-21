@@ -1,19 +1,25 @@
 package com.example.backend.modules.auth.services;
 
 
+import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.auth.constant.AuthConstants;
 import com.example.backend.modules.auth.dtos.LoginDTO;
 import com.example.backend.modules.auth.dtos.RegisterDTO;
+import com.example.backend.modules.auth.dtos.ResendMailDTO;
+import com.example.backend.modules.auth.dtos.VerifyDTO;
 import com.example.backend.modules.auth.exceptions.EmailUsedException;
 import com.example.backend.modules.auth.exceptions.UserNameUsedException;
+import com.example.backend.modules.auth.exceptions.VerifyEmailException;
 import com.example.backend.modules.auth.viewmodels.AuthenVm;
+import com.example.backend.modules.email.services.EmailService;
 import com.example.backend.modules.jwt.services.JwtService;
 import com.example.backend.modules.user.Role;
-import com.example.backend.modules.user.constant.UserConstant;
+import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.exceptions.UserNotFoundException;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.services.UserService;
+import com.example.backend.utils.Utilities;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,17 +33,20 @@ public class AuthServiceImpl  implements AuthService{
     private final JwtService jwtService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public AuthServiceImpl(
             AuthenticationManager authenticationManager,
             JwtService jwtService,
             UserService userService,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            EmailService emailService
     ){
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.userService = userService;
+        this.emailService = emailService;
     }
     @Override
     public ResponseSuccess<AuthenVm> login(LoginDTO dto) {
@@ -47,7 +56,7 @@ public class AuthServiceImpl  implements AuthService{
 
         var user = userService.findByUserName(dto.getUserName());
         if(user.isEmpty()){
-            throw new UserNotFoundException(UserConstant.USER_NOT_FOUND);
+            throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
         }
 
 
@@ -71,6 +80,8 @@ public class AuthServiceImpl  implements AuthService{
             throw new EmailUsedException(AuthConstants.EMAIL_USED);
         }
 
+        String verifyToken = passwordEncoder.encode(Utilities.generateCode());
+
         User newUser = User.builder()
                 .avatar("")
                 .userName(dto.getUserName())
@@ -81,9 +92,72 @@ public class AuthServiceImpl  implements AuthService{
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .isNotLocked(true)
+                .isEnable(false)
+                .token(verifyToken)
                 .build();
 
         userService.saveUser(newUser);
+
+        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL,AppConstants.TEXT_VERIFY_EMAIL + verifyToken);
+
         return new ResponseSuccess<>(AuthConstants.REGISTER_SUCCESS, true);
+    }
+
+    @Override
+    public ResponseSuccess<Boolean> verifyAccount(VerifyDTO dto) {
+        var foundUser = userService.findByEmailAndToken(dto.getEmail(), passwordEncoder.encode(dto.getCode()));
+        if (foundUser.isEmpty()) {
+            throw new VerifyEmailException(AuthConstants.VERIFY_FAILED);
+        }
+        if (foundUser.get().isEnabled()) {
+            return new ResponseSuccess<>(AuthConstants.ACCOUNT_VERIFIED, true);
+        }
+
+        foundUser.get()
+                .setIsEnable(true);
+        foundUser.get()
+                .setToken(null);
+
+        userService.saveUser(foundUser.get());
+
+        return new ResponseSuccess<>(AuthConstants.VERIFY_SUCCESS, true);
+    }
+
+    @Override
+    public ResponseSuccess<Boolean> resendEmail(ResendMailDTO dto) {
+        var foundUser = userService.findByEmail(dto.getEmail());
+        if (foundUser.isEmpty()) {
+            throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
+        }
+
+        if (foundUser.get().isEnabled()) {
+            return new ResponseSuccess<>(AuthConstants.ACCOUNT_VERIFIED, true);
+        }
+
+        foundUser.get()
+                .setToken(passwordEncoder.encode(Utilities.generateCode()));
+
+        userService.saveUser(foundUser.get());
+
+        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL,AppConstants.TEXT_VERIFY_EMAIL + foundUser.get().getToken());
+
+
+        return new ResponseSuccess<>(AuthConstants.RESEND_EMAIL, true);
+    }
+
+    @Override
+    public ResponseSuccess<String> refreshToken(String refreshToken) {
+        String userName = jwtService.extractUsername(refreshToken);
+        if (userName != null) {
+            var userFound = userService.findByUserName(userName);
+            if (userFound.isEmpty()) {
+                throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
+            }
+
+            var accessToken = jwtService.generateAccessToken(userFound.get());
+            return new ResponseSuccess<>("Thành công", accessToken);
+        }
+
+        throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
     }
 }

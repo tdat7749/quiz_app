@@ -40,6 +40,7 @@ public class User implements UserDetails {
     @Column(name = "user_name",length = 40,nullable = false)
     private String userName;
 
+    @Column(columnDefinition = "MEDIUMTEXT",nullable = true)
     private String token;
 
     @Column(columnDefinition = "MEDIUMTEXT",nullable = true)
@@ -64,6 +65,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    @ColumnDefault("false")
+    @Column(name = "is_enable",nullable = false)
+    private Boolean isEnable;
 
     @Override
     public java.util.Collection<? extends GrantedAuthority> getAuthorities() {
@@ -100,7 +105,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnable;
     }
 
 
