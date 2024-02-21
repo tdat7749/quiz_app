@@ -14,4 +14,11 @@ public class TopicExceptionHandler {
     public ResponseError topicNotFoundExceptionHandler(TopicNotFoundException ex){
         return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
     }
+
+
+    @ExceptionHandler(TopicSlugUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError topicNotFoundExceptionHandler(TopicSlugUsedException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
 }

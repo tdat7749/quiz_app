@@ -6,9 +6,13 @@ import com.example.backend.modules.topic.dtos.EditTopicDTO;
 import com.example.backend.modules.topic.services.TopicService;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,17 +39,16 @@ public class TopicController {
     @PostMapping("/")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<TopicVm>> createTopic(
-            @RequestPart @Valid CreateTopicDTO dto
-            ) throws IOException {
+            @ModelAttribute @Valid CreateTopicDTO dto
+    ) throws IOException {
         var result = topicService.createTopic(dto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @PatchMapping("/")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<TopicVm>> editTopic(
-            @RequestPart @Valid EditTopicDTO dto
+            @ModelAttribute @Valid EditTopicDTO dto
     ) throws IOException {
         var result = topicService.editTopic(dto);
 

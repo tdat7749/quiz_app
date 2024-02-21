@@ -8,4 +8,6 @@ public class TopicConstants {
     public static final String EDIT_TOPIC = "Chỉnh sửa chủ đề thành công";
 
     public static final String DELETE_TOPIC = "Xóa chủ đề thành công";
+
+    public static final String TOPIC_SLUG_USED = "Tiêu đề này đã được sử dụng";
 }

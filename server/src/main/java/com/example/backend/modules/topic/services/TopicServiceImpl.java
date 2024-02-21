@@ -6,6 +6,7 @@ import com.example.backend.modules.topic.constant.TopicConstants;
 import com.example.backend.modules.topic.dtos.CreateTopicDTO;
 import com.example.backend.modules.topic.dtos.EditTopicDTO;
 import com.example.backend.modules.topic.exceptions.TopicNotFoundException;
+import com.example.backend.modules.topic.exceptions.TopicSlugUsedException;
 import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.topic.repositories.TopicRepository;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
@@ -43,6 +44,10 @@ public class TopicServiceImpl implements TopicService{
     @Transactional
     public ResponseSuccess<TopicVm> createTopic(CreateTopicDTO dto) throws IOException {
 
+        var topic = topicRepository.findBySlug(dto.getSlug());
+        if(topic.isPresent()){
+            throw new TopicSlugUsedException(TopicConstants.TOPIC_SLUG_USED);
+        }
         String thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
 
         Topic newTopic = Topic.builder()
@@ -67,6 +72,12 @@ public class TopicServiceImpl implements TopicService{
             throw new TopicNotFoundException(TopicConstants.TOPIC_NOT_FOUND);
         }
 
+        var topicFoundBySlug = topicRepository.findBySlug(dto.getSlug());
+
+        if(topicFoundBySlug.isPresent() && !topic.get().equals(topicFoundBySlug.get())){
+            throw new TopicSlugUsedException(TopicConstants.TOPIC_SLUG_USED);
+        }
+
         String thumbnailUrl = null;
         if(dto.getThumbnail() != null){
             thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
@@ -78,6 +89,8 @@ public class TopicServiceImpl implements TopicService{
                 .setSlug(dto.getSlug());
         topic.get()
                 .setTitle(dto.getTitle());
+        topic.get()
+                .setUpdatedAt(new Date());
         if(thumbnailUrl != null){
             topic.get().setThumbnail(thumbnailUrl);
         }
