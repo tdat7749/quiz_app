@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService{
-    private final String serectKey = "qu!zzappcodebyspringbootandkotlinjetpackcompose";
+    private final String serectKey = "quizzappcodebyspringbootandkotlinjetpackcompose";
     private final long accessTokenTime =  1000 * 60 * 60 * 24; // 1 day'
     private final long refreshTokenTime = 1000 * 60 * 60 * 24 * 7; // 7 days
 

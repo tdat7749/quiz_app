@@ -29,7 +29,7 @@ public class QuestionController {
     @ResponseBody
     public ResponseEntity<ResponseSuccess<Boolean>> editQuestion(
             @AuthenticationPrincipal User user,
-            @RequestBody @Valid EditQuestionDTO dto
+            @ModelAttribute @Valid EditQuestionDTO dto
     ) throws IOException {
         var result = questionService.editQuestion(user,dto);
 
