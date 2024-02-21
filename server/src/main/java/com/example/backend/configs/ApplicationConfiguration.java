@@ -6,6 +6,7 @@ import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class ApplicationConfiguration {
     private final UserService userService;
 
-    public ApplicationConfiguration(UserService userService){
+    public ApplicationConfiguration(@Lazy UserService userService){
         this.userService = userService;
     }
 

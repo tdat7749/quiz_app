@@ -19,6 +19,7 @@ import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import com.example.backend.utils.Utilities;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +38,8 @@ public class UserServiceImpl implements UserService{
 
     public UserServiceImpl(
             UserRepository userRepository,
-            FileStorageService fileStorageService,
-            PasswordEncoder passwordEncoder,
+            @Lazy FileStorageService fileStorageService,
+            @Lazy PasswordEncoder passwordEncoder,
             EmailService emailService
     ){
         this.userRepository = userRepository;
