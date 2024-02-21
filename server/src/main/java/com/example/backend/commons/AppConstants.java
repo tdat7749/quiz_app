@@ -2,6 +2,13 @@ package com.example.backend.commons;
 
 public class AppConstants {
 
+    public static final String SUBJECT_EMAIL = "XÁC MINH TÀI KHOẢN EMAIL CỦA BẠN";
+
+    public static final String SUBJECT_EMAIL_FORGOT_PASSWORD = "LẤY LẠI MẬT KHẨU";
+
+    public static final String TEXT_VERIFY_EMAIL = "Chào mừng bạn đến với QuizHell!. Đây là mã xác minh của bạn, vui lòng không chia sẻ nó cho bất kì ai : ";
+
+    public static final String TEXT_FORGOT_PASSWORD = "Đây là mã lấy lại mật khẩu của bạn, vui lòng không chia sẻ nó cho bất kì ai : ";
     public static final String FROM_EMAIL = "noreply@quizapp.hell";
     public static final String CLOUD_NAME = "dafpvnxnf";
 

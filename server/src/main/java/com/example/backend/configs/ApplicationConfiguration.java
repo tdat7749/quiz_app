@@ -2,10 +2,11 @@ package com.example.backend.configs;
 
 import com.cloudinary.Cloudinary;
 import com.example.backend.commons.AppConstants;
-import com.example.backend.modules.user.constant.UserConstant;
+import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,13 +26,13 @@ import java.util.Map;
 public class ApplicationConfiguration {
     private final UserService userService;
 
-    public ApplicationConfiguration(UserService userService){
+    public ApplicationConfiguration(@Lazy UserService userService){
         this.userService = userService;
     }
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userService.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(UserConstant.USER_NOT_FOUND));
+        return username -> userService.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(UserConstants.USER_NOT_FOUND));
     }
 
     @Bean
