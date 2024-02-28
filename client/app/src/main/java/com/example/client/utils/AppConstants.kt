@@ -1,5 +1,12 @@
 package com.example.client.utils
 
 object AppConstants {
-    const val APP_BASE_URL = "http://localhost:8080/api"
+    const val APP_BASE_URL = "http://192.168.1.15:8080/"
+    const val ACCESS_TOKEN = "access_token"
+    const val REFRESH_TOKEN = "refresh_token"
+
+    val PUBLIC_API: ArrayList<String> = arrayListOf(
+        "/api/auth/login",
+        "/api/auth/register",
+    )
 }

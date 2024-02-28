@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">client</string>
+    <string name="app_name">Hell Quiz</string>
+    <string name="hello">Xin Chào</string>
+    <string name="logo_description">Logo App</string>
+    <string name="user_name">Tên Đăng Nhập</string>
+    <string name="password">Mật Khẩu</string>
+    <string name="hide_password">Ẩn Mật Khẩu</string>
+    <string name="show_password">Hiển Thị Mật Khẩu</string>
+    <string name="login">Đăng Nhập</string>
+    <string name="register">Đăng Ký</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Nhập Lại Mật Khẩu</string>
+    <string name="display_name">Tên Hiển Thị</string>
+    <string name="havent_account">Chưa có tài khoản ? Vui lòng nhấp vào đây để đăng ký</string>
+    <string name="have_account">Đã có tài khoản ? Đăng nhập!</string>
 </resources>
