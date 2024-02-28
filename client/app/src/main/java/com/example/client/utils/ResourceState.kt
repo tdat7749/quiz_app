@@ -1,9 +1,13 @@
 package com.example.client.utils
 
-sealed class ResourceState<T> {
-    class Loading<T> : ResourceState<T>()
+import retrofit2.Response
 
-    data class Success<T> (val data:T) : ResourceState<T>()
-
-    data class Error<T> (val error:Any) : ResourceState<T>()
+sealed class ResourceState<out T> {
+    object Loading : ResourceState<Nothing>()
+    data class Success<out T> (val value:T?) : ResourceState<T>()
+    data class Error(
+        val isNetworkError: Boolean,
+        val errorCode: Int?,
+        val errorBody: ErrorResponse?
+    ) : ResourceState<Nothing>()
 }

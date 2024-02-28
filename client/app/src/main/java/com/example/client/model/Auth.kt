@@ -5,3 +5,7 @@ data class AuthToken(
     val refreshToken:String
 )
 
+data class Login(
+    val userName:String,
+    val password:String
+)
