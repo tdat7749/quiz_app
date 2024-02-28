@@ -16,29 +16,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.client.ui.viewmodel.LoginViewModel
 import com.example.client.R
-import com.example.client.model.Login
 import com.example.client.ui.components.*
 import com.example.client.ui.navigation.Routes
 import com.example.client.utils.ResourceState
 
 
 @Composable
-fun LoginScreen(
-    navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel(),
+fun RegisterScreen(
+    navController: NavController
 ){
-    val auth by loginViewModel.auth.collectAsState()
-
-
     val userName = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val displayName = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-
-    val login = Login(userName.value,password.value)
+    val confirmPassword = remember { mutableStateOf("") }
 
     Surface(
         modifier = Modifier
@@ -82,7 +76,7 @@ fun LoginScreen(
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             NormalText(
-                stringResource(id = R.string.login),
+                stringResource(id = R.string.register),
                 TextAlign.Center,
                 MaterialTheme.colorScheme.primary
             )
@@ -90,7 +84,6 @@ fun LoginScreen(
                 modifier = Modifier
                     .height(dimensionResource(id = R.dimen.space_app_normal))
             )
-
             TextFieldOutlined(
                 userName.value,
                 onChangeValue = {
@@ -98,6 +91,30 @@ fun LoginScreen(
                 },
                 stringResource(id = R.string.user_name),
                 painterResource(id = R.drawable.person)
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_small))
+            )
+            TextFieldOutlined(
+                email.value,
+                onChangeValue = {
+                    email.value = it
+                },
+                stringResource(id = R.string.email),
+                painterResource(id = R.drawable.email)
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_small))
+            )
+            TextFieldOutlined(
+                displayName.value,
+                onChangeValue = {
+                  displayName.value = it
+                },
+                stringResource(id = R.string.display_name),
+                painterResource(id = R.drawable.display_name)
             )
             Spacer(
                 modifier = Modifier
@@ -113,17 +130,28 @@ fun LoginScreen(
             )
             Spacer(
                 modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_small))
+            )
+
+            PasswordFieldOutlined(
+                confirmPassword.value,
+                onChangeValue = {
+                    confirmPassword.value = it
+                },
+                stringResource(id = R.string.confirm_password),
+                painterResource(id = R.drawable.password)
+            )
+            Spacer(
+                modifier = Modifier
                     .height(dimensionResource(id = R.dimen.space_app_normal))
             )
 
             ButtonComponent(
-                onClick = {
-                  loginViewModel.login(login)
-                },
-                stringResource(id = R.string.login),
+                onClick = {},
+                stringResource(id = R.string.register),
                 MaterialTheme.colorScheme.primary,
-                auth is ResourceState.Loading,
-                auth is ResourceState.Loading
+                false,
+                false
             )
 
             Spacer(
@@ -131,23 +159,23 @@ fun LoginScreen(
                     .height(dimensionResource(id = R.dimen.space_app_normal))
             )
             SmallText(
-                stringResource(id = R.string.havent_account),
+                stringResource(id = R.string.have_account),
                 TextAlign.Start,
                 MaterialTheme.colorScheme.onBackground,
                 navController,
-                Routes.REGISTER_SCREEN)
+                Routes.LOGIN_SCREEN)
         }
     }
 }
 
 @Preview
 @Composable
-fun LoginScreenPreview(){
+fun RegisterScreenPreview(){
     val navController = rememberNavController() // Tạo NavController giả
     val LocalNavController = compositionLocalOf<NavController> {
         error("No NavController provided")
     }
     CompositionLocalProvider(LocalNavController provides navController){
-        LoginScreen(LocalNavController.current)
+        RegisterScreen(LocalNavController.current)
     }
 }

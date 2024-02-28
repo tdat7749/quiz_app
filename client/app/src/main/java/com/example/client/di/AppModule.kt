@@ -3,8 +3,8 @@ package com.example.client.di
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
 import com.example.client.network.auth.AuthService
-import com.example.client.network.auth.AuthServiceImpl
 import com.example.client.repositories.AuthRepository
+import com.example.client.utils.SharedPreferencesManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -15,13 +15,11 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
     @Provides
     @Singleton
     fun providesRetrofit() : Retrofit {
@@ -30,8 +28,22 @@ class AppModule {
             level = HttpLoggingInterceptor.Level.BASIC
         }
 
+
         val httpClient = OkHttpClient().newBuilder().apply {
             addInterceptor(httpLoggingInterceptor)
+            addInterceptor{ chain ->
+                val originalRequest = chain.request()
+                val sharedPreferences = SharedPreferencesManager.getSharedPreferences()
+                val accessToken =  sharedPreferences.getString(AppConstants.ACCESS_TOKEN,null)
+                if(AppConstants.PUBLIC_API.contains(originalRequest.url.encodedPath)){
+                    chain.proceed(originalRequest)
+                }else{
+                    val requestWithJwt = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $accessToken")
+                        .build()
+                    chain.proceed(requestWithJwt)
+                }
+            }
         }
 
         val moshi = Moshi.Builder()
