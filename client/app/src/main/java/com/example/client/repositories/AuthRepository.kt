@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val authService: AuthService
-): BaseRepository(){
-    suspend fun login(login:Login) = safeCallApi {
+){
+    suspend fun login(login:Login) = ApiHelper.safeCallApi {
         authService.login(login)
     }
 }

@@ -37,52 +37,18 @@ fun RegisterScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_app)),
+            .padding(dimensionResource(id = R.dimen.padding_app))
+            .verticalScroll(rememberScrollState()),
         color = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_extraLarge))
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.choose),
-                    contentDescription = stringResource(id = R.string.logo_description),
-                    modifier = Modifier
-                        .size(200.dp)
-                )
-            }
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            HeadingBoldText(
+            HeaderApp(
+                painterResource(id = R.drawable.choose),
                 stringResource(id = R.string.app_name),
-                TextAlign.Center,
-                MaterialTheme.colorScheme.primary
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            NormalText(
-                stringResource(id = R.string.register),
-                TextAlign.Center,
-                MaterialTheme.colorScheme.primary
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                stringResource(id = R.string.register)
             )
             TextFieldOutlined(
                 userName.value,
