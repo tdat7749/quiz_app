@@ -3,14 +3,18 @@ package com.example.backend.modules.history.dtos;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
+@Builder
 @Getter
+@Setter
 public class CreateHistoryDTO {
 
     @NotNull(message = "Không được thiếu trường 'totalCorrect'")

@@ -2,10 +2,14 @@ package com.example.backend.modules.quiz.dtos;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Builder
+@Setter
 public class EditQuizThumbnail {
     @NotNull(message = "Không được thiếu trường 'thumbnail'")
     private MultipartFile thumbnail;
