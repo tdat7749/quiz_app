@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 @Getter
+@Setter
 public class CreateTopicDTO {
 
     @NotBlank(message = "Không được bỏ trống trường 'title'")

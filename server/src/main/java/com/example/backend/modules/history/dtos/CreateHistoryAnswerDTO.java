@@ -3,9 +3,13 @@ package com.example.backend.modules.history.dtos;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+@Builder
 @Getter
+@Setter
 public class CreateHistoryAnswerDTO {
 
     @NotNull(message = "Không được thiếu trường 'questionId'")

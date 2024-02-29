@@ -5,11 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
+@Setter
 public class EditQuestionDTO {
     @Digits(integer = 10,fraction = 0,message = "Trường 'questionId' phải là số nguyên")
     private int questionId;

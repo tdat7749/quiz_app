@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Builder
+@Setter
 public class EditQuizDTO {
     @Digits(integer = 10,fraction = 0,message = "Trường 'topicId' phải là số nguyên")
     @NotNull(message = "Không được thiếu trường 'quizId'")
