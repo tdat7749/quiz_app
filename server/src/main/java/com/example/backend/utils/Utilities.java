@@ -46,6 +46,7 @@ public class Utilities {
                 .title(quiz.getTitle())
                 .slug(quiz.getSlug())
                 .thumbnail(quiz.getThumbnail())
+                .user(getUserVm(quiz.getUser()))
                 .build();
 
         return quizVm;

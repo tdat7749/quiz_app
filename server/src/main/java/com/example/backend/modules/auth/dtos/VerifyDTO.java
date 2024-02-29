@@ -9,7 +9,7 @@ public class VerifyDTO {
     @NotNull(message = "Không được thiếu trường 'email'")
     @NotBlank(message = "Không được để trống trường 'email'")
     private String email;
-    @NotNull(message = "Không được thiếu trường 'code'")
-    @NotBlank(message = "Không được để trống trường 'code'")
-    private String code;
+    @NotNull(message = "Không được thiếu trường 'token'")
+    @NotBlank(message = "Không được để trống trường 'token'")
+    private String token;
 }

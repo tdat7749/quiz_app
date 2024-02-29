@@ -1,6 +1,7 @@
 package com.example.backend.modules.quiz.viewmodels;
 
 
+import com.example.backend.modules.user.viewmodels.UserVm;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,4 +12,5 @@ public class QuizVm {
     private String title;
     private String slug;
     private String thumbnail;
+    private UserVm user;
 }

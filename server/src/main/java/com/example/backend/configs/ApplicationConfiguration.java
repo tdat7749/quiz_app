@@ -59,7 +59,7 @@ public class ApplicationConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("*");
         config.addAllowedMethod("*"); // Cấu hình cho phép tất cả các phương thức (GET, POST, PUT, DELETE, v.v.)
         config.addAllowedHeader("*"); // Cấu hình cho phép tất cả các tiêu đề
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
