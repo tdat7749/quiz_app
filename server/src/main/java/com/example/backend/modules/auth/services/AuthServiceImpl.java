@@ -80,7 +80,7 @@ public class AuthServiceImpl  implements AuthService{
             throw new EmailUsedException(AuthConstants.EMAIL_USED);
         }
 
-        String verifyToken = passwordEncoder.encode(Utilities.generateCode());
+        final String verifyToken = Utilities.generateCode();
 
         User newUser = User.builder()
                 .avatar("")
@@ -105,7 +105,7 @@ public class AuthServiceImpl  implements AuthService{
 
     @Override
     public ResponseSuccess<Boolean> verifyAccount(VerifyDTO dto) {
-        var foundUser = userService.findByEmailAndToken(dto.getEmail(), passwordEncoder.encode(dto.getCode()));
+        var foundUser = userService.findByEmailAndToken(dto.getEmail().toLowerCase(), dto.getToken());
         if (foundUser.isEmpty()) {
             throw new VerifyEmailException(AuthConstants.VERIFY_FAILED);
         }
@@ -134,12 +134,14 @@ public class AuthServiceImpl  implements AuthService{
             return new ResponseSuccess<>(AuthConstants.ACCOUNT_VERIFIED, true);
         }
 
+        final String token = Utilities.generateCode();
+
         foundUser.get()
-                .setToken(passwordEncoder.encode(Utilities.generateCode()));
+                .setToken(token);
 
         userService.saveUser(foundUser.get());
 
-        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL,AppConstants.TEXT_VERIFY_EMAIL + foundUser.get().getToken());
+        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL,AppConstants.TEXT_VERIFY_EMAIL + token);
 
 
         return new ResponseSuccess<>(AuthConstants.RESEND_EMAIL, true);
