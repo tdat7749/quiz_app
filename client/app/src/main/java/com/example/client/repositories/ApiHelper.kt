@@ -6,9 +6,10 @@ import com.example.client.utils.ResourceState
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import retrofit2.HttpException
 
-abstract class BaseRepository {
+object ApiHelper {
     suspend fun <T> safeCallApi(
         apiCall: suspend () -> T
     ): ResourceState<T> {
@@ -18,7 +19,7 @@ abstract class BaseRepository {
             }catch(throwable: Throwable){
                 when(throwable){
                     is HttpException -> {
-                        ResourceState.Error(false, throwable.code(),convertErrorBody(throwable))
+                        ResourceState.Error(false, throwable.code(),convertThrowableToErrorResponse(throwable))
                     }
                     else -> {
                         ResourceState.Error(false,500, ErrorResponse("INTERNAL_SERVER",500,"Có lỗi không xác định xảy ra"))
@@ -28,7 +29,7 @@ abstract class BaseRepository {
         }
     }
 
-    private fun convertErrorBody(throwable: HttpException): ErrorResponse? {
+    fun convertThrowableToErrorResponse(throwable: HttpException): ErrorResponse? {
         return try {
             throwable.response()?.errorBody()?.source()?.let {
                 val moshiAdapter = Moshi.Builder().build().adapter(ErrorResponse::class.java)

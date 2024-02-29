@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.client.ui.screens.HomeScreen
 import com.example.client.ui.screens.LoginScreen
 import com.example.client.ui.screens.RegisterScreen
+import com.example.client.ui.screens.SearchScreen
 
 @Composable
 fun AppNavigationGraph(){
@@ -22,7 +23,7 @@ fun AppNavigationGraph(){
     }
 
     CompositionLocalProvider(LocalNavController provides navController){
-        NavHost(navController = navController, startDestination = Routes.LOGIN_SCREEN){
+        NavHost(navController = navController, startDestination = Routes.SEARCH_SCREEN){
 
             composable(Routes.LOGIN_SCREEN){
                 LoginScreen(LocalNavController.current)
@@ -34,6 +35,9 @@ fun AppNavigationGraph(){
 
             composable(Routes.HOME_SCREEN){
                 HomeScreen()
+            }
+            composable(Routes.SEARCH_SCREEN){
+                SearchScreen()
             }
         }
     }

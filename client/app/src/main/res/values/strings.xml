@@ -13,4 +13,11 @@
     <string name="display_name">Tên Hiển Thị</string>
     <string name="havent_account">Chưa có tài khoản ? Vui lòng nhấp vào đây để đăng ký</string>
     <string name="have_account">Đã có tài khoản ? Đăng nhập!</string>
+    <string name="forgot_password">Quên Mật Khẩu</string>
+    <string name="send">Gửi</string>
+    <string name="new_password">Mật Khẩu Mới</string>
+    <string name="token">Mã Xác Nhận</string>
+    <string name="verify">Xác Minh Tài Khoản</string>
+    <string name="verify_email">Nhập Email Của Tài Khoản Cần Xác Minh</string>
+    <string name="search">Tìm Kiếm</string>
 </resources>

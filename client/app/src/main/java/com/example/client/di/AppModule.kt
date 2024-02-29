@@ -3,7 +3,9 @@ package com.example.client.di
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
 import com.example.client.network.auth.AuthService
+import com.example.client.network.quiz.QuizService
 import com.example.client.repositories.AuthRepository
+import com.example.client.repositories.QuizRepository
 import com.example.client.utils.SharedPreferencesManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -72,5 +74,17 @@ class AppModule {
     @Singleton
     fun providesAuthRepository(authService: AuthService) : AuthRepository {
         return AuthRepository(authService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuizService(retrofit: Retrofit) : QuizService {
+        return retrofit.create(QuizService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuizRepository(quizService: QuizService) : QuizRepository {
+        return QuizRepository(quizService)
     }
 }

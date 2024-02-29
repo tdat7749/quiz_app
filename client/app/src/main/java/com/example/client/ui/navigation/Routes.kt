@@ -4,4 +4,8 @@ object Routes {
     const val HOME_SCREEN = "HOME"
     const val LOGIN_SCREEN = "LOGIN"
     const val REGISTER_SCREEN = "REGISTER"
+    const val SEARCH_SCREEN = "SEARCH"
+    const val VERIFY_SCREEN = "VERIFY"
+    const val FORGOT_PASSWORD_SCREEN = "FORGOT_PASSWORD"
+    const val CREATE_QUIZ_SCREEN = "CREATE_QUIZ"
 }
