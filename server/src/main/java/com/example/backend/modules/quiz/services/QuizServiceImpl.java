@@ -162,13 +162,15 @@ public class QuizServiceImpl implements QuizService{
 
         var thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
 
+        boolean isPublic = dto.getIsPublic().equalsIgnoreCase("true");
+
         var newQuiz = Quiz.builder()
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .description(dto.getDescription())
                 .slug(dto.getSlug())
                 .summary(dto.getSummary())
-                .isPublic(dto.isPublic())
+                .isPublic(isPublic)
                 .user(user)
                 .title(dto.getTitle())
                 .thumbnail(thumbnailUrl)

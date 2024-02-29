@@ -4,13 +4,17 @@ package com.example.backend.modules.quiz.dtos;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Builder
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateQuizDTO {
     @NotBlank(message = "Không được bỏ trống trường 'summary'")
     @NotNull(message = "Không được thiếu trường 'summary'")
@@ -42,6 +46,6 @@ public class CreateQuizDTO {
     private List<CreateQuestionDTO> questions;
 
     @NotNull(message = "Không được thiếu trường 'isPublic'")
-    private boolean isPublic;
+    private String isPublic;
 
 }
