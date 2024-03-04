@@ -11,10 +11,10 @@ import retrofit2.http.Query
 interface QuizService {
     @GET("api/quizzes/public/{topicId}/topic")
     suspend fun getPublicQuizzes(
+        @Path("topicId") topicId:Int,
         @Query("keyword") keyword:String,
         @Query("pageIndex") pageIndex:Int,
-        @Query("sortBy") sortBy:String = "createdAt",
-        @Path("topicId") topicId:Int
+        @Query("sortBy") sortBy:String = "createdAt"
     ) : ApiResponse<PagingResponse<List<Quiz>>>
 
     @GET("api/quizzes/my")

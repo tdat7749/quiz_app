@@ -7,6 +7,6 @@ class QuizRepository @Inject constructor(
     private val quizService: QuizService
 ){
     suspend fun getPublicQuiz(keyword:String,pageIndex:Int,sortBy:String,topicId:Int) = ApiHelper.safeCallApi {
-        quizService.getPublicQuizzes(keyword, pageIndex, sortBy, topicId)
+        quizService.getPublicQuizzes(topicId,keyword, pageIndex, sortBy)
     }
 }

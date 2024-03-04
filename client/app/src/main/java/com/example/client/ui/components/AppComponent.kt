@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -127,6 +129,52 @@ fun TextFieldOutlined(
                 contentDescription = label
             )
         }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchTextField(
+    value:String,
+    onChangeValue: (String) -> Unit,
+    label:String,
+    painterResource: Painter,
+    onSearch: () -> Unit
+){
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(Shapes.medium),
+        label = {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        value = value,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
+        onValueChange = onChangeValue,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                painter = painterResource,
+                contentDescription = label
+            )
+        },
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearch()
+            }
+        )
     )
 }
 
@@ -236,6 +284,15 @@ fun ButtonComponent(
 }
 
 @Composable
+fun Loading(){
+    CircularProgressIndicator(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .width(64.dp)
+    )
+}
+
+@Composable
 fun HeaderApp(painterResource: Painter,headingText:String,normalText:String){
     Spacer(
         modifier = Modifier
@@ -286,11 +343,11 @@ fun HeaderApp(painterResource: Painter,headingText:String,normalText:String){
 }
 
 @Composable
-fun QuizCardScroll(quiz: Quiz){
+fun QuizCard(quiz:Quiz){
     Box(){
         Card(
             modifier = Modifier
-                .width(dimensionResource(id = R.dimen.quiz_card_width))
+                .fillMaxWidth()
                 .height(dimensionResource(id = R.dimen.quiz_card_height))
                 .shadow(4.dp,shape = RoundedCornerShape(8.dp)),
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary)
@@ -316,7 +373,7 @@ fun QuizCardScroll(quiz: Quiz){
                         .fillMaxSize()
                         .padding(start = 8.dp, bottom = 8.dp),
                     verticalArrangement = Arrangement.SpaceBetween
-                ) {
+                ){
                     HeadingBoldText(
                         quiz.title,
                         TextAlign.Start,
@@ -325,6 +382,7 @@ fun QuizCardScroll(quiz: Quiz){
                             .fillMaxWidth(),
                         fontSize = 24.sp
                     )
+
                     UserInfo(quiz.user)
                 }
             }

@@ -19,9 +19,11 @@ object ApiHelper {
             }catch(throwable: Throwable){
                 when(throwable){
                     is HttpException -> {
+                        Log.d("exception",throwable.message.toString())
                         ResourceState.Error(false, throwable.code(),convertThrowableToErrorResponse(throwable))
                     }
                     else -> {
+                        Log.d("exception",throwable.message.toString())
                         ResourceState.Error(false,500, ErrorResponse("INTERNAL_SERVER",500,"Có lỗi không xác định xảy ra"))
                     }
                 }

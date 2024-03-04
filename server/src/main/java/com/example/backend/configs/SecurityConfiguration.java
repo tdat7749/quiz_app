@@ -39,7 +39,8 @@ public class SecurityConfiguration {
 
                         // auth
                         .requestMatchers(HttpMethod.GET,"/api/auth/**").permitAll()
-
+                        .requestMatchers(HttpMethod.GET,"/api/quizzes/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/topics/").permitAll()
 
                         .anyRequest().permitAll()
                 )

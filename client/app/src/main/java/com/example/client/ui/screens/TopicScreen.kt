@@ -1,5 +1,7 @@
 package com.example.client.ui.screens
 
+import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,50 +22,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
-import com.example.client.ui.components.QuizCardScroll
+import com.example.client.ui.components.QuizCard
 import com.example.client.ui.components.TextFieldOutlined
 import com.example.client.ui.viewmodel.SearchViewModel
 
 
 @Composable
 fun TopicScreen(
+    topicId:Int,
+    title:String,
+    thumbnail:String,
     searchViewModel:SearchViewModel = hiltViewModel()
 ) {
 
     Surface (
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(id = R.dimen.padding_app)),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Top
         ) {
-            TopicHeader("https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg","Lịch Sử")
+            TopicHeader(thumbnail,title)
             Spacer(
                 modifier = Modifier
                     .height(dimensionResource(id = R.dimen.space_app_normal))
             )
-
-            TextFieldOutlined(
-                value = searchViewModel.keyword,
-                onChangeValue = {
-                    searchViewModel.searchOnChange(it)
-                },
-                label = stringResource(id = R.string.search),
-                painterResource = painterResource(id = R.drawable.search)
-            )
-            Spacer(
+            Column (
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app)),
+            ) {
+                TextFieldOutlined(
+                    value = searchViewModel.keyword,
+                    onChangeValue = {
+                        searchViewModel.searchOnChange(it)
+                    },
+                    label = stringResource(id = R.string.search),
+                    painterResource = painterResource(id = R.drawable.search)
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_normal))
+                )
 
-            QuizList(searchViewModel)
+                QuizList(topicId,searchViewModel)
+            }
         }
     }
 }
@@ -97,26 +106,26 @@ fun TopicHeader(thubnail:String, title:String){
 }
 
 @Composable
-fun QuizList(searchViewModel:SearchViewModel){
-    if(!searchViewModel.isSearchKeywordBlank()){
-        val quizzes = searchViewModel.getQuizzes().collectAsLazyPagingItems()
+fun QuizList(topicId:Int,searchViewModel:SearchViewModel){
+        val quizzes = searchViewModel.getQuizzes(topicId).collectAsLazyPagingItems()
         LazyColumn (
             contentPadding =  PaddingValues(
                 top = dimensionResource(id = R.dimen.space_app_normal),
-                bottom = dimensionResource(id = R.dimen.space_app_normal)
+                bottom = dimensionResource(id = R.dimen.space_app_normal),
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
         ){
             items(quizzes.itemCount){index ->
-                QuizCardScroll(quizzes[index]!!)
+                QuizCard(quizzes[index]!!)
             }
         }
-    }
 }
 
 @Preview
 @Composable
 fun TopicScreenPreview(){
-    TopicScreen()
+//    TopicScreen(1)
 }

@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -21,10 +23,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.client.ui.viewmodel.LoginViewModel
 import com.example.client.R
+import com.example.client.model.AuthToken
 import com.example.client.model.Login
 import com.example.client.ui.components.*
 import com.example.client.ui.navigation.Routes
+import com.example.client.ui.navigation.Routes.HOME_SCREEN
+import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -34,6 +41,11 @@ fun LoginScreen(
 ){
     val auth by loginViewModel.auth.collectAsState()
 
+    LaunchedEffect(Unit){
+        withContext(Dispatchers.Main){
+            loginViewModel.checkLogin(navController)
+        }
+    }
 
     val userName = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -47,6 +59,18 @@ fun LoginScreen(
             .verticalScroll(rememberScrollState()),
         color = Color.White
     ) {
+        when(auth){
+            is ResourceState.Success -> {
+                ShowMessage((auth as ResourceState.Success<ApiResponse<AuthToken>>).value.message)
+                navController.navigate(HOME_SCREEN)
+            }
+            is ResourceState.Error -> {
+                (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+            }
+            else -> {
+
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,7 +112,7 @@ fun LoginScreen(
                 stringResource(id = R.string.login),
                 MaterialTheme.colorScheme.primary,
                 auth is ResourceState.Loading,
-                auth is ResourceState.Loading
+                auth !is ResourceState.Loading
             )
 
             Spacer(
@@ -101,8 +125,30 @@ fun LoginScreen(
                 MaterialTheme.colorScheme.onBackground,
                 navController,
                 Routes.REGISTER_SCREEN)
+
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_normal))
+            )
+            SmallText(
+                stringResource(id = R.string.to_verify_email),
+                TextAlign.Start,
+                MaterialTheme.colorScheme.onBackground,
+                navController,
+                Routes.VERIFY_SCREEN)
         }
     }
+}
+
+@Composable
+private fun ShowMessage(
+    message: String,
+) {
+    Toast.makeText(
+        LocalContext.current,
+        message,
+        Toast.LENGTH_LONG
+    ).show()
 }
 
 @Preview
@@ -116,3 +162,4 @@ fun LoginScreenPreview(){
         LoginScreen(LocalNavController.current)
     }
 }
+
