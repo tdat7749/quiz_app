@@ -9,4 +9,12 @@ class QuizRepository @Inject constructor(
     suspend fun getPublicQuiz(keyword:String,pageIndex:Int,sortBy:String,topicId:Int) = ApiHelper.safeCallApi {
         quizService.getPublicQuizzes(topicId,keyword, pageIndex, sortBy)
     }
+
+    suspend fun get10QuizLatest() = ApiHelper.safeCallApi {
+        quizService.get10QuizLatest()
+    }
+
+    suspend fun getTop10QuizCollection() = ApiHelper.safeCallApi {
+        quizService.getTop10QuizCollection()
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,29 +8,47 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.client.R
+import com.example.client.model.AuthToken
 import com.example.client.ui.components.*
+import com.example.client.ui.navigation.Routes
+import com.example.client.ui.viewmodel.ForgotPasswordViewModel
+import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
 @Composable
-fun ForgotPasswordScreen(){
+fun ForgotPasswordScreen(
+    navController: NavController,
+    forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
+){
 
-    val newPassword = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
-    val token = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
+    val forgot by forgotPasswordViewModel.forgot.collectAsState()
+
+    when(forgot){
+        is ResourceState.Success -> {
+            ShowMessage((forgot as ResourceState.Success<ApiResponse<Boolean>>).value.message)
+            navController.navigate(Routes.LOGIN_SCREEN)
+        }
+        is ResourceState.Error -> {
+            (forgot as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+        }
+        else -> {
+
+        }
+    }
 
     Surface (
         modifier = Modifier
@@ -48,9 +67,9 @@ fun ForgotPasswordScreen(){
                 stringResource(id = R.string.forgot_password)
             )
             PasswordFieldOutlined(
-                newPassword.value,
+                forgotPasswordViewModel.newPassword,
                 onChangeValue = {
-                    newPassword.value = it
+                    forgotPasswordViewModel.onChangeNewPassword(it)
                 },
                 stringResource(id = R.string.new_password),
                 painterResource(id = R.drawable.password)
@@ -60,9 +79,9 @@ fun ForgotPasswordScreen(){
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             PasswordFieldOutlined(
-                confirmPassword.value,
+                forgotPasswordViewModel.confirmPassword,
                 onChangeValue = {
-                    confirmPassword.value = it
+                    forgotPasswordViewModel.onChangeConfirmPassword(it)
                 },
                 stringResource(id = R.string.confirm_password),
                 painterResource(id = R.drawable.password)
@@ -72,9 +91,9 @@ fun ForgotPasswordScreen(){
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             TextFieldOutlined(
-                email.value,
+                forgotPasswordViewModel.email,
                 onChangeValue = {
-                    email.value = it
+                    forgotPasswordViewModel.onChangeEmail(it)
                 },
                 stringResource(id = R.string.email),
                 painterResource(id = R.drawable.email)
@@ -84,9 +103,9 @@ fun ForgotPasswordScreen(){
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             PasswordFieldOutlined(
-                token.value,
+                forgotPasswordViewModel.token,
                 onChangeValue = {
-                    token.value = it
+                    forgotPasswordViewModel.onChangeToken(it)
                 },
                 stringResource(id = R.string.token),
                 painterResource(id = R.drawable.token)
@@ -97,19 +116,24 @@ fun ForgotPasswordScreen(){
             )
             ButtonComponent(
                 onClick = {
-
+                    forgotPasswordViewModel.forgotPassword()
                 },
                 stringResource(id = R.string.send),
                 MaterialTheme.colorScheme.primary,
-                false,
-                true
+                forgot is ResourceState.Loading,
+                forgot !is ResourceState.Loading
             )
         }
     }
 }
 
-@Preview
 @Composable
-fun ForgotPasswordScreenPreview(){
-    ForgotPasswordScreen()
+private fun ShowMessage(
+    message: String,
+) {
+    Toast.makeText(
+        LocalContext.current,
+        message,
+        Toast.LENGTH_LONG
+    ).show()
 }

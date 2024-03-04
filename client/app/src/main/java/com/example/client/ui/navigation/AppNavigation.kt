@@ -35,6 +35,10 @@ fun AppNavigationGraph(){
                 HomeScreen(navController)
             }
 
+            composable(Routes.FORGOT_PASSWORD_SCREEN){
+                ForgotPasswordScreen(navController)
+            }
+
             composable(Routes.VERIFY_SCREEN){
                 VerifyAccountScreen(navController)
             }

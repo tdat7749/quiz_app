@@ -42,15 +42,23 @@ fun LoginScreen(
     val auth by loginViewModel.auth.collectAsState()
 
     LaunchedEffect(Unit){
-        withContext(Dispatchers.Main){
-            loginViewModel.checkLogin(navController)
-        }
+        loginViewModel.checkLogin(navController)
     }
 
-    val userName = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    when{
+        auth is ResourceState.Success -> {
+            ShowMessage((auth as ResourceState.Success<ApiResponse<AuthToken>>).value.message)
+            LaunchedEffect(Unit){
+                navController.navigate(Routes.HOME_SCREEN)
+            }
+        }
+        auth is ResourceState.Error -> {
+            (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+        }
+        else -> {
 
-    val login = Login(userName.value,password.value)
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -59,18 +67,6 @@ fun LoginScreen(
             .verticalScroll(rememberScrollState()),
         color = Color.White
     ) {
-        when(auth){
-            is ResourceState.Success -> {
-                ShowMessage((auth as ResourceState.Success<ApiResponse<AuthToken>>).value.message)
-                navController.navigate(HOME_SCREEN)
-            }
-            is ResourceState.Error -> {
-                (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
-            }
-            else -> {
-
-            }
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,9 +77,9 @@ fun LoginScreen(
                 stringResource(id = R.string.login)
             )
             TextFieldOutlined(
-                userName.value,
+                loginViewModel.userName,
                 onChangeValue = {
-                    userName.value = it
+                    loginViewModel.onChangeUserName(it)
                 },
                 stringResource(id = R.string.user_name),
                 painterResource(id = R.drawable.person)
@@ -93,9 +89,9 @@ fun LoginScreen(
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             PasswordFieldOutlined(
-                password.value,
+                loginViewModel.password,
                 onChangeValue = {
-                    password.value = it
+                    loginViewModel.onChangePassword(it)
                 },
                 stringResource(id = R.string.password),
                 painterResource(id = R.drawable.password)
@@ -107,7 +103,7 @@ fun LoginScreen(
 
             ButtonComponent(
                 onClick = {
-                  loginViewModel.login(login)
+                  loginViewModel.login()
                 },
                 stringResource(id = R.string.login),
                 MaterialTheme.colorScheme.primary,

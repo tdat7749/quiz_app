@@ -22,10 +22,16 @@ interface QuizService {
         @Query("keyword") keyword:String,
         @Query("pageIndex") pageIndex:Int,
         @Query("sortBy") sortBy:String = "createdAt",
-    )
+    ) : ApiResponse<PagingResponse<List<Quiz>>>
 
     @GET("api/quizzes/{quizId}")
     suspend fun getMyQuizzes(
         @Path("quizId") topicId:Int
     )
+
+    @GET("api/quizzes/latest")
+    suspend fun get10QuizLatest(): ApiResponse<List<Quiz>>
+
+    @GET("api/quizzes/top-10")
+    suspend fun getTop10QuizCollection(): ApiResponse<List<Quiz>>
 }

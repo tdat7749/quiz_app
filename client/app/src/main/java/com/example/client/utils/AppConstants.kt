@@ -1,7 +1,7 @@
 package com.example.client.utils
 
 object AppConstants {
-    const val APP_BASE_URL = "http://192.168.1.15:8080/"
+    const val APP_BASE_URL = "http://192.168.1.5:8080/"
     const val ACCESS_TOKEN = "access_token"
     const val REFRESH_TOKEN = "refresh_token"
 
@@ -12,6 +12,8 @@ object AppConstants {
         "/api/topics/",
         "/api/auth/verify",
         "/api/auth/resend",
-        "/api/auth/refresh"
+        "/api/auth/refresh",
+        "/api/quizzes/top-10",
+        "/api/quizzes/latest"
     )
 }
