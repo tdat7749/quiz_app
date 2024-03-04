@@ -1,9 +1,16 @@
 package com.example.client.di
 
+import android.util.Log
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
 import com.example.client.network.auth.AuthService
+import com.example.client.network.quiz.QuizService
+import com.example.client.network.topic.TopicService
+import com.example.client.network.user.UserService
 import com.example.client.repositories.AuthRepository
+import com.example.client.repositories.QuizRepository
+import com.example.client.repositories.TopicRepository
+import com.example.client.repositories.UserRepository
 import com.example.client.utils.SharedPreferencesManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -33,8 +40,9 @@ class AppModule {
             addInterceptor(httpLoggingInterceptor)
             addInterceptor{ chain ->
                 val originalRequest = chain.request()
-                val sharedPreferences = SharedPreferencesManager.getSharedPreferences()
-                val accessToken =  sharedPreferences.getString(AppConstants.ACCESS_TOKEN,null)
+                val accessToken =  SharedPreferencesManager.getAccessToken()
+                Log.d("URL",originalRequest.url.encodedPath)
+                Log.d("ACCESS_TOKEN",accessToken.toString())
                 if(AppConstants.PUBLIC_API.contains(originalRequest.url.encodedPath)){
                     chain.proceed(originalRequest)
                 }else{
@@ -72,5 +80,41 @@ class AppModule {
     @Singleton
     fun providesAuthRepository(authService: AuthService) : AuthRepository {
         return AuthRepository(authService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuizService(retrofit: Retrofit) : QuizService {
+        return retrofit.create(QuizService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuizRepository(quizService: QuizService) : QuizRepository {
+        return QuizRepository(quizService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTopicService(retrofit: Retrofit) : TopicService {
+        return retrofit.create(TopicService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTopicRepository(topicService: TopicService) : TopicRepository {
+        return TopicRepository(topicService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserService(retrofit: Retrofit) : UserService {
+        return retrofit.create(UserService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserRepository(userService: UserService) : UserRepository {
+        return UserRepository(userService)
     }
 }

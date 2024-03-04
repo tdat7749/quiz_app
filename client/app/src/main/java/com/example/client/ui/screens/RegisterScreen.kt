@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,84 +11,59 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.client.R
 import com.example.client.ui.components.*
 import com.example.client.ui.navigation.Routes
+import com.example.client.ui.viewmodel.RegisterViewModel
+import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
 
 @Composable
 fun RegisterScreen(
-    navController: NavController
+    navController: NavController,
+    registerViewModel: RegisterViewModel = hiltViewModel()
 ){
-    val userName = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val displayName = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
+    val register by registerViewModel.register.collectAsState()
+
+    if(register is ResourceState.Success){
+        ShowMessage((register as ResourceState.Success<ApiResponse<Boolean>>).value.message)
+        navController.navigate(Routes.LOGIN_SCREEN)
+    }
+    if(register is ResourceState.Error){
+        (register as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+    }
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_app)),
+            .padding(dimensionResource(id = R.dimen.padding_app))
+            .verticalScroll(rememberScrollState()),
         color = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_extraLarge))
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.choose),
-                    contentDescription = stringResource(id = R.string.logo_description),
-                    modifier = Modifier
-                        .size(200.dp)
-                )
-            }
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            HeadingBoldText(
+            HeaderApp(
+                painterResource(id = R.drawable.choose),
                 stringResource(id = R.string.app_name),
-                TextAlign.Center,
-                MaterialTheme.colorScheme.primary
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            NormalText(
-                stringResource(id = R.string.register),
-                TextAlign.Center,
-                MaterialTheme.colorScheme.primary
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                stringResource(id = R.string.register)
             )
             TextFieldOutlined(
-                userName.value,
+                registerViewModel.userName,
                 onChangeValue = {
-                    userName.value = it
+                    registerViewModel.onChangeUserName(it)
                 },
                 stringResource(id = R.string.user_name),
                 painterResource(id = R.drawable.person)
@@ -97,9 +73,9 @@ fun RegisterScreen(
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             TextFieldOutlined(
-                email.value,
+                registerViewModel.email,
                 onChangeValue = {
-                    email.value = it
+                    registerViewModel.onChangeEmail(it)
                 },
                 stringResource(id = R.string.email),
                 painterResource(id = R.drawable.email)
@@ -109,9 +85,9 @@ fun RegisterScreen(
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             TextFieldOutlined(
-                displayName.value,
+                registerViewModel.displayName,
                 onChangeValue = {
-                  displayName.value = it
+                    registerViewModel.onChangeDisplayName(it)
                 },
                 stringResource(id = R.string.display_name),
                 painterResource(id = R.drawable.display_name)
@@ -121,9 +97,9 @@ fun RegisterScreen(
                     .height(dimensionResource(id = R.dimen.space_app_small))
             )
             PasswordFieldOutlined(
-                password.value,
+                registerViewModel.password,
                 onChangeValue = {
-                    password.value = it
+                    registerViewModel.onChangePassword(it)
                 },
                 stringResource(id = R.string.password),
                 painterResource(id = R.drawable.password)
@@ -134,9 +110,9 @@ fun RegisterScreen(
             )
 
             PasswordFieldOutlined(
-                confirmPassword.value,
+                registerViewModel.confirmPassword,
                 onChangeValue = {
-                    confirmPassword.value = it
+                    registerViewModel.onChangeConfirmPassword(it)
                 },
                 stringResource(id = R.string.confirm_password),
                 painterResource(id = R.drawable.password)
@@ -147,11 +123,13 @@ fun RegisterScreen(
             )
 
             ButtonComponent(
-                onClick = {},
+                onClick = {
+                    registerViewModel.register()
+                },
                 stringResource(id = R.string.register),
                 MaterialTheme.colorScheme.primary,
-                false,
-                false
+                register is ResourceState.Loading,
+                register !is ResourceState.Loading
             )
 
             Spacer(
@@ -168,14 +146,13 @@ fun RegisterScreen(
     }
 }
 
-@Preview
 @Composable
-fun RegisterScreenPreview(){
-    val navController = rememberNavController() // Tạo NavController giả
-    val LocalNavController = compositionLocalOf<NavController> {
-        error("No NavController provided")
-    }
-    CompositionLocalProvider(LocalNavController provides navController){
-        RegisterScreen(LocalNavController.current)
-    }
+private fun ShowMessage(
+    message: String,
+) {
+    Toast.makeText(
+        LocalContext.current,
+        message,
+        Toast.LENGTH_LONG
+    ).show()
 }

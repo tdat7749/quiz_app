@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService{
             throw new PasswordNotMatchException(UserConstants.PASSWORD_NOT_MATCH);
         }
 
-        var foundUser = userRepository.findByEmailAndToken(dto.getEmail(), passwordEncoder.encode(dto.getToken()));
+        var foundUser = userRepository.findByEmailAndToken(dto.getEmail(),dto.getToken());
         if (foundUser.isEmpty()) {
             throw new InvalidTokenException(UserConstants.INVALID_CODE);
         }
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService{
         final String token = Utilities.generateCode();
 
         foundUser.get()
-                .setToken(passwordEncoder.encode(token));
+                .setToken(token);
 
         userRepository.save(foundUser.get());
 

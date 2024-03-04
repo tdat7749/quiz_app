@@ -3,10 +3,14 @@ package com.example.backend.modules.quiz.dtos;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@Builder
+@Setter
 public class EditAnswerDTO {
     @NotBlank(message = "Không được bỏ trống trường 'title'")
     @NotNull(message = "Không được thiếu trường 'title'")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError authenticationExceptionHandler(AuthenticationException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST, 400, "Sai tài khoản hoặc mật khẩu");
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError disabledExceptionHandler(DisabledException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST, 400, "Tài khoản chưa được xác thực");
     }
 
     @ExceptionHandler(JsonProcessingException.class)

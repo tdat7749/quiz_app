@@ -4,10 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Builder
 @Getter
+@Setter
 public class ChangeDisplayNameDTO {
 
     @NotBlank(message = "Không được bỏ trống trường 'displayName'")

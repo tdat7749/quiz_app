@@ -10,6 +10,7 @@ import com.example.backend.modules.quiz.exceptions.*;
 import com.example.backend.modules.quiz.models.Answer;
 import com.example.backend.modules.quiz.models.Question;
 import com.example.backend.modules.quiz.models.Quiz;
+import com.example.backend.modules.quiz.repositories.AnswerRepository;
 import com.example.backend.modules.quiz.repositories.QuestionRepository;
 import com.example.backend.modules.quiz.viewmodels.QuestionDetailVm;
 import com.example.backend.modules.user.models.User;
@@ -33,16 +34,20 @@ public class QuestionServiceImpl implements QuestionService{
 
     private final QuizService quizService;
 
+    private final AnswerRepository answerRepository;
+
     public QuestionServiceImpl(
             QuestionRepository questionRepository,
             FileStorageService fileStorageService,
             QuestionTypeService questionTypeService,
-            @Lazy QuizService quizService
+            @Lazy QuizService quizService,
+            AnswerRepository answerRepository
     ){
         this.questionRepository = questionRepository;
         this.fileStorageService = fileStorageService;
         this.questionTypeService = questionTypeService;
         this.quizService = quizService;
+        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -61,21 +66,9 @@ public class QuestionServiceImpl implements QuestionService{
                 throw new QuestionTypeNotFoundException(QuizConstants.QUESTION_TYPE_NOT_FOUND);
             }
 
-            List<Answer> answerList = new ArrayList<>();
-
-            for(CreateAnswerDTO i : item.getAnswers()){
-                var newAnswer = Answer.builder()
-                        .createdAt(new Date())
-                        .title(i.getTitle())
-                        .updatedAt(new Date())
-                        .isCorrect(i.isCorrect())
-                        .build();
-                answerList.add(newAnswer);
-            }
-
             var thumbnailUrl = fileStorageService.uploadFile(item.getThumbnail());
 
-            var newQuestion = Question.builder()
+            var questionBuilder = Question.builder()
                     .createdAt(new Date())
                     .order(item.getOrder())
                     .score(item.getScore())
@@ -85,14 +78,25 @@ public class QuestionServiceImpl implements QuestionService{
                     .timeLimit(item.getTimeLimit())
                     .questionType(questionType.get())
                     .updatedAt(new Date())
-                    .answers(answerList)
                     .build();
 
-            questionList.add(newQuestion);
+            var newQuestion = questionRepository.save(questionBuilder);
+
+            List<Answer> answerList = new ArrayList<>();
+
+            for(CreateAnswerDTO i : item.getAnswers()){
+                var newAnswer = Answer.builder()
+                        .createdAt(new Date())
+                        .title(i.getTitle())
+                        .updatedAt(new Date())
+                        .isCorrect(i.isCorrect())
+                        .question(newQuestion)
+                        .build();
+                answerList.add(newAnswer);
+            }
+
+            answerRepository.saveAll(answerList);
         }
-
-        questionRepository.saveAll(questionList);
-
         return true;
     }
 
