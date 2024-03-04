@@ -1,5 +1,6 @@
 package com.example.client.ui.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,14 +26,13 @@ class SearchViewModel @Inject constructor(
     var keyword by mutableStateOf("")
         private set
 
-    fun isSearchKeywordBlank(): Boolean = keyword.isBlank()
-    fun searchOnChange(newValue: String) { keyword = newValue }
+    fun searchOnChange(newValue: String) {
+        keyword = newValue
+    }
 
-    val search = Search(keyword, pageIndex = null)
-
-    fun getQuizzes(): Flow<PagingData<Quiz>> = Pager(
+    fun getQuizzes(topicId:Int): Flow<PagingData<Quiz>> = Pager(
         PagingConfig(10)
     ){
-        SearchQuizDataSource(quizRepository,search,1)
+        SearchQuizDataSource(quizRepository,keyword,topicId)
     }.flow.cachedIn(viewModelScope)
 }

@@ -20,4 +20,7 @@
     <string name="verify">Xác Minh Tài Khoản</string>
     <string name="verify_email">Nhập Email Của Tài Khoản Cần Xác Minh</string>
     <string name="search">Tìm Kiếm</string>
+    <string name="old_password">Mật Khẩu Cũ</string>
+    <string name="change_password">Đổi Mật Khẩu</string>
+    <string name="to_verify_email">Vui lòng nhấp vào đây để xác thực tài khoản</string>
 </resources>
