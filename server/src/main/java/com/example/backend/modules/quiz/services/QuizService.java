@@ -28,9 +28,13 @@ public interface QuizService {
 
     ResponseSuccess<ResponsePaging<List<QuizVm>>> getMyListQuizzes(String keyword,String sortBy,int pageIndex, User user);
 
-//    ResponseSuccess<ResponsePaging<List<QuizVm>>> getMyListCollection(String keyword,String sortBy,int pageIndex,User user);
+    ResponseSuccess<ResponsePaging<List<QuizVm>>> getMyListCollection(String keyword,String sortBy,int pageIndex,User user);
 
     ResponseSuccess<ResponsePaging<List<QuizVm>>> getListPublicQuizzes(String keyword,String sortBy,int pageIndex,int topicId);
+
+    ResponseSuccess<List<QuizVm>> getTop10QuizCollection();
+
+    ResponseSuccess<List<QuizVm>> get10QuizLatest();
 
     ResponseSuccess<QuizDetailVm> getQuizDetail(int quizId);
 

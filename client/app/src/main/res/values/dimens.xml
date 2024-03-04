@@ -11,6 +11,7 @@
     <dimen name="quiz_card_height">280dp</dimen>
     <dimen name="quiz_card_width">220dp</dimen>
     <dimen name="image_height">150dp</dimen>
-    <dimen name="avatar">30dp</dimen>
+    <dimen name="avatar_quiz">30dp</dimen>
+    <dimen name="avatar">75dp</dimen>
     <dimen name="search_header">180dp</dimen>
 </resources>

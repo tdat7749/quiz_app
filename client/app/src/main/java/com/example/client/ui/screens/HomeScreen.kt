@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import com.example.client.model.User
 import com.example.client.ui.components.HeadingBoldText
 import com.example.client.ui.components.Loading
 import com.example.client.ui.components.QuizCard
+import com.example.client.ui.components.ScreenHeader
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.theme.Shapes
 import com.example.client.ui.viewmodel.HomeViewModel
@@ -49,38 +51,84 @@ fun HomeScreen(
     navController: NavController,
     homeViewModel: HomeViewModel = hiltViewModel()
 ){
+    val topics by homeViewModel.topics.collectAsState()
+    val user by homeViewModel.user.collectAsState()
+    val quizLatest by homeViewModel.quizLatest.collectAsState()
+    val quizTop10 by homeViewModel.quizTop10.collectAsState()
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(dimensionResource(id = R.dimen.padding_app)),
-        color = Color.White
+            .verticalScroll(rememberScrollState()),
+        color = MaterialTheme.colorScheme.background
     ) {
-        val topics by homeViewModel.topics.collectAsState()
+        Column (
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top
+        ) {
+            ScreenHeader("", painterResource = painterResource(id = R.drawable.quiz_time))
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_large))
+            )
+            Column (modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_app))) {
+                when{
+                    topics is ResourceState.Loading ||
+                            user is ResourceState.Loading ||
+                            quizLatest is ResourceState.Loading ||
+                            quizTop10 is ResourceState.Loading -> {
+                        Loading()
+                    }
+                    topics is ResourceState.Success &&
+                            user is ResourceState.Success &&
+                            quizLatest is ResourceState.Success &&
+                            quizTop10 is ResourceState.Success-> {
+//                        UserHeader((user as ResourceState.Success<ApiResponse<User>>).value.data)
+//                        Spacer(
+//                            modifier = Modifier
+//                                .height(dimensionResource(id = R.dimen.space_app_extraLarge))
+//                        )
+                        SectionTopic(
+                            "Chủ Đề",
+                            (topics as ResourceState.Success<ApiResponse<List<Topic>>>).value.data,
+                            navController)
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_extraLarge))
+                        )
+                        SectionQuiz(
+                            "Mới Nhất",
+                            (quizLatest as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_extraLarge))
+                        )
+                        SectionQuiz(
+                            "Được Yêu Thích Nhất",
+                            (quizTop10 as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_extraLarge))
+                        )
+                    }
+                    user is ResourceState.Error -> {
+                        (user as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+                    }
+                    topics is ResourceState.Error -> {
+                        (topics as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+                    }
+                    quizLatest is ResourceState.Error -> {
+                        (quizLatest as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+                    }
+                    quizTop10 is ResourceState.Error -> {
+                        (quizTop10 as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+                    }
+                    else -> {
 
-        LaunchedEffect(Unit){
-            homeViewModel.getAllTopic()
-            if(SharedPreferencesManager.getUser(User::class.java) == null){
-                homeViewModel.getMe()
-            }
-        }
-        Column {
-            when(topics){
-                is ResourceState.Loading -> {
-                    Loading()
-                }
-                is ResourceState.Success-> {
-                    UserInfo(homeViewModel.getMe())
-                    SectionTopic(
-                        "Chủ Đề",
-                        (topics as ResourceState.Success<ApiResponse<List<Topic>>>).value.data,
-                        navController)
-                }
-                is ResourceState.Error -> {
-                    ShowMessage("Có lỗi xảy ra")
-                }
-                else -> {
-
+                    }
                 }
             }
         }
@@ -175,6 +223,36 @@ fun QuizCardScroll(quiz: Quiz){
 }
 
 @Composable
+fun UserHeader(user:User){
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(100.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        AsyncImage(
+            model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.avatar))
+                .width(dimensionResource(id = R.dimen.avatar))
+                .clip(Shapes.extraSmall),
+        )
+
+        Text(
+            text = user.displayName,
+            modifier = Modifier
+                .padding(start = 8.dp),
+            style = TextStyle(
+                fontSize = 30.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        )
+    }
+}
+
+@Composable
 fun UserInfo(user:User){
     Row (
         modifier = Modifier
@@ -187,8 +265,8 @@ fun UserInfo(user:User){
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(dimensionResource(id = R.dimen.avatar))
-                .width(dimensionResource(id = R.dimen.avatar))
+                .height(dimensionResource(id = R.dimen.avatar_quiz))
+                .width(dimensionResource(id = R.dimen.avatar_quiz))
                 .clip(Shapes.extraSmall),
         )
 

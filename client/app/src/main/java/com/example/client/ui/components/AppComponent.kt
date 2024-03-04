@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -285,11 +286,17 @@ fun ButtonComponent(
 
 @Composable
 fun Loading(){
-    CircularProgressIndicator(
-        color = MaterialTheme.colorScheme.primary,
+    Box(
         modifier = Modifier
-            .width(64.dp)
-    )
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .width(100.dp)
+        )
+    }
 }
 
 @Composable
@@ -387,5 +394,44 @@ fun QuizCard(quiz:Quiz){
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter? = null,){
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(dimensionResource(id = R.dimen.search_header)),
+        contentAlignment = Alignment.BottomCenter
+    ){
+        if(thumbnail != null){
+            AsyncImage(
+                model = thumbnail,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.search_header))
+            )
+        }
+        if(painterResource != null){
+            Image(
+                painter = painterResource,
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.search_header))
+            )
+        }
+        Text(
+            text = title,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .padding(bottom = 14.dp),
+            color = MaterialTheme.colorScheme.onPrimary
+        )
     }
 }

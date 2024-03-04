@@ -57,6 +57,35 @@ public class QuizController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/collect")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<QuizVm>>>> getMyListCollection(
+            @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
+            @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.SORT_BY_CREATED_AT) String sortBy,
+            @AuthenticationPrincipal User user
+    ) {
+        var result = quizService.getMyListCollection(keyword,sortBy,pageIndex,user);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/top-10")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<List<QuizVm>>> getTop10QuizCollection() {
+        var result = quizService.getTop10QuizCollection();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/latest")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<List<QuizVm>>> get10QuizLatest() {
+        var result = quizService.get10QuizLatest();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/{quizId}")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<QuizDetailVm>> getQuizDetail(

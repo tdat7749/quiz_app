@@ -27,6 +27,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
 import com.example.client.ui.components.QuizCard
+import com.example.client.ui.components.ScreenHeader
 import com.example.client.ui.components.TextFieldOutlined
 import com.example.client.ui.viewmodel.SearchViewModel
 
@@ -48,7 +49,10 @@ fun TopicScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top
         ) {
-            TopicHeader(thumbnail,title)
+            ScreenHeader(
+                title = title,
+                thumbnail = thumbnail
+            )
             Spacer(
                 modifier = Modifier
                     .height(dimensionResource(id = R.dimen.space_app_normal))
@@ -74,34 +78,6 @@ fun TopicScreen(
                 QuizList(topicId,searchViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun TopicHeader(thubnail:String, title:String){
-    Box (
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.search_header)),
-        contentAlignment = Alignment.BottomCenter
-    ){
-        AsyncImage(
-            model = thubnail,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.search_header))
-        )
-
-        Text(
-            text = title,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier
-                .padding(bottom = 14.dp),
-            color = MaterialTheme.colorScheme.onPrimary
-        )
     }
 }
 

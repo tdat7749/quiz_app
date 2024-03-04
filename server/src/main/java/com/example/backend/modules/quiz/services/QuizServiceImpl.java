@@ -93,20 +93,22 @@ public class QuizServiceImpl implements QuizService{
         return new ResponseSuccess<>("Thành công",result);
     }
 
-//    @Override
-//    public ResponseSuccess<ResponsePaging<List<QuizVm>>> getMyListCollection(String keyword, String sortBy, int pageIndex, User user) {
-//        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
-//
-//        Page<Quiz> pagingResult = quizRepository.getListPublicQuizzes(topic.get(),keyword,paging);
-//
-//        List<QuizVm> roomVmList = pagingResult.stream().map(Utilities::getQuizVm).toList();
-//
-//        ResponsePaging result = ResponsePaging.builder()
-//                .data(roomVmList)
-//                .totalPage(pagingResult.getTotalPages())
-//                .totalRecord((int) pagingResult.getTotalElements())
-//                .build();
-//    }
+    @Override
+    public ResponseSuccess<ResponsePaging<List<QuizVm>>> getMyListCollection(String keyword, String sortBy, int pageIndex, User user) {
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
+
+        Page<Quiz> pagingResult = quizRepository.getMyListCollection(user,keyword,paging);
+
+        List<QuizVm> roomVmList = pagingResult.stream().map(Utilities::getQuizVm).toList();
+
+        ResponsePaging result = ResponsePaging.builder()
+                .data(roomVmList)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
 
     @Override
     public ResponseSuccess<ResponsePaging<List<QuizVm>>> getListPublicQuizzes(String keyword, String sortBy, int pageIndex, int topicId) {
@@ -127,6 +129,28 @@ public class QuizServiceImpl implements QuizService{
                 .totalPage(pagingResult.getTotalPages())
                 .totalRecord((int) pagingResult.getTotalElements())
                 .build();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public ResponseSuccess<List<QuizVm>> getTop10QuizCollection() {
+        Pageable pageable = PageRequest.of(0,10);
+
+        List<Quiz> quizzes = quizRepository.getTop10QuizCollection(pageable);
+
+        List<QuizVm> result = quizzes.stream().map(Utilities::getQuizVm).toList();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public ResponseSuccess<List<QuizVm>> get10QuizLatest() {
+        Pageable pageable = PageRequest.of(0,10);
+
+        List<Quiz> quizzes = quizRepository.get10QuizLatest(pageable);
+
+        List<QuizVm> result = quizzes.stream().map(Utilities::getQuizVm).toList();
 
         return new ResponseSuccess<>("Thành công",result);
     }

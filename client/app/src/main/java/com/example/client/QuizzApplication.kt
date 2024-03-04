@@ -11,7 +11,6 @@ class QuizzApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         SharedPreferencesManager.init(this)
-        SharedPreferencesManager.clear()
         Log.d(TAG,"Running on onCreate")
     }
     

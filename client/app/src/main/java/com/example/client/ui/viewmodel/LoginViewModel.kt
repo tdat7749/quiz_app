@@ -1,6 +1,10 @@
 package com.example.client.ui.viewmodel
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -16,6 +20,7 @@ import com.example.client.utils.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,22 +31,49 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _auth : MutableStateFlow<ResourceState<ApiResponse<AuthToken>>> = MutableStateFlow(ResourceState.Nothing)
-    val auth: MutableStateFlow<ResourceState<ApiResponse<AuthToken>>> = _auth
+    val auth = _auth.asStateFlow()
 
 
-    fun login(login:Login){
+    var userName by  mutableStateOf("")
+        private set
+
+    var password by  mutableStateOf("")
+        private set
+
+    fun onChangeUserName(newValue: String) { userName = newValue }
+    fun onChangePassword(newValue: String) { password = newValue }
+
+
+    fun login(){
+        val login:Login = Login(
+            userName,
+            password
+        )
         viewModelScope.launch(Dispatchers.IO) {
             _auth.value = ResourceState.Loading
             val response = authRepository.login(login)
              _auth.value = response
             if(response is ResourceState.Success){
-//                val accessToken = response.value.data.accessToken
-//                val sharedPreferences = SharedPreferencesManager.getTokenSharedPreferences()
-//                sharedPreferences.edit().putString(AppConstants.ACCESS_TOKEN,accessToken).apply()
-                SharedPreferencesManager.saveToken(response.value.data.accessToken,response.value.data.refreshToken)
+                with(SharedPreferencesManager){
+                    saveToken(response.value.data.accessToken,response.value.data.refreshToken)
+                }
             }
         }
     }
+
+//    fun getMe(){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            _login.value = ResourceState.Loading
+//            val userResponse = userRepository.getMe()
+//            if(userResponse is ResourceState.Success){
+//                with(SharedPreferencesManager){
+//                    saveUser(userResponse.value.data)
+//                }
+//                Log.d("USER,GETME",SharedPreferencesManager.getUser(User::class.java).toString())
+//                _login.value = userResponse
+//            }
+//        }
+//    }
 
     fun checkLogin(navController: NavController){
         val accessToken = SharedPreferencesManager.getAccessToken()
@@ -52,7 +84,9 @@ class LoginViewModel @Inject constructor(
                     navController.navigate(Routes.HOME_SCREEN)
                     val user = SharedPreferencesManager.getUser(User::class.java)
                     if(user == null){
-                        SharedPreferencesManager.saveUser(response.value.data)
+                        with(SharedPreferencesManager){
+                            saveUser(response.value.data)
+                        }
                     }
                 }
             }
