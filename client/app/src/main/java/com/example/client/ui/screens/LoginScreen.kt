@@ -53,7 +53,7 @@ fun LoginScreen(
             }
         }
         auth is ResourceState.Error -> {
-            (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+            (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetState() } }
         }
         else -> {
 
@@ -126,12 +126,30 @@ fun LoginScreen(
                 modifier = Modifier
                     .height(dimensionResource(id = R.dimen.space_app_normal))
             )
+
             SmallText(
                 stringResource(id = R.string.to_verify_email),
                 TextAlign.Start,
                 MaterialTheme.colorScheme.onBackground,
                 navController,
-                Routes.VERIFY_SCREEN)
+                Routes.SEND_EMAIL_VERIFY_SCREEN)
+
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_normal))
+            )
+
+            SmallText(
+                stringResource(id = R.string.forgot_password),
+                TextAlign.Start,
+                MaterialTheme.colorScheme.onBackground,
+                navController,
+                Routes.SEND_EMAIL_FORGOT_SCREEN)
+
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_normal))
+            )
         }
     }
 }
@@ -139,12 +157,14 @@ fun LoginScreen(
 @Composable
 private fun ShowMessage(
     message: String,
+    onReset: () -> Unit = {}
 ) {
     Toast.makeText(
         LocalContext.current,
         message,
         Toast.LENGTH_LONG
     ).show()
+    onReset()
 }
 
 @Preview

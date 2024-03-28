@@ -1,10 +1,7 @@
 package com.example.backend.modules.user.controllers;
 
 import com.example.backend.commons.ResponseSuccess;
-import com.example.backend.modules.user.dtos.ChangeAvatarDTO;
-import com.example.backend.modules.user.dtos.ChangeDisplayNameDTO;
-import com.example.backend.modules.user.dtos.ChangePasswordDTO;
-import com.example.backend.modules.user.dtos.ForgotPasswordDTO;
+import com.example.backend.modules.user.dtos.*;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.services.UserService;
 import com.example.backend.modules.user.viewmodels.UserVm;
@@ -54,11 +51,11 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/{email}/forgot-mail")
+    @PostMapping("/forgot-mail")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<Boolean>> sendCodeForgotPassword(
-            @PathVariable("email") String email) {
-        var result = userService.sendCodeForgotPassword(email);
+            @RequestBody SendEmailForgotDTO dto) {
+        var result = userService.sendCodeForgotPassword(dto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

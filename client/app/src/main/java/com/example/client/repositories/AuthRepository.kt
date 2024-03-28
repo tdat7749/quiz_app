@@ -2,6 +2,7 @@ package com.example.client.repositories
 
 import com.example.client.model.Login
 import com.example.client.model.Register
+import com.example.client.model.ResendEmail
 import com.example.client.model.Verify
 import com.example.client.network.auth.AuthService
 import com.example.client.network.user.UserService
@@ -20,5 +21,9 @@ class AuthRepository @Inject constructor(
 
     suspend fun verify(verify: Verify) = ApiHelper.safeCallApi {
         authService.verify(verify)
+    }
+
+    suspend fun resendEmail(resendEmail: ResendEmail) = ApiHelper.safeCallApi {
+        authService.resendEmail(resendEmail)
     }
 }

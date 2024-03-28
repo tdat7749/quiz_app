@@ -1,10 +1,7 @@
 package com.example.backend.modules.user.services;
 
 import com.example.backend.commons.ResponseSuccess;
-import com.example.backend.modules.user.dtos.ChangeAvatarDTO;
-import com.example.backend.modules.user.dtos.ChangeDisplayNameDTO;
-import com.example.backend.modules.user.dtos.ChangePasswordDTO;
-import com.example.backend.modules.user.dtos.ForgotPasswordDTO;
+import com.example.backend.modules.user.dtos.*;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import org.springframework.stereotype.Service;
@@ -33,5 +30,5 @@ public interface UserService {
 
     ResponseSuccess<Boolean> forgotPassword(ForgotPasswordDTO dto);
 
-    ResponseSuccess<Boolean> sendCodeForgotPassword(String email);
+    ResponseSuccess<Boolean> sendCodeForgotPassword(SendEmailForgotDTO dto);
 }

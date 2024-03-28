@@ -41,8 +41,6 @@ class AppModule {
             addInterceptor{ chain ->
                 val originalRequest = chain.request()
                 val accessToken =  SharedPreferencesManager.getAccessToken()
-                Log.d("URL",originalRequest.url.encodedPath)
-                Log.d("ACCESS_TOKEN",accessToken.toString())
                 if(AppConstants.PUBLIC_API.contains(originalRequest.url.encodedPath)){
                     chain.proceed(originalRequest)
                 }else{

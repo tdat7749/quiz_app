@@ -19,7 +19,7 @@ data class Register(
 )
 
 data class Verify(
-    val code:String,
+    val token:String,
     val email:String
 )
 
@@ -27,4 +27,8 @@ data class User(
     val id:Int,
     val displayName:String,
     val avatar :String
+)
+
+data class ResendEmail(
+    val email:String
 )

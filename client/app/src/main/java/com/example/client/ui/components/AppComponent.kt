@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -102,7 +103,8 @@ fun TextFieldOutlined(
     value:String,
     onChangeValue: (String) -> Unit,
     label:String,
-    painterResource: Painter
+    painterResource: Painter,
+    enable: Boolean = true
 ){
     OutlinedTextField(
         modifier = Modifier
@@ -129,7 +131,8 @@ fun TextFieldOutlined(
                 painter = painterResource,
                 contentDescription = label
             )
-        }
+        },
+        enabled = enable
     )
 }
 
@@ -432,6 +435,37 @@ fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter?
             modifier = Modifier
                 .padding(bottom = 14.dp),
             color = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar (title:String,navController: NavController){
+    TopAppBar(
+        title = { Text(text = title) },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+        }
+    )
+}
+
+@Composable
+fun EmailDisplay(email:String){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = email,
+            style = TextStyle(fontSize = 18.sp),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
     }
 }

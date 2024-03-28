@@ -22,5 +22,8 @@
     <string name="search">Tìm Kiếm</string>
     <string name="old_password">Mật Khẩu Cũ</string>
     <string name="change_password">Đổi Mật Khẩu</string>
-    <string name="to_verify_email">Vui lòng nhấp vào đây để xác thực tài khoản</string>
+    <string name="to_verify_email">Vui lòng nhấp vào đây để xác minh tài khoản</string>
+    <string name="verify_email_string">Xác minh email</string>
+    <string name="resend_email_verify">Gửi Lại Email Xác Minh</string>
+    <string name="send_email_forgot">Gửi Email Xác Minh Quên Mật Khẩu</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,9 +17,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.client.R
@@ -31,16 +34,21 @@ import com.example.client.utils.ResourceState
 
 @Composable
 fun ForgotPasswordScreen(
+    email:String,
     navController: NavController,
     forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
 ){
 
     val forgot by forgotPasswordViewModel.forgot.collectAsState()
 
+    forgotPasswordViewModel.onChangeEmail(email)
+
     when(forgot){
         is ResourceState.Success -> {
             ShowMessage((forgot as ResourceState.Success<ApiResponse<Boolean>>).value.message)
-            navController.navigate(Routes.LOGIN_SCREEN)
+            LaunchedEffect(Unit){
+                navController.navigate(Routes.LOGIN_SCREEN)
+            }
         }
         is ResourceState.Error -> {
             (forgot as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
@@ -66,6 +74,13 @@ fun ForgotPasswordScreen(
                 stringResource(id = R.string.app_name),
                 stringResource(id = R.string.forgot_password)
             )
+            EmailDisplay(
+                email
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.space_app_small))
+            )
             PasswordFieldOutlined(
                 forgotPasswordViewModel.newPassword,
                 onChangeValue = {
@@ -85,18 +100,6 @@ fun ForgotPasswordScreen(
                 },
                 stringResource(id = R.string.confirm_password),
                 painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            TextFieldOutlined(
-                forgotPasswordViewModel.email,
-                onChangeValue = {
-                    forgotPasswordViewModel.onChangeEmail(it)
-                },
-                stringResource(id = R.string.email),
-                painterResource(id = R.drawable.email)
             )
             Spacer(
                 modifier = Modifier

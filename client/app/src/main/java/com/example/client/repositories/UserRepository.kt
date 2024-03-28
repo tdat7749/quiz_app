@@ -3,6 +3,7 @@ package com.example.client.repositories
 import com.example.client.model.ChangeDisplayName
 import com.example.client.model.ChangePassword
 import com.example.client.model.ForgotPassword
+import com.example.client.model.SendEmailForgot
 import com.example.client.network.user.UserService
 import javax.inject.Inject
 
@@ -23,5 +24,9 @@ class UserRepository @Inject constructor(
 
     suspend fun changeDisplayName(data: ChangeDisplayName) = ApiHelper.safeCallApi {
         userService.changeDisplayName(data)
+    }
+
+    suspend fun sendEmailForgotPassword(data:SendEmailForgot) = ApiHelper.safeCallApi {
+        userService.sendEmailForgotPassword(data)
     }
 }

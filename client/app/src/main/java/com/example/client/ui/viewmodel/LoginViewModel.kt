@@ -61,20 +61,6 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-//    fun getMe(){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _login.value = ResourceState.Loading
-//            val userResponse = userRepository.getMe()
-//            if(userResponse is ResourceState.Success){
-//                with(SharedPreferencesManager){
-//                    saveUser(userResponse.value.data)
-//                }
-//                Log.d("USER,GETME",SharedPreferencesManager.getUser(User::class.java).toString())
-//                _login.value = userResponse
-//            }
-//        }
-//    }
-
     fun checkLogin(navController: NavController){
         val accessToken = SharedPreferencesManager.getAccessToken()
         if(accessToken != null){
@@ -91,5 +77,9 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun resetState() {
+        _auth.value = ResourceState.Nothing
     }
 }
