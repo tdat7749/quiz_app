@@ -16,3 +16,7 @@ data class ChangePassword(
 data class ChangeDisplayName(
     val displayName: String
 )
+
+data class SendEmailForgot(
+    val email:String
+)

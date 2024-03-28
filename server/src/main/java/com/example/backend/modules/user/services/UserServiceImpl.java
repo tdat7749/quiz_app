@@ -6,10 +6,7 @@ import com.example.backend.modules.auth.constant.AuthConstants;
 import com.example.backend.modules.auth.exceptions.EmailNotFoundException;
 import com.example.backend.modules.email.services.EmailService;
 import com.example.backend.modules.filestorage.services.FileStorageService;
-import com.example.backend.modules.user.dtos.ChangeAvatarDTO;
-import com.example.backend.modules.user.dtos.ChangeDisplayNameDTO;
-import com.example.backend.modules.user.dtos.ChangePasswordDTO;
-import com.example.backend.modules.user.dtos.ForgotPasswordDTO;
+import com.example.backend.modules.user.dtos.*;
 import com.example.backend.modules.user.exceptions.InvalidTokenException;
 import com.example.backend.modules.user.exceptions.PasswordIncorrectException;
 import com.example.backend.modules.user.exceptions.PasswordNotMatchException;
@@ -131,8 +128,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ResponseSuccess<Boolean> sendCodeForgotPassword(String email) {
-        var foundUser = userRepository.findByEmail(email);
+    public ResponseSuccess<Boolean> sendCodeForgotPassword(SendEmailForgotDTO dto) {
+        var foundUser = userRepository.findByEmail(dto.getEmail());
         if (foundUser.isEmpty()) {
             throw new EmailNotFoundException(UserConstants.EMAIL_NOT_FOUND);
         }
@@ -145,7 +142,7 @@ public class UserServiceImpl implements UserService{
         userRepository.save(foundUser.get());
 
 
-        emailService.sendMail(email, AppConstants.SUBJECT_EMAIL_FORGOT_PASSWORD,AppConstants.TEXT_FORGOT_PASSWORD + token);
+        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL_FORGOT_PASSWORD,AppConstants.TEXT_FORGOT_PASSWORD + token);
 
         return new ResponseSuccess<>(UserConstants.SEND_MAIL_FORGOT_PASSWORD_SUCCESS, true);
     }

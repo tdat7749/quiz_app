@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.client.model.Verify
+import com.example.client.model.ResendEmail
 import com.example.client.repositories.AuthRepository
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
@@ -17,38 +17,31 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class VerifyViewModel @Inject constructor(
+class SendEmailVerifyViewModel @Inject constructor(
     private val authRepository: AuthRepository
-) :ViewModel() {
+): ViewModel() {
 
-    private val _verify : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
-    val verify: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _verify
-
-    var code by mutableStateOf("")
-        private set
+    private val _send : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
+    val send: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _send
 
     var email by mutableStateOf("")
         private set
-
-    fun onChangeToken(newValue: String) {
-        code = newValue
-    }
 
     fun onChangeEmail(newValue: String) {
         email = newValue
     }
 
 
-    fun verify(){
-        val data = Verify(
-            code,
+    fun resendEmail(){
+        val data = ResendEmail(
             email
         )
 
         viewModelScope.launch (Dispatchers.IO) {
-            _verify.value = ResourceState.Loading
-            val response =  authRepository.verify(data)
-            _verify.value = response
+            _send.value = ResourceState.Loading
+            val response = authRepository.resendEmail(data)
+            _send.value = response
         }
     }
+
 }

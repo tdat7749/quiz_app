@@ -1,4 +1,4 @@
-package com.example.backend.modules.auth.dtos;
+package com.example.backend.modules.user.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ResendMailDTO {
+public class SendEmailForgotDTO {
     @NotBlank(message = "Không được bỏ trống trường 'email'")
     @NotNull(message = "Không được thiếu trường 'email'")
     @Email(message = "Email không đúng định dạng")
