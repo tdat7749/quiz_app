@@ -5,8 +5,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     navController: NavController,
@@ -38,12 +41,13 @@ fun RegisterScreen(
 
     if(register is ResourceState.Success){
         ShowMessage((register as ResourceState.Success<ApiResponse<Boolean>>).value.message)
-        navController.navigate(Routes.LOGIN_SCREEN)
+        LaunchedEffect(Unit){
+            navController.navigate("${Routes.VERIFY_SCREEN}/${registerViewModel.email}")
+        }
     }
     if(register is ResourceState.Error){
         (register as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
     }
-
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -55,6 +59,10 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            TopBar(
+                title = stringResource(id = R.string.register),
+                navController = navController
+            )
             HeaderApp(
                 painterResource(id = R.drawable.choose),
                 stringResource(id = R.string.app_name),

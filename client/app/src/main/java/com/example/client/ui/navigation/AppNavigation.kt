@@ -35,12 +35,33 @@ fun AppNavigationGraph(){
                 HomeScreen(navController)
             }
 
-            composable(Routes.FORGOT_PASSWORD_SCREEN){
-                ForgotPasswordScreen(navController)
+            composable(Routes.SEND_EMAIL_FORGOT_SCREEN){
+                SendEmailForgotScreen(navController)
             }
 
-            composable(Routes.VERIFY_SCREEN){
-                VerifyAccountScreen(navController)
+            composable(Routes.SEND_EMAIL_VERIFY_SCREEN){
+                SendEmailVerifyScreen(navController)
+            }
+
+            composable(
+                route = "${Routes.FORGOT_PASSWORD_SCREEN}/{email}",
+                arguments = listOf(
+                    navArgument("email"){ type = NavType.StringType}
+                )
+            ){navStackEntry ->
+                val email = navStackEntry.arguments?.getString("email")
+                ForgotPasswordScreen(email!!,navController)
+            }
+
+
+            composable(
+                route = "${Routes.VERIFY_SCREEN}/{email}",
+                arguments = listOf(
+                    navArgument("email"){ type = NavType.StringType}
+                )
+            ){navStackEntry ->
+                val email = navStackEntry.arguments?.getString("email")
+                VerifyAccountScreen(email!!,navController)
             }
 
             composable(

@@ -1,13 +1,8 @@
 package com.example.client.network.user
 
-import com.example.client.model.ChangeDisplayName
-import com.example.client.model.ChangePassword
-import com.example.client.model.ForgotPassword
-import com.example.client.model.User
+import com.example.client.model.*
 import com.example.client.utils.ApiResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.PATCH
+import retrofit2.http.*
 
 interface UserService {
     @GET("api/users/me")
@@ -21,5 +16,10 @@ interface UserService {
 
     @PATCH("api/users/name")
     suspend fun changeDisplayName(@Body changeDisplayName: ChangeDisplayName) : ApiResponse<Boolean>
+
+    @POST("api/users/forgot-mail")
+    suspend fun sendEmailForgotPassword(
+        @Body data: SendEmailForgot
+    ) :  ApiResponse<Boolean>
 
 }

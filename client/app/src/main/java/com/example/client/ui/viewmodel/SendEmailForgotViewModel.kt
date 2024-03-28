@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.client.model.Verify
-import com.example.client.repositories.AuthRepository
+import com.example.client.model.SendEmailForgot
+import com.example.client.repositories.UserRepository
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,40 +15,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class VerifyViewModel @Inject constructor(
-    private val authRepository: AuthRepository
-) :ViewModel() {
+class SendEmailForgotViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
-    private val _verify : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
-    val verify: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _verify
-
-    var code by mutableStateOf("")
-        private set
+    private val _send : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
+    val send: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _send
 
     var email by mutableStateOf("")
         private set
-
-    fun onChangeToken(newValue: String) {
-        code = newValue
-    }
 
     fun onChangeEmail(newValue: String) {
         email = newValue
     }
 
 
-    fun verify(){
-        val data = Verify(
-            code,
+    fun resendEmail(){
+        val data = SendEmailForgot(
             email
         )
-
         viewModelScope.launch (Dispatchers.IO) {
-            _verify.value = ResourceState.Loading
-            val response =  authRepository.verify(data)
-            _verify.value = response
+            _send.value = ResourceState.Loading
+            val response = userRepository.sendEmailForgotPassword(data)
+            _send.value = response
         }
     }
 }
