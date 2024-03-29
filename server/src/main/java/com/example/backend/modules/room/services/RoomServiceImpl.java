@@ -46,11 +46,7 @@ public class RoomServiceImpl implements RoomService{
         return roomRepository.findById(id);
     }
 
-    @Override
-    public boolean isRoomOwner(User user, int roomId) {
-        boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
-        return isOwner;
-    }
+
 
     @Override
     public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
@@ -74,7 +70,11 @@ public class RoomServiceImpl implements RoomService{
 
         return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
     }
-
+    @Override
+    public boolean isRoomOwner(User user, int roomId) {
+        boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
+        return isOwner;
+    }
 
     @Override
     public ResponseSuccess<RoomVm> joinRoom(String roomPin) {
