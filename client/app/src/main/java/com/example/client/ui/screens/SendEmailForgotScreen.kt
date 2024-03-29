@@ -64,7 +64,7 @@ fun SendEmailForgotScreen (
                 navController = navController
             )
             HeaderApp(
-                painterResource(id = R.drawable.verify),
+                painterResource(id = R.drawable.send_email),
                 stringResource(id = R.string.app_name),
                 stringResource(id = R.string.send_email_forgot)
             )
