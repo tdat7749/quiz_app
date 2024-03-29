@@ -70,7 +70,7 @@ fun ForgotPasswordScreen(
                 .fillMaxSize()
         ) {
             HeaderApp(
-                painterResource(id = R.drawable.padlock),
+                painterResource(id = R.drawable.forgot_password),
                 stringResource(id = R.string.app_name),
                 stringResource(id = R.string.forgot_password)
             )
