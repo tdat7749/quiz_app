@@ -53,26 +53,6 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public ResponseSuccess<RoomVm> joinRoom(String roomPin) {
-        var room = roomRepository.findByRoomPin(roomPin);
-        if(room.isEmpty()){
-            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
-        }
-
-        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
-            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
-        }
-
-        if (room.get().isClosed()){
-            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
-        }
-
-        RoomVm roomVm = Utilities.getRoomVm(room.get());
-
-        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,roomVm);
-    }
-
-    @Override
     public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
         var quiz = quizService.findById(dto.getQuizId());
         if(quiz.isEmpty()){
@@ -95,6 +75,27 @@ public class RoomServiceImpl implements RoomService{
         return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
     }
 
+
+    @Override
+    public ResponseSuccess<RoomVm> joinRoom(String roomPin) {
+        var room = roomRepository.findByRoomPin(roomPin);
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
+            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
+        }
+
+        if (room.get().isClosed()){
+            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
+        }
+
+        RoomVm roomVm = Utilities.getRoomVm(room.get());
+
+        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,roomVm);
+    }
+
     @Override
     public ResponseSuccess<Boolean> endRoom(User user,int roomId) {
         var room = roomRepository.findById(roomId);
@@ -111,28 +112,6 @@ public class RoomServiceImpl implements RoomService{
 
         return new ResponseSuccess<>(RoomConstants.END_ROOM,true);
 
-    }
-
-    @Override
-    public ResponseSuccess<Boolean> editRoom(User user, EditRoomDTO dto) {
-        var room = roomRepository.findById(dto.getRoomId());
-        if(room.isEmpty()){
-            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
-        }
-
-        var isOwner = this.isRoomOwner(user,dto.getRoomId());
-        if(!isOwner){
-            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
-        }
-
-        room.get()
-                .setTimeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null);
-        room.get()
-                .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
-
-        roomRepository.save(room.get());
-
-        return new ResponseSuccess<>(RoomConstants.EDIT_ROOM,true);
     }
 
     @Override
@@ -167,5 +146,27 @@ public class RoomServiceImpl implements RoomService{
                 .build();
 
         return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public ResponseSuccess<Boolean> editRoom(User user, EditRoomDTO dto) {
+        var room = roomRepository.findById(dto.getRoomId());
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        var isOwner = this.isRoomOwner(user,dto.getRoomId());
+        if(!isOwner){
+            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
+        }
+
+        room.get()
+                .setTimeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null);
+        room.get()
+                .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
+
+        roomRepository.save(room.get());
+
+        return new ResponseSuccess<>(RoomConstants.EDIT_ROOM,true);
     }
 }
