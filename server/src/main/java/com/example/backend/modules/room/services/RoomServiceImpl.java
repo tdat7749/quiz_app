@@ -46,6 +46,30 @@ public class RoomServiceImpl implements RoomService{
         return roomRepository.findById(id);
     }
 
+
+
+    @Override
+    public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
+        var quiz = quizService.findById(dto.getQuizId());
+        if(quiz.isEmpty()){
+            throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
+        }
+
+        var newRoom = Room.builder()
+                .createdAt(new Date())
+                .timeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null)
+                .timeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null)
+                .quiz(quiz.get())
+                .user(user)
+                .roomPin(Utilities.generateCode())
+                .isClosed(false)
+                .build();
+
+        var save = roomRepository.save(newRoom);
+        RoomVm roomVm = Utilities.getRoomVm(save);
+
+        return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
+    }
     @Override
     public boolean isRoomOwner(User user, int roomId) {
         boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
@@ -73,29 +97,6 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
-    public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
-        var quiz = quizService.findById(dto.getQuizId());
-        if(quiz.isEmpty()){
-            throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
-        }
-
-        var newRoom = Room.builder()
-                .createdAt(new Date())
-                .timeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null)
-                .timeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null)
-                .quiz(quiz.get())
-                .user(user)
-                .roomPin(Utilities.generateCode())
-                .isClosed(false)
-                .build();
-
-        var save = roomRepository.save(newRoom);
-        RoomVm roomVm = Utilities.getRoomVm(save);
-
-        return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
-    }
-
-    @Override
     public ResponseSuccess<Boolean> endRoom(User user,int roomId) {
         var room = roomRepository.findById(roomId);
         if(room.isEmpty()){
@@ -111,28 +112,6 @@ public class RoomServiceImpl implements RoomService{
 
         return new ResponseSuccess<>(RoomConstants.END_ROOM,true);
 
-    }
-
-    @Override
-    public ResponseSuccess<Boolean> editRoom(User user, EditRoomDTO dto) {
-        var room = roomRepository.findById(dto.getRoomId());
-        if(room.isEmpty()){
-            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
-        }
-
-        var isOwner = this.isRoomOwner(user,dto.getRoomId());
-        if(!isOwner){
-            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
-        }
-
-        room.get()
-                .setTimeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null);
-        room.get()
-                .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
-
-        roomRepository.save(room.get());
-
-        return new ResponseSuccess<>(RoomConstants.EDIT_ROOM,true);
     }
 
     @Override
@@ -167,5 +146,27 @@ public class RoomServiceImpl implements RoomService{
                 .build();
 
         return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public ResponseSuccess<Boolean> editRoom(User user, EditRoomDTO dto) {
+        var room = roomRepository.findById(dto.getRoomId());
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        var isOwner = this.isRoomOwner(user,dto.getRoomId());
+        if(!isOwner){
+            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
+        }
+
+        room.get()
+                .setTimeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null);
+        room.get()
+                .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
+
+        roomRepository.save(room.get());
+
+        return new ResponseSuccess<>(RoomConstants.EDIT_ROOM,true);
     }
 }

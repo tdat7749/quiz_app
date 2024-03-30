@@ -108,27 +108,6 @@ public class UserServiceImpl implements UserService{
     }
 
 
-
-    @Override
-    public ResponseSuccess<Boolean> sendCodeForgotPassword(SendEmailForgotDTO dto) {
-        var foundUser = userRepository.findByEmail(dto.getEmail());
-        if (foundUser.isEmpty()) {
-            throw new EmailNotFoundException(UserConstants.EMAIL_NOT_FOUND);
-        }
-
-        final String token = Utilities.generateCode();
-
-        foundUser.get()
-                .setToken(token);
-
-        userRepository.save(foundUser.get());
-
-
-        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL_FORGOT_PASSWORD,AppConstants.TEXT_FORGOT_PASSWORD + token);
-
-        return new ResponseSuccess<>(UserConstants.SEND_MAIL_FORGOT_PASSWORD_SUCCESS, true);
-    }
-
     @Override
     public ResponseSuccess<Boolean> forgotPassword(ForgotPasswordDTO dto) {
         if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
@@ -150,4 +129,23 @@ public class UserServiceImpl implements UserService{
         return new ResponseSuccess<>(UserConstants.FORGOT_PASSWORD_SUCCESS, true);
     }
 
+    @Override
+    public ResponseSuccess<Boolean> sendCodeForgotPassword(SendEmailForgotDTO dto) {
+        var foundUser = userRepository.findByEmail(dto.getEmail());
+        if (foundUser.isEmpty()) {
+            throw new EmailNotFoundException(UserConstants.EMAIL_NOT_FOUND);
+        }
+
+        final String token = Utilities.generateCode();
+
+        foundUser.get()
+                .setToken(token);
+
+        userRepository.save(foundUser.get());
+
+
+        emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL_FORGOT_PASSWORD,AppConstants.TEXT_FORGOT_PASSWORD + token);
+
+        return new ResponseSuccess<>(UserConstants.SEND_MAIL_FORGOT_PASSWORD_SUCCESS, true);
+    }
 }
