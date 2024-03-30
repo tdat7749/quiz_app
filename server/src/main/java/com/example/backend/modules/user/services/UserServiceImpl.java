@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
     }
 
+
     @Override
     @Transactional
     public ResponseSuccess<String> changeAvatar(ChangeAvatarDTO dto, User user) throws IOException {
@@ -75,16 +76,6 @@ public class UserServiceImpl implements UserService{
         var save = userRepository.save(user);
 
         return new ResponseSuccess<>(UserConstants.CHANGE_AVATAR_SUCCESS, save.getAvatar());
-    }
-
-
-
-    @Override
-    public ResponseSuccess<String> changeDisplayName(ChangeDisplayNameDTO dto, User user) {
-        user.setDisplayName(dto.getDisplayName());
-        var save = userRepository.save(user);
-
-        return new ResponseSuccess<>(UserConstants.CHANGE_DISPLAY_NAME, save.getDisplayName());
     }
 
     @Override
@@ -101,6 +92,14 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
 
         return new ResponseSuccess<>(UserConstants.CHANGE_PASSWORD_SUCCESS, true);
+    }
+
+    @Override
+    public ResponseSuccess<String> changeDisplayName(ChangeDisplayNameDTO dto, User user) {
+        user.setDisplayName(dto.getDisplayName());
+        var save = userRepository.save(user);
+
+        return new ResponseSuccess<>(UserConstants.CHANGE_DISPLAY_NAME, save.getDisplayName());
     }
 
     @Override
