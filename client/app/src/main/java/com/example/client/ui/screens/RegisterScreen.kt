@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,7 @@ import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -48,110 +50,122 @@ fun RegisterScreen(
     if(register is ResourceState.Error){
         (register as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
     }
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_app))
-            .verticalScroll(rememberScrollState()),
-        color = Color.White
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+
+    Scaffold(
+        topBar = {
             TopBar(
                 title = stringResource(id = R.string.register),
                 navController = navController
             )
-            HeaderApp(
-                painterResource(id = R.drawable.choose),
-                stringResource(id = R.string.app_name),
-                stringResource(id = R.string.register)
-            )
-            TextFieldOutlined(
-                registerViewModel.userName,
-                onChangeValue = {
-                    registerViewModel.onChangeUserName(it)
-                },
-                stringResource(id = R.string.user_name),
-                painterResource(id = R.drawable.person)
-            )
-            Spacer(
+        },
+        content = {
+            Surface(
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            TextFieldOutlined(
-                registerViewModel.email,
-                onChangeValue = {
-                    registerViewModel.onChangeEmail(it)
-                },
-                stringResource(id = R.string.email),
-                painterResource(id = R.drawable.email)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            TextFieldOutlined(
-                registerViewModel.displayName,
-                onChangeValue = {
-                    registerViewModel.onChangeDisplayName(it)
-                },
-                stringResource(id = R.string.display_name),
-                painterResource(id = R.drawable.display_name)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                registerViewModel.password,
-                onChangeValue = {
-                    registerViewModel.onChangePassword(it)
-                },
-                stringResource(id = R.string.password),
-                painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .verticalScroll(rememberScrollState()),
+                color = Color.White
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+//                    TopBar(
+//                        title = stringResource(id = R.string.register),
+//                        navController = navController
+//                    )
+                    HeaderApp(
+                        painterResource(id = R.drawable.choose),
+                        stringResource(id = R.string.app_name),
+                        stringResource(id = R.string.register)
+                    )
+                    TextFieldOutlined(
+                        registerViewModel.userName,
+                        onChangeValue = {
+                            registerViewModel.onChangeUserName(it)
+                        },
+                        stringResource(id = R.string.user_name),
+                        painterResource(id = R.drawable.person)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    TextFieldOutlined(
+                        registerViewModel.email,
+                        onChangeValue = {
+                            registerViewModel.onChangeEmail(it)
+                        },
+                        stringResource(id = R.string.email),
+                        painterResource(id = R.drawable.email)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    TextFieldOutlined(
+                        registerViewModel.displayName,
+                        onChangeValue = {
+                            registerViewModel.onChangeDisplayName(it)
+                        },
+                        stringResource(id = R.string.display_name),
+                        painterResource(id = R.drawable.display_name)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    PasswordFieldOutlined(
+                        registerViewModel.password,
+                        onChangeValue = {
+                            registerViewModel.onChangePassword(it)
+                        },
+                        stringResource(id = R.string.password),
+                        painterResource(id = R.drawable.password)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
 
-            PasswordFieldOutlined(
-                registerViewModel.confirmPassword,
-                onChangeValue = {
-                    registerViewModel.onChangeConfirmPassword(it)
-                },
-                stringResource(id = R.string.confirm_password),
-                painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                    PasswordFieldOutlined(
+                        registerViewModel.confirmPassword,
+                        onChangeValue = {
+                            registerViewModel.onChangeConfirmPassword(it)
+                        },
+                        stringResource(id = R.string.confirm_password),
+                        painterResource(id = R.drawable.password)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_normal))
+                    )
 
-            ButtonComponent(
-                onClick = {
-                    registerViewModel.register()
-                },
-                stringResource(id = R.string.register),
-                MaterialTheme.colorScheme.primary,
-                register is ResourceState.Loading,
-                register !is ResourceState.Loading
-            )
+                    ButtonComponent(
+                        onClick = {
+                            registerViewModel.register()
+                        },
+                        stringResource(id = R.string.register),
+                        MaterialTheme.colorScheme.primary,
+                        register is ResourceState.Loading,
+                        register !is ResourceState.Loading
+                    )
 
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
-            SmallText(
-                stringResource(id = R.string.have_account),
-                TextAlign.Start,
-                MaterialTheme.colorScheme.onBackground,
-                navController,
-                Routes.LOGIN_SCREEN)
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_normal))
+                    )
+                    SmallText(
+                        stringResource(id = R.string.have_account),
+                        TextAlign.Start,
+                        MaterialTheme.colorScheme.onBackground,
+                        navController,
+                        Routes.LOGIN_SCREEN)
+                }
+            }
         }
-    }
+    )
+
 }
 
 @Composable
