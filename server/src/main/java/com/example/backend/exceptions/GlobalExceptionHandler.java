@@ -98,4 +98,11 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
                 "Lỗi xảy ra, vui lòng thử lại sau");
     }
+
+    @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError numberFormatExceptionHandler(NumberFormatException ex) {
+        return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
+                "Lỗi xảy ra, vui lòng thử lại sau");
+    }
 }

@@ -1,9 +1,11 @@
 package com.example.client.di
 
 import android.util.Log
+import com.example.client.model.QuestionType
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
 import com.example.client.network.auth.AuthService
+import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
 import com.example.client.network.topic.TopicService
 import com.example.client.network.user.UserService
@@ -88,8 +90,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesQuizRepository(quizService: QuizService) : QuizRepository {
-        return QuizRepository(quizService)
+    fun providesQuizRepository(quizService: QuizService,questionTypeService: QuestionTypeService) : QuizRepository {
+        return QuizRepository(quizService,questionTypeService)
     }
 
     @Provides
@@ -115,4 +117,11 @@ class AppModule {
     fun providesUserRepository(userService: UserService) : UserRepository {
         return UserRepository(userService)
     }
+
+    @Provides
+    @Singleton
+    fun providesQuestionTypeService(retrofit: Retrofit) : QuestionTypeService {
+        return retrofit.create(QuestionTypeService::class.java)
+    }
+
 }
