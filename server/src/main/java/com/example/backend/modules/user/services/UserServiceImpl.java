@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
     }
 
+
     @Override
     @Transactional
     public ResponseSuccess<String> changeAvatar(ChangeAvatarDTO dto, User user) throws IOException {
@@ -105,6 +106,7 @@ public class UserServiceImpl implements UserService{
     public ResponseSuccess<UserVm> getMe(User user) {
         return new ResponseSuccess<>("Thành công", Utilities.getUserVm(user));
     }
+
 
     @Override
     public ResponseSuccess<Boolean> forgotPassword(ForgotPasswordDTO dto) {
