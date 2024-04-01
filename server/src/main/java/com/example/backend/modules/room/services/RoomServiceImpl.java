@@ -43,10 +43,10 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public Optional<Room> findById(int id) {
+
         return roomRepository.findById(id);
     }
-
-
+    
 
     @Override
     public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
@@ -69,6 +69,22 @@ public class RoomServiceImpl implements RoomService{
         RoomVm roomVm = Utilities.getRoomVm(save);
 
         return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
+    }
+
+    @Override
+    public ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword, String sortBy, int pageIndex,User user) {
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
+
+        Page<Room> pagingResult = roomRepository.getMyListRooms(user,paging);
+        List<RoomVm> roomVmList = pagingResult.stream().map(Utilities::getRoomVm).toList();
+
+        ResponsePaging result = ResponsePaging.builder()
+                .data(roomVmList)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",result);
     }
     @Override
     public boolean isRoomOwner(User user, int roomId) {
@@ -127,25 +143,7 @@ public class RoomServiceImpl implements RoomService{
         }
 
         roomRepository.delete(room.get());
-
         return new ResponseSuccess<>(RoomConstants.DELETE_ROOM,true);
-    }
-
-    @Override
-    public ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword, String sortBy, int pageIndex,User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
-
-        Page<Room> pagingResult = roomRepository.getMyListRooms(user,paging);
-
-        List<RoomVm> roomVmList = pagingResult.stream().map(Utilities::getRoomVm).toList();
-
-        ResponsePaging result = ResponsePaging.builder()
-                .data(roomVmList)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",result);
     }
 
     @Override

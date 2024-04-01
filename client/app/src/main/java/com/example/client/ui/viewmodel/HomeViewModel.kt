@@ -26,17 +26,20 @@ class HomeViewModel @Inject constructor(
     private val quizRepository: QuizRepository
 ) : ViewModel() {
 
-    private val _topics : MutableStateFlow<ResourceState<ApiResponse<List<Topic>>>> = MutableStateFlow(ResourceState.Nothing)
-    val topics = _topics.asStateFlow()
-
-    private val _user : MutableStateFlow<ResourceState<ApiResponse<User>>> = MutableStateFlow(ResourceState.Nothing)
-    val user = _user.asStateFlow()
+   
 
     private val _quizLatest : MutableStateFlow<ResourceState<ApiResponse<List<Quiz>>>> = MutableStateFlow(ResourceState.Nothing)
     val quizLatest = _quizLatest.asStateFlow()
 
     private val _quizTop10 : MutableStateFlow<ResourceState<ApiResponse<List<Quiz>>>> = MutableStateFlow(ResourceState.Nothing)
     val quizTop10 = _quizTop10.asStateFlow()
+
+    private val _topics : MutableStateFlow<ResourceState<ApiResponse<List<Topic>>>> = MutableStateFlow(ResourceState.Nothing)
+    val topics = _topics.asStateFlow()
+
+    private val _user : MutableStateFlow<ResourceState<ApiResponse<User>>> = MutableStateFlow(ResourceState.Nothing)
+    val user = _user.asStateFlow()
+
 
     init {
         getAllTopic()
@@ -67,6 +70,17 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+   
+    fun getTop10QuizCollection(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _quizTop10.value = ResourceState.Loading
+            val response = quizRepository.getTop10QuizCollection()
+            if(response is ResourceState.Success){
+                _quizTop10.value = response
+            }
+        }
+    }
+
     fun get10QuizLatest(){
         viewModelScope.launch(Dispatchers.IO) {
             _quizLatest.value = ResourceState.Loading
@@ -77,14 +91,5 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getTop10QuizCollection(){
-        viewModelScope.launch(Dispatchers.IO) {
-            _quizTop10.value = ResourceState.Loading
-            val response = quizRepository.getTop10QuizCollection()
-            if(response is ResourceState.Success){
-                _quizTop10.value = response
-            }
-        }
-    }
 
 }
