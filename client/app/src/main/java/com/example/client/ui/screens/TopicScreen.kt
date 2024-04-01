@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
@@ -37,6 +38,7 @@ fun TopicScreen(
     topicId:Int,
     title:String,
     thumbnail:String,
+    navController: NavController,
     searchViewModel:SearchViewModel = hiltViewModel()
 ) {
 
@@ -51,7 +53,9 @@ fun TopicScreen(
         ) {
             ScreenHeader(
                 title = title,
-                thumbnail = thumbnail
+                thumbnail = thumbnail,
+                navController = navController,
+                showBackIcon = true
             )
             Spacer(
                 modifier = Modifier

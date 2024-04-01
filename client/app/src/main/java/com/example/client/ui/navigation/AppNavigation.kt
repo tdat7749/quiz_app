@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -14,12 +15,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.client.ui.screens.*
+import com.example.client.ui.viewmodel.CreateQuizViewModel
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun AppNavigationGraph(){
 
     val navController: NavHostController = rememberNavController()
+    val createQuizViewModel:CreateQuizViewModel = hiltViewModel()
 
         NavHost(navController = navController, startDestination = Routes.LOGIN_SCREEN){
 
@@ -41,6 +44,20 @@ fun AppNavigationGraph(){
 
             composable(Routes.SEND_EMAIL_VERIFY_SCREEN){
                 SendEmailVerifyScreen(navController)
+            }
+
+            composable(Routes.CREATE_QUIZ_SCREEN){
+                CreateQuizScreen(navController,createQuizViewModel)
+            }
+
+            composable(
+                route = "${Routes.QUESTION_SCREEN}/{index}",
+                arguments = listOf(
+                    navArgument("index"){ type = NavType.IntType}
+                )
+                ){navStackEntry ->
+                val index = navStackEntry.arguments?.getInt("index")
+                QuestionScreen(index!!,navController,createQuizViewModel)
             }
 
             composable(
@@ -75,7 +92,7 @@ fun AppNavigationGraph(){
                 val topicId = backStackEntry.arguments?.getInt("topicId")
                 val title = backStackEntry.arguments?.getString("title")
                 val thumbnail = backStackEntry.arguments?.getString("thumbnail")
-                TopicScreen(topicId!!, Uri.decode(title!!),Uri.decode(thumbnail!!))
+                TopicScreen(topicId!!, Uri.decode(title!!),Uri.decode(thumbnail!!),navController)
             }
         }
 }

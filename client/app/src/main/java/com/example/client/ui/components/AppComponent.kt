@@ -1,5 +1,10 @@
 package com.example.client.ui.components
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,19 +13,19 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,8 +45,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.client.ui.theme.Shapes
 import com.example.client.R
+import com.example.client.model.QuestionType
 import com.example.client.model.Quiz
+import com.example.client.model.Topic
+import com.example.client.ui.navigation.Routes
 import com.example.client.ui.screens.UserInfo
+import com.example.client.utils.AppConstants
 
 
 @Composable
@@ -124,6 +133,45 @@ fun TextFieldOutlined(
         ),
         value = value,
         keyboardOptions = KeyboardOptions.Default,
+        onValueChange = onChangeValue,
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                painter = painterResource,
+                contentDescription = label
+            )
+        },
+        enabled = enable
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NumberFieldOutlined(
+    value:Int,
+    onChangeValue: (String) -> Unit,
+    label:String,
+    painterResource: Painter,
+    enable: Boolean = true
+){
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(Shapes.medium),
+        label = {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        value = value.toString(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         onValueChange = onChangeValue,
         singleLine = true,
         leadingIcon = {
@@ -288,6 +336,30 @@ fun ButtonComponent(
 }
 
 @Composable
+fun ButtonNavigate(
+    onClick: () -> Unit,
+    value:String,
+    color:Color,
+){
+    Button(
+        onClick = onClick,
+        contentPadding = PaddingValues(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(48.dp),
+        colors = ButtonDefaults.buttonColors(color),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button)),
+    ){
+        Text(
+            text = value,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 fun Loading(){
     Box(
         modifier = Modifier
@@ -401,7 +473,7 @@ fun QuizCard(quiz:Quiz){
 }
 
 @Composable
-fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter? = null,){
+fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter? = null,navController: NavController,showBackIcon:Boolean = false){
     Box (
         modifier = Modifier
             .fillMaxWidth()
@@ -428,14 +500,37 @@ fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter?
                     .height(dimensionResource(id = R.dimen.search_header))
             )
         }
-        Text(
-            text = title,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.SemiBold,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
-                .padding(bottom = 14.dp),
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+                .fillMaxWidth()
+                .padding(start = 16.dp)
+        ) {
+            if (showBackIcon) {
+                IconButton(
+                    modifier = Modifier.size(30.dp),
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa icon và tiêu đề
+            Text(
+                text = title,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier
+                    .padding(bottom = 14.dp)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
     }
 }
 
@@ -446,7 +541,10 @@ fun TopBar (title:String,navController: NavController){
         title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                )
             }
         }
     )
@@ -467,5 +565,224 @@ fun EmailDisplay(email:String){
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+    }
+}
+
+@Composable
+fun BottomBar(navController:NavController){
+
+    val selected = remember {
+        mutableStateOf(Icons.Default.Home)
+    }
+
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primary
+    ) {
+        IconButton(
+            onClick = {
+                selected.value = Icons.Default.Home
+                navController.navigate(Routes.HOME_SCREEN) {
+                    popUpTo(0)
+                }
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                Icons.Default.Home,
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = if (selected.value == Icons.Default.Home) Color.White else Color.DarkGray
+            )
+
+        }
+
+        Box(modifier = Modifier
+            .weight(1f)
+            .padding(16.dp),
+            contentAlignment = Alignment.Center){
+            FloatingActionButton(
+                onClick = { showBottomSheet = true },) {
+                Icon(Icons.Default.Search,contentDescription = null,tint = MaterialTheme.colorScheme.primary)
+            }
+        }
+
+
+        IconButton(
+            onClick = {
+                selected.value = Icons.Default.Person
+                navController.navigate(Routes.CREATE_QUIZ_SCREEN) {
+                    popUpTo(0)
+                }
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = if (selected.value == Icons.Default.Person) Color.White else Color.DarkGray
+            )
+
+        }
+
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownTopicMenu(
+    options:List<Topic>,
+    selectedOption:Topic?,
+    onChangeValue: (Topic) -> Unit
+    ){
+
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedOption?.title ?: "",
+            onValueChange = { },
+            label = { Text("Chủ Đề") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            readOnly = true,
+            modifier = Modifier.menuAnchor().fillMaxWidth().clip(Shapes.medium),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            options.forEach {option ->
+                DropdownMenuItem(
+                    text = { Text(option.title) },
+                    onClick = {
+                        onChangeValue(option)
+                        expanded = false
+                    })
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownQuestionType(
+    options:List<QuestionType>,
+    selectedOption:QuestionType?,
+    onChangeValue: (QuestionType) -> Unit
+){
+
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedOption?.title ?: "",
+            onValueChange = { },
+            label = { Text("Loại Câu Hỏi") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            readOnly = true,
+            modifier = Modifier.menuAnchor().fillMaxWidth().clip(Shapes.medium),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            options.forEach {option ->
+                DropdownMenuItem(
+                    text = { Text(option.title) },
+                    onClick = {
+                        onChangeValue(option)
+                        expanded = false
+                    })
+            }
+        }
+    }
+}
+
+@Composable
+fun SwitchLabel(
+    label:String,
+    value:Boolean,
+    onChangeValue: (Boolean) -> Unit
+){
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = label)
+        Spacer(modifier = Modifier.width(8.dp))
+        Switch(
+            checked = value,
+            onCheckedChange = { newSwitchState ->
+                onChangeValue(newSwitchState)
+            }
+        )
+    }
+}
+
+@Composable
+fun ImageCard(imageUri:Uri?){
+    val context = LocalContext.current
+    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(dimensionResource(id = R.dimen.quiz_card_height))
+    ) {
+        imageUri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, it)
+            } else {
+                val source = ImageDecoder.createSource(context.contentResolver, it)
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+            }
+
+            bitmap.value?.let { btm ->
+                Image(
+                    bitmap = btm.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
     }
 }

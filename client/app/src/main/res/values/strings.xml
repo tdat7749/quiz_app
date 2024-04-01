@@ -26,4 +26,11 @@
     <string name="verify_email_string">Xác minh email</string>
     <string name="resend_email_verify">Gửi Lại Email Xác Minh</string>
     <string name="send_email_forgot">Gửi Email Xác Minh Quên Mật Khẩu</string>
+    <string name="create_quiz">Tạo Quiz</string>
+    <string name="status_public">Trạng Thái Công Khai: </string>
+    <string name="create_question">Tạo Câu Hỏi</string>
+    <string name="title_question">Tiêu Đề Câu Hỏi</string>
+    <string name="score">Điểm</string>
+    <string name="time_limit">Thời Gian</string>
+    <string name="Điểm">Điểm</string>
 </resources>

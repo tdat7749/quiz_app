@@ -66,7 +66,11 @@ public class QuestionServiceImpl implements QuestionService{
                 throw new QuestionTypeNotFoundException(QuizConstants.QUESTION_TYPE_NOT_FOUND);
             }
 
-            var thumbnailUrl = fileStorageService.uploadFile(item.getThumbnail());
+            String thumbnailUrl = null;
+
+            if(item.getThumbnail() != null){
+                thumbnailUrl = fileStorageService.uploadFile(item.getThumbnail());
+            }
 
             var questionBuilder = Question.builder()
                     .createdAt(new Date())
@@ -85,11 +89,12 @@ public class QuestionServiceImpl implements QuestionService{
             List<Answer> answerList = new ArrayList<>();
 
             for(CreateAnswerDTO i : item.getAnswers()){
+                var isCorrect = i.getIsCorrect().equals("true");
                 var newAnswer = Answer.builder()
                         .createdAt(new Date())
                         .title(i.getTitle())
                         .updatedAt(new Date())
-                        .isCorrect(i.isCorrect())
+                        .isCorrect(isCorrect)
                         .question(newQuestion)
                         .build();
                 answerList.add(newAnswer);
