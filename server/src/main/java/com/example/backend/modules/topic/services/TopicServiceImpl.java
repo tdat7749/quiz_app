@@ -32,13 +32,7 @@ public class TopicServiceImpl implements TopicService{
         this.fileStorageService = fileStorageService;
     }
 
-    @Override
-    public ResponseSuccess<List<TopicVm>> getAllTopic() {
-        var listTopics = topicRepository.findAll();
-        var result = listTopics.stream().map(Utilities::getTopicVm).toList();
 
-        return new ResponseSuccess<>("Thành công",result);
-    }
 
     @Override
     @Transactional
@@ -63,6 +57,31 @@ public class TopicServiceImpl implements TopicService{
         var topicVm = Utilities.getTopicVm(save);
 
         return new ResponseSuccess<>(TopicConstants.CREATE_TOPIC,topicVm);
+    }
+    @Override
+    public ResponseSuccess<List<TopicVm>> getAllTopic() {
+        var listTopics = topicRepository.findAll();
+        var result = listTopics.stream().map(Utilities::getTopicVm).toList();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public Optional<Topic> findById(int topicId) {
+        return topicRepository.findById(topicId);
+    }
+
+
+    @Override
+    public ResponseSuccess<Boolean> deleteTopic(int topicId) {
+        var topic = topicRepository.findById(topicId);
+        if(topic.isEmpty()){
+            throw new TopicNotFoundException(TopicConstants.TOPIC_NOT_FOUND);
+        }
+
+        topicRepository.delete(topic.get());
+
+        return new ResponseSuccess<>(TopicConstants.DELETE_TOPIC,true);
     }
 
     @Override
@@ -100,22 +119,5 @@ public class TopicServiceImpl implements TopicService{
 
         return new ResponseSuccess<>(TopicConstants.EDIT_TOPIC,result);
 
-    }
-
-    @Override
-    public ResponseSuccess<Boolean> deleteTopic(int topicId) {
-        var topic = topicRepository.findById(topicId);
-        if(topic.isEmpty()){
-            throw new TopicNotFoundException(TopicConstants.TOPIC_NOT_FOUND);
-        }
-
-        topicRepository.delete(topic.get());
-
-        return new ResponseSuccess<>(TopicConstants.DELETE_TOPIC,true);
-    }
-
-    @Override
-    public Optional<Topic> findById(int topicId) {
-        return topicRepository.findById(topicId);
     }
 }
