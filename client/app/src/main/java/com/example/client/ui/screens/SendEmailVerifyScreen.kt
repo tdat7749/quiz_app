@@ -36,15 +36,15 @@ fun SendEmailVerifyScreen(
 
     val send by sendEmailVerifyViewModel.send.collectAsState()
 
+    if(send is ResourceState.Error){
+        (send as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+    }
+
     if(send is ResourceState.Success){
         ShowMessage((send as ResourceState.Success<ApiResponse<Boolean>>).value.message)
         LaunchedEffect(Unit){
             navController.navigate("${Routes.VERIFY_SCREEN}/${sendEmailVerifyViewModel.email}")
         }
-    }
-
-    if(send is ResourceState.Error){
-        (send as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
     }
 
     Scaffold(
@@ -103,8 +103,6 @@ fun SendEmailVerifyScreen(
         }
     )
 }
-
-
 
 @Composable
 private fun ShowMessage(

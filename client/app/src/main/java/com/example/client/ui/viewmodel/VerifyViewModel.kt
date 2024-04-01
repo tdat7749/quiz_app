@@ -24,12 +24,6 @@ class VerifyViewModel @Inject constructor(
     private val _verify : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
     val verify: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _verify
 
-    var code by mutableStateOf("")
-        private set
-
-    var email by mutableStateOf("")
-        private set
-
     fun onChangeToken(newValue: String) {
         code = newValue
     }
@@ -38,6 +32,12 @@ class VerifyViewModel @Inject constructor(
         email = newValue
     }
 
+
+    var code by mutableStateOf("")
+        private set
+
+    var email by mutableStateOf("")
+        private set
 
     fun verify(){
         val data = Verify(

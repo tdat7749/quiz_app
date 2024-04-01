@@ -31,12 +31,10 @@ class SendEmailVerifyViewModel @Inject constructor(
         email = newValue
     }
 
-
     fun resendEmail(){
         val data = ResendEmail(
             email
         )
-
         viewModelScope.launch (Dispatchers.IO) {
             _send.value = ResourceState.Loading
             val response = authRepository.resendEmail(data)
