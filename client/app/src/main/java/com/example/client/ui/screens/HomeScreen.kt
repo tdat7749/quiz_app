@@ -52,10 +52,9 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ){
     val topics by homeViewModel.topics.collectAsState()
+    val quizTop10 by homeViewModel.quizTop10.collectAsState()
     val user by homeViewModel.user.collectAsState()
     val quizLatest by homeViewModel.quizLatest.collectAsState()
-    val quizTop10 by homeViewModel.quizTop10.collectAsState()
-
 
     Scaffold(
         bottomBar =  {
@@ -230,35 +229,7 @@ fun QuizCardScroll(quiz: Quiz){
     }
 }
 
-@Composable
-fun UserHeader(user:User){
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(100.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        AsyncImage(
-            model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.avatar))
-                .width(dimensionResource(id = R.dimen.avatar))
-                .clip(Shapes.extraSmall),
-        )
 
-        Text(
-            text = user.displayName,
-            modifier = Modifier
-                .padding(start = 8.dp),
-            style = TextStyle(
-                fontSize = 30.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        )
-    }
-}
 
 @Composable
 fun UserInfo(user:User){
@@ -291,30 +262,32 @@ fun UserInfo(user:User){
 }
 
 @Composable
-fun SectionTopic(title:String,items: List<Topic>,navController: NavController){
-    Column (
+fun UserHeader(user:User){
+    Row (
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(100.dp),
+        verticalAlignment = Alignment.CenterVertically
     ){
-        Text(
-            text = title,
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold,
-            ),
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(
+        AsyncImage(
+            model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(dimensionResource(id = R.dimen.space_app_normal))
+                .height(dimensionResource(id = R.dimen.avatar))
+                .width(dimensionResource(id = R.dimen.avatar))
+                .clip(Shapes.extraSmall),
         )
-        LazyRow (
-            horizontalArrangement  = Arrangement.spacedBy(8.dp)
-        ) {
-            items(items){ item ->
-                TopicCard(item,navController)
-            }
-        }
+
+        Text(
+            text = user.displayName,
+            modifier = Modifier
+                .padding(start = 8.dp),
+            style = TextStyle(
+                fontSize = 30.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        )
     }
 }
 
@@ -345,6 +318,35 @@ fun SectionQuiz(title:String,items: List<Quiz>){
         }
     }
 }
+
+@Composable
+fun SectionTopic(title:String,items: List<Topic>,navController: NavController){
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Text(
+            text = title,
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.space_app_normal))
+        )
+        LazyRow (
+            horizontalArrangement  = Arrangement.spacedBy(8.dp)
+        ) {
+            items(items){ item ->
+                TopicCard(item,navController)
+            }
+        }
+    }
+}
+
 
 
 @Composable
