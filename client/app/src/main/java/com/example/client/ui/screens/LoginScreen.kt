@@ -46,14 +46,14 @@ fun LoginScreen(
     }
 
     when{
+        auth is ResourceState.Error -> {
+            (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetState() } }
+        }
         auth is ResourceState.Success -> {
             ShowMessage((auth as ResourceState.Success<ApiResponse<AuthToken>>).value.message)
             LaunchedEffect(Unit){
                 navController.navigate(Routes.HOME_SCREEN)
             }
-        }
-        auth is ResourceState.Error -> {
-            (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetState() } }
         }
         else -> {
 
@@ -165,17 +165,5 @@ private fun ShowMessage(
         Toast.LENGTH_LONG
     ).show()
     onReset()
-}
-
-@Preview
-@Composable
-fun LoginScreenPreview(){
-    val navController = rememberNavController() // Tạo NavController giả
-    val LocalNavController = compositionLocalOf<NavController> {
-        error("No NavController provided")
-    }
-    CompositionLocalProvider(LocalNavController provides navController){
-        LoginScreen(LocalNavController.current)
-    }
 }
 

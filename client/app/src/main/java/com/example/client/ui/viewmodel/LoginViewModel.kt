@@ -39,27 +39,9 @@ class LoginViewModel @Inject constructor(
 
     var password by  mutableStateOf("")
         private set
-
     fun onChangeUserName(newValue: String) { userName = newValue }
     fun onChangePassword(newValue: String) { password = newValue }
 
-
-    fun login(){
-        val login:Login = Login(
-            userName,
-            password
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            _auth.value = ResourceState.Loading
-            val response = authRepository.login(login)
-             _auth.value = response
-            if(response is ResourceState.Success){
-                with(SharedPreferencesManager){
-                    saveToken(response.value.data.accessToken,response.value.data.refreshToken)
-                }
-            }
-        }
-    }
 
     fun checkLogin(navController: NavController){
         val accessToken = SharedPreferencesManager.getAccessToken()
@@ -74,6 +56,23 @@ class LoginViewModel @Inject constructor(
                             saveUser(response.value.data)
                         }
                     }
+                }
+            }
+        }
+    }
+
+    fun login(){
+        val login:Login = Login(
+            userName,
+            password
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            _auth.value = ResourceState.Loading
+            val response = authRepository.login(login)
+             _auth.value = response
+            if(response is ResourceState.Success){
+                with(SharedPreferencesManager){
+                    saveToken(response.value.data.accessToken,response.value.data.refreshToken)
                 }
             }
         }
