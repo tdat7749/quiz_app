@@ -16,6 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.client.ui.screens.*
 import com.example.client.ui.viewmodel.CreateQuizViewModel
+import com.example.client.ui.viewmodel.PlayQuizViewModel
+import java.lang.Integer.parseInt
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -23,6 +25,7 @@ fun AppNavigationGraph(){
 
     val navController: NavHostController = rememberNavController()
     val createQuizViewModel:CreateQuizViewModel = hiltViewModel()
+    val playQuizViewModel:PlayQuizViewModel = hiltViewModel()
 
         NavHost(navController = navController, startDestination = Routes.LOGIN_SCREEN){
 
@@ -51,6 +54,39 @@ fun AppNavigationGraph(){
             }
 
             composable(
+                route = "${Routes.QUIZ_LADING_SCREEN}/{id}",
+                arguments = listOf(
+                    navArgument("id"){ type = NavType.IntType}
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("id")
+                QuizLanding(id!!,navController = navController)
+            }
+
+            composable(
+                route = "${Routes.PLAY_QUIZ_SCREEN}/{id}/{roomId}",
+                arguments = listOf(
+                    navArgument("id"){ type = NavType.IntType},
+                    navArgument("roomId"){ type = NavType.StringType}
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("id")
+                val roomIdString = navStackEntry.arguments?.getString("roomId")
+                var roomId: Int? = null;
+                if(roomIdString.equals("null")){
+                    roomId = null
+                }else{
+                    roomId = roomIdString?.let { parseInt(it) }
+                }
+
+                PlayQuizScreen(id!!,roomId = roomId,navController = navController, playQuizViewModel =playQuizViewModel)
+            }
+
+            composable(Routes.QUIZ_RESULT_SCREEN){
+                ResultQuizScreen(navController,playQuizViewModel)
+            }
+
+            composable(
                 route = "${Routes.QUESTION_SCREEN}/{index}",
                 arguments = listOf(
                     navArgument("index"){ type = NavType.IntType}
@@ -69,7 +105,6 @@ fun AppNavigationGraph(){
                 val email = navStackEntry.arguments?.getString("email")
                 ForgotPasswordScreen(email!!,navController)
             }
-
 
             composable(
                 route = "${Routes.VERIFY_SCREEN}/{email}",

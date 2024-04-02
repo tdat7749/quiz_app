@@ -2,6 +2,7 @@ package com.example.client.network.quiz
 
 import androidx.paging.PagingSource
 import com.example.client.model.Quiz
+import com.example.client.model.QuizDetail
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.PagingResponse
 import okhttp3.MultipartBody
@@ -23,10 +24,6 @@ interface QuizService {
         @Query("sortBy") sortBy:String = "createdAt",
     ) : ApiResponse<PagingResponse<List<Quiz>>>
 
-    @GET("api/quizzes/{quizId}")
-    suspend fun getMyQuizzes(
-        @Path("quizId") topicId:Int
-    )
 
     @GET("api/quizzes/latest")
     suspend fun get10QuizLatest(): ApiResponse<List<Quiz>>
@@ -40,4 +37,9 @@ interface QuizService {
     suspend fun createQuiz(
         @Part parts: List<MultipartBody.Part>
     ):ApiResponse<Quiz>
+
+    @GET("api/quizzes/{quizId}")
+    suspend fun getQuizDetail(
+        @Path("quizId") quizId:Int
+    ): ApiResponse<QuizDetail>
 }

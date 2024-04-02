@@ -40,4 +40,9 @@ public class HistoryAnswer {
     @JsonBackReference
     @JoinColumn(name = "question_id",nullable = false)
     private Question question;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 }

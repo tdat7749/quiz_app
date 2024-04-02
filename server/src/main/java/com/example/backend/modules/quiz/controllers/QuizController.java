@@ -89,9 +89,10 @@ public class QuizController {
     @GetMapping("/{quizId}")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<QuizDetailVm>> getQuizDetail(
+            @AuthenticationPrincipal User user,
             @PathVariable int quizId
     ) {
-        var result = quizService.getQuizDetail(quizId);
+        var result = quizService.getQuizDetail(user,quizId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

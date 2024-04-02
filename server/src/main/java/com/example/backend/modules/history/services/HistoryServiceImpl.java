@@ -4,12 +4,13 @@ import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.history.constant.HistoryConstants;
-import com.example.backend.modules.history.dtos.CreateHistoryAnswerDTO;
 import com.example.backend.modules.history.dtos.CreateHistoryDTO;
 import com.example.backend.modules.history.models.History;
-import com.example.backend.modules.history.models.HistoryAnswer;
 import com.example.backend.modules.history.repositories.HistoryRepository;
+import com.example.backend.modules.history.viewmodels.HistoryRank;
+import com.example.backend.modules.history.viewmodels.HistoryRankVm;
 import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
+import com.example.backend.modules.history.viewmodels.HistorySingleVm;
 import com.example.backend.modules.quiz.constant.QuizConstants;
 import com.example.backend.modules.quiz.exceptions.QuizNotFoundException;
 import com.example.backend.modules.quiz.models.Quiz;
@@ -27,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +62,8 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     @Transactional
     public ResponseSuccess<Boolean> createHistory(CreateHistoryDTO dto,User user) {
-        Optional<Room> room = null;
-        Optional<Quiz> quiz = null;
+        Optional<Room> room = Optional.empty();
+        Optional<Quiz> quiz = Optional.empty();
         if(dto.getRoomId() != null){
             room = roomService.findById(dto.getRoomId());
             if(room.isEmpty()){
@@ -79,8 +79,8 @@ public class HistoryServiceImpl implements HistoryService{
         }
 
         History history = History.builder()
-                .room(room.get())
-                .quiz(quiz.get())
+                .room(room.orElse(null))
+                .quiz(quiz.orElse(null))
                 .score(dto.getTotalScore())
                 .user(user)
                 .createdAt(new Date())
@@ -92,7 +92,7 @@ public class HistoryServiceImpl implements HistoryService{
 
         var saveHistory = historyRepository.save(history);
 
-        historyAnswerService.createBulkHistoryAnswer(dto.getHistoryAnswers(),history);
+        historyAnswerService.createBulkHistoryAnswer(dto.getHistoryAnswers(),saveHistory);
 
         return new ResponseSuccess<>(HistoryConstants.CREATE_HISTORY,true);
     }
@@ -115,12 +115,46 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>> getHistorySingle(int pageIndex, User user) {
+    public ResponseSuccess<ResponsePaging<List<HistorySingleVm>>> getHistorySingle(int pageIndex, User user) {
         Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
 
         Page<History> pagingResult = historyRepository.getHistorySingle(user,paging);
 
         var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistorySingleVm).toList();
+
+        ResponsePaging responsePaging = ResponsePaging.builder()
+                .data(listHistoryRoomVm)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",responsePaging);
+    }
+
+    @Override
+    public ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankSingle(int quizId, int pageIndex) {
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"score"));
+
+        Page<HistoryRank> pagingResult = historyRepository.getHistoryRankSingle(quizId,paging);
+
+        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistoryRankVm).toList();
+
+        ResponsePaging responsePaging = ResponsePaging.builder()
+                .data(listHistoryRoomVm)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",responsePaging);
+    }
+
+    @Override
+    public ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankRoom(int roomid, int pageIndex) {
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"score"));
+
+        Page<HistoryRank> pagingResult = historyRepository.getHistoryRankRoom(roomid,paging);
+
+        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistoryRankVm).toList();
 
         ResponsePaging responsePaging = ResponsePaging.builder()
                 .data(listHistoryRoomVm)

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface CollectionService {
-    boolean isCollected(User user, int quizId);
+    boolean isCollected(User user, Quiz quiz);
 
     ResponseSuccess<Boolean> addToCollection(User user,int quizId);
 

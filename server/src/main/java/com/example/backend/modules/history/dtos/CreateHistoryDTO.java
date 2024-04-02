@@ -20,8 +20,8 @@ public class CreateHistoryDTO {
     @NotNull(message = "Không được thiếu trường 'totalCorrect'")
     @Digits(integer = 10,fraction = 0,message = "Trường 'totalCorrect' phải là số nguyên")
     private int totalCorrect;
-    private Date startedAt;
-    private Date finishedAt;
+    private String startedAt;
+    private String finishedAt;
 
     @NotNull(message = "Không được thiếu trường 'totalScore'")
     @Digits(integer = 10,fraction = 0,message = "Trường 'totalScore' phải là số nguyên")

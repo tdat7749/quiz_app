@@ -40,4 +40,9 @@ public class Answer {
     @JsonBackReference
     private Question question;
 
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "answer")
+    @JsonBackReference
+    private List<HistoryAnswer> historyAnswers;
+
 }

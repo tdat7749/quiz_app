@@ -79,14 +79,14 @@ fun TopicScreen(
                         .height(dimensionResource(id = R.dimen.space_app_normal))
                 )
 
-                QuizList(topicId,searchViewModel)
+                QuizList(topicId,searchViewModel,navController)
             }
         }
     }
 }
 
 @Composable
-fun QuizList(topicId:Int,searchViewModel:SearchViewModel){
+fun QuizList(topicId:Int,searchViewModel:SearchViewModel,navController: NavController){
         val quizzes = searchViewModel.getQuizzes(topicId).collectAsLazyPagingItems()
         LazyColumn (
             contentPadding =  PaddingValues(
@@ -99,7 +99,7 @@ fun QuizList(topicId:Int,searchViewModel:SearchViewModel){
                 .fillMaxWidth()
         ){
             items(quizzes.itemCount){index ->
-                QuizCard(quizzes[index]!!)
+                QuizCard(quizzes[index]!!,navController)
             }
         }
 }

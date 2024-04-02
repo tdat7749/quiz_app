@@ -13,6 +13,17 @@ data class CreateQuestion (
     val uri: Uri?
 )
 
+data class QuestionDetail(
+    val id:Int,
+    val title:String,
+    val score:Int,
+    val timeLimit:Int,
+    val answers:List<Answer>,
+    val thumbnail: String?,
+    val order:Int,
+    val questionType:QuestionType,
+)
+
 data class QuestionType(
     val id:Int,
     val title:String

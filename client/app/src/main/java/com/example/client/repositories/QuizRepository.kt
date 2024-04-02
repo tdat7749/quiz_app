@@ -2,6 +2,7 @@ package com.example.client.repositories
 
 import android.util.Log
 import com.example.client.model.CreateQuiz
+import com.example.client.network.quiz.QuestionService
 import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
 import com.example.client.utils.Utilities
@@ -10,7 +11,8 @@ import javax.inject.Inject
 
 class QuizRepository @Inject constructor(
     private val quizService: QuizService,
-    private val questionTypeService: QuestionTypeService
+    private val questionTypeService: QuestionTypeService,
+    private val questionService:QuestionService
 ){
     suspend fun getPublicQuiz(keyword:String,pageIndex:Int,sortBy:String,topicId:Int) = ApiHelper.safeCallApi {
         quizService.getPublicQuizzes(topicId,keyword, pageIndex, sortBy)
@@ -26,6 +28,10 @@ class QuizRepository @Inject constructor(
 
     suspend fun  getAllQuestionType() = ApiHelper.safeCallApi {
         questionTypeService.getAllQuestionType()
+    }
+
+    suspend fun getQuizDetail(quizId:Int) = ApiHelper.safeCallApi {
+        quizService.getQuizDetail(quizId)
     }
 
     suspend fun createQuiz(data: CreateQuiz) = ApiHelper.safeCallApi {
@@ -58,5 +64,9 @@ class QuizRepository @Inject constructor(
         }
 
         quizService.createQuiz(parts)
+    }
+
+    suspend fun getListQuestionByQuizId(quizId:Int) = ApiHelper.safeCallApi {
+        questionService.getListQuestionByQuizId(quizId)
     }
 }

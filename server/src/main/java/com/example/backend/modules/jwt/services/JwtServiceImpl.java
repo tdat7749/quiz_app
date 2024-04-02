@@ -82,13 +82,6 @@ public class JwtServiceImpl implements JwtService{
         return claimsResolver.apply(claims);
     }
 
-
-
-    private Key getSignInKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(serectKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
     private  boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }

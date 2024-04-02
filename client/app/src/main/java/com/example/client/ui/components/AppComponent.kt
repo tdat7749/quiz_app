@@ -6,8 +6,10 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -424,22 +426,27 @@ fun HeaderApp(painterResource: Painter,headingText:String,normalText:String){
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizCard(quiz:Quiz){
+fun QuizCard(quiz:Quiz,navController:NavController){
     Box(){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dimensionResource(id = R.dimen.quiz_card_height))
+                .width(dimensionResource(id = R.dimen.quiz_card_height))
                 .shadow(4.dp,shape = RoundedCornerShape(8.dp)),
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary)
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+            onClick = {
+                navController.navigate("${Routes.QUIZ_LADING_SCREEN}/${quiz.id}")
+            }
         ){
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
                 AsyncImage(
-                    model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
+                    model = quiz.thumbnail,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -580,7 +587,7 @@ fun BottomBar(navController:NavController){
     }
 
     BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primary
+        containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         IconButton(
             onClick = {
@@ -595,28 +602,42 @@ fun BottomBar(navController:NavController){
                 Icons.Default.Home,
                 contentDescription = null,
                 modifier = Modifier.size(26.dp),
-                tint = if (selected.value == Icons.Default.Home) Color.White else Color.DarkGray
+                tint = if (selected.value == Icons.Default.Home) MaterialTheme.colorScheme.primary else Color.DarkGray
             )
 
         }
 
-        Box(modifier = Modifier
-            .weight(1f)
-            .padding(16.dp),
-            contentAlignment = Alignment.Center){
-            FloatingActionButton(
-                onClick = { showBottomSheet = true },) {
-                Icon(Icons.Default.Search,contentDescription = null,tint = MaterialTheme.colorScheme.primary)
-            }
+        IconButton(
+            onClick = {
+                selected.value = Icons.Default.Search
+                navController.navigate(Routes.CREATE_QUIZ_SCREEN)
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = if (selected.value == Icons.Default.Search) MaterialTheme.colorScheme.primary else Color.DarkGray
+            )
+
         }
+
+//        Box(modifier = Modifier
+//            .weight(1f)
+//            .padding(16.dp),
+//            contentAlignment = Alignment.Center){
+//            FloatingActionButton(
+//                onClick = { showBottomSheet = true },) {
+//                Icon(Icons.Default.Search,contentDescription = null,tint = MaterialTheme.colorScheme.primary)
+//            }
+//        }
 
 
         IconButton(
             onClick = {
                 selected.value = Icons.Default.Person
-                navController.navigate(Routes.CREATE_QUIZ_SCREEN) {
-                    popUpTo(0)
-                }
+                //navController.navigate(Routes.CREATE_QUIZ_SCREEN) to UserScreen
             },
             modifier = Modifier.weight(1f)
         ) {
@@ -624,7 +645,7 @@ fun BottomBar(navController:NavController){
                 Icons.Default.Person,
                 contentDescription = null,
                 modifier = Modifier.size(26.dp),
-                tint = if (selected.value == Icons.Default.Person) Color.White else Color.DarkGray
+                tint = if (selected.value == Icons.Default.Person) MaterialTheme.colorScheme.primary else Color.DarkGray
             )
 
         }
@@ -784,5 +805,26 @@ fun ImageCard(imageUri:Uri?){
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun CircleCheckBox(
+    onChecked: () -> Unit,
+    selected: Boolean = false,
+    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+) {
+
+    val imageVector = if (selected) R.drawable.check_circle else R.drawable.uncheck_circle
+    val background = if (selected) MaterialTheme.colorScheme.background else Color.Transparent
+
+    IconButton(onClick = onChecked) {
+        Icon(
+            modifier = Modifier.background(color = background, shape = CircleShape),
+            painter = painterResource(id = imageVector),
+            contentDescription = null,
+            tint = tint
+        )
     }
 }

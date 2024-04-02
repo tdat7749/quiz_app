@@ -13,6 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Utilities {
@@ -51,6 +52,11 @@ class Utilities {
                 .replace(Regex("\\-+"), "-")
                 .removePrefix("-")
                 .removeSuffix("-")
+        }
+
+        fun formatDate(date: Date): String {
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+            return dateFormat.format(date)
         }
 
         fun getRealPathFromURI(uri: Uri, context: Context): String? {

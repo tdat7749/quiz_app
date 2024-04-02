@@ -30,13 +30,8 @@ public class CollectionServiceImpl implements CollectionService{
     }
 
     @Override
-    public boolean isCollected(User user, int quizId) {
-        var quiz = quizService.findById(quizId);
-        if(quiz.isEmpty()){
-            throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
-        }
-
-        return collectionRepository.existsByUserAndQuiz(user,quiz.get());
+    public boolean isCollected(User user, Quiz quiz) {
+        return collectionRepository.existsByUserAndQuiz(user,quiz);
     }
 
     @Override
@@ -77,9 +72,5 @@ public class CollectionServiceImpl implements CollectionService{
 
         return new ResponseSuccess<>(CollectionConstants.REMOVE_FROM_COLLECTION,true);
 
-    }
-
-    private boolean isCollected(User user, Quiz quiz){
-        return collectionRepository.existsByUserAndQuiz(user,quiz);
     }
 }
