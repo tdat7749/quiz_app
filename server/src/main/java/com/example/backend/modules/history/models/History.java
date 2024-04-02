@@ -31,10 +31,10 @@ public class History {
     private int totalCorrect;
 
     @Column(name = "started_at",nullable = false)
-    private Date startedAt;
+    private String startedAt;
 
     @Column(name = "finished_at",nullable = false)
-    private Date finishedAt;
+    private String finishedAt;
 
     @Column(nullable = false)
     private int score;
@@ -51,15 +51,16 @@ public class History {
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "room_id",nullable = true)
-    private Room room;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "quiz_id",nullable = true)
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "history")
     @JsonManagedReference

@@ -10,6 +10,22 @@ data class Quiz(
     val user: User
 )
 
+data class QuizDetail(
+    val id:Int,
+    val title:String,
+    val slug:String,
+    val thumbnail:String,
+    val user: User,
+    val summary:String,
+    val description:String,
+    val createdAt:String,
+    val updatedAt:String,
+    val topic:Topic,
+    val totalScore:Int,
+    val collect:Boolean,
+    val public:Boolean
+)
+
 data class CreateQuiz(
     val summary:String,
     val description:String,

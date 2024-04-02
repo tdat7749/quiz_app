@@ -2,9 +2,7 @@ package com.example.backend.utils;
 
 import com.example.backend.modules.history.models.History;
 import com.example.backend.modules.history.models.HistoryAnswer;
-import com.example.backend.modules.history.viewmodels.HistoryAnswerVm;
-import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
-import com.example.backend.modules.history.viewmodels.HistorySingleVm;
+import com.example.backend.modules.history.viewmodels.*;
 import com.example.backend.modules.quiz.models.Answer;
 import com.example.backend.modules.quiz.models.Question;
 import com.example.backend.modules.quiz.models.QuestionType;
@@ -32,28 +30,28 @@ public class Utilities {
     }
 
     public static UserVm getUserVm(User user){
-        UserVm userVm = UserVm.builder()
+        return UserVm.builder()
                 .id(user.getId())
                 .displayName(user.getDisplayName())
                 .avatar(user.getAvatar())
                 .build();
-        return userVm;
     }
 
     public static QuizVm getQuizVm(Quiz quiz){
-        QuizVm quizVm = QuizVm.builder()
+
+        return QuizVm.builder()
                 .id(quiz.getId())
                 .title(quiz.getTitle())
                 .slug(quiz.getSlug())
                 .thumbnail(quiz.getThumbnail())
                 .user(getUserVm(quiz.getUser()))
                 .build();
-
-        return quizVm;
     }
 
-    public static QuizDetailVm getQuizDetailVm(Quiz quiz){
-        QuizDetailVm quizDetailVm = QuizDetailVm.builder()
+    public static QuizDetailVm getQuizDetailVm(Quiz quiz,boolean isCollect){
+
+        // còn thiếu get cái totalScore của quiz
+        return QuizDetailVm.builder()
                 .id(quiz.getId())
                 .title(quiz.getTitle())
                 .slug(quiz.getSlug())
@@ -64,14 +62,13 @@ public class Utilities {
                 .createdAt(quiz.getCreatedAt().toString())
                 .user(getUserVm(quiz.getUser()))
                 .topic(getTopicVm(quiz.getTopic()))
+                .isCollect(isCollect)
                 .build();
-
-        // còn thiếu get cái totalScore của quiz
-        return quizDetailVm;
     }
 
     public static RoomVm getRoomVm(Room room){
-        RoomVm roomVm = RoomVm.builder()
+
+        return RoomVm.builder()
                 .roomPin(room.getRoomPin())
                 .id(room.getId())
                 .timeStart(room.getTimeStart().toString())
@@ -80,12 +77,11 @@ public class Utilities {
                 .host(getUserVm(room.getUser()))
                 .quiz(getQuizVm(room.getQuiz()))
                 .build();
-
-        return roomVm;
     }
 
     public static TopicVm getTopicVm(Topic topic){
-        TopicVm topicVm = TopicVm.builder()
+
+        return TopicVm.builder()
                 .id(topic.getId())
                 .thumbnail(topic.getThumbnail())
                 .slug(topic.getSlug())
@@ -93,12 +89,11 @@ public class Utilities {
                 .createdAt(topic.getCreatedAt().toString())
                 .updatedAt(topic.getUpdatedAt().toString())
                 .build();
-
-        return topicVm;
     }
 
     public static HistoryRoomVm getHistoryRoomVm(History history){
-        HistoryRoomVm historyRoomVm = HistoryRoomVm.builder()
+
+        return HistoryRoomVm.builder()
                 .id(history.getId())
                 .timeStart(history.getStartedAt().toString())
                 .timeEnd(history.getFinishedAt().toString())
@@ -107,12 +102,11 @@ public class Utilities {
                 .totalScore(history.getScore())
                 .totalCorrect(history.getTotalCorrect())
                 .build();
-
-        return historyRoomVm;
     }
 
     public static HistorySingleVm getHistorySingleVm(History history){
-        HistorySingleVm historySingleVm = HistorySingleVm.builder()
+
+        return HistorySingleVm.builder()
                 .id(history.getId())
                 .timeStart(history.getStartedAt().toString())
                 .timeEnd(history.getFinishedAt().toString())
@@ -121,18 +115,15 @@ public class Utilities {
                 .totalScore(history.getScore())
                 .totalCorrect(history.getTotalCorrect())
                 .build();
-
-        return historySingleVm;
     }
 
     public static AnswerVm getAnswerVm(Answer answer){
-        AnswerVm answerVm = AnswerVm.builder()
+
+        return AnswerVm.builder()
                 .id(answer.getId())
                 .title(answer.getTitle())
                 .isCorrect(answer.getIsCorrect())
                 .build();
-
-        return answerVm;
     }
 
     public static List<AnswerVm> getListAnswerVm(List<Answer> answers){
@@ -152,18 +143,18 @@ public class Utilities {
     }
 
     public static QuestionVm getQuestionVm(Question question){
-        QuestionVm questionVm = QuestionVm.builder()
+
+        return QuestionVm.builder()
                 .score(question.getScore())
                 .id(question.getId())
                 .title(question.getTitle())
                 .answers(getListAnswerVm(question.getAnswers()))
                 .build();
-
-        return questionVm;
     }
 
     public static QuestionDetailVm getQuestionDetailVm(Question question){
-        QuestionDetailVm questionDetailVm = QuestionDetailVm.builder()
+
+        return QuestionDetailVm.builder()
                 .score(question.getScore())
                 .id(question.getId())
                 .title(question.getTitle())
@@ -173,27 +164,31 @@ public class Utilities {
                 .thumbnail(question.getThumbnail())
                 .questionType(getQuestionTypeVm(question.getQuestionType()))
                 .build();
-
-        return questionDetailVm;
     }
 
     public static QuestionTypeVm getQuestionTypeVm(QuestionType questionType){
-        QuestionTypeVm questionTypeVm = QuestionTypeVm.builder()
+
+        return QuestionTypeVm.builder()
                 .id(questionType.getId())
                 .title(questionType.getTitle())
                 .build();
-
-        return  questionTypeVm;
     }
 
     public static HistoryAnswerVm getHistoryAnswer(HistoryAnswer historyAnswer){
-        HistoryAnswerVm historyAnswerVm = HistoryAnswerVm.builder()
+
+        return HistoryAnswerVm.builder()
                 .id(historyAnswer.getId())
                 .isCorrect(historyAnswer.getIsCorrect())
                 .question(getQuestionVm(historyAnswer.getQuestion()))
                 .build();
+    }
 
-        return  historyAnswerVm;
+    public static HistoryRankVm getHistoryRankVm(HistoryRank historyRank){
+        return HistoryRankVm.builder()
+                .user(getUserVm(historyRank.getUser()))
+                .totalCorrect(historyRank.getTotalCorrect())
+                .totalScore(historyRank.getTotalScore())
+                .build();
     }
 }
 

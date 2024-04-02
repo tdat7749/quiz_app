@@ -5,14 +5,14 @@ import com.example.client.model.QuestionType
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
 import com.example.client.network.auth.AuthService
+import com.example.client.network.collect.CollectService
+import com.example.client.network.history.HistoryService
+import com.example.client.network.quiz.QuestionService
 import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
 import com.example.client.network.topic.TopicService
 import com.example.client.network.user.UserService
-import com.example.client.repositories.AuthRepository
-import com.example.client.repositories.QuizRepository
-import com.example.client.repositories.TopicRepository
-import com.example.client.repositories.UserRepository
+import com.example.client.repositories.*
 import com.example.client.utils.SharedPreferencesManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -90,8 +90,12 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesQuizRepository(quizService: QuizService,questionTypeService: QuestionTypeService) : QuizRepository {
-        return QuizRepository(quizService,questionTypeService)
+    fun providesQuizRepository(
+        quizService: QuizService,
+        questionTypeService: QuestionTypeService,
+        questionService:QuestionService
+    ) : QuizRepository {
+        return QuizRepository(quizService,questionTypeService,questionService)
     }
 
     @Provides
@@ -120,8 +124,39 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun providesCollectService(retrofit: Retrofit) : CollectService {
+        return retrofit.create(CollectService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCollectRepository(collectService: CollectService) : CollectRepository {
+        return CollectRepository(collectService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesHistoryService(retrofit: Retrofit) : HistoryService {
+        return retrofit.create(HistoryService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesHisotryRepository(historyService: HistoryService) : HistoryRepository {
+        return HistoryRepository(historyService)
+    }
+
+
+    @Provides
+    @Singleton
     fun providesQuestionTypeService(retrofit: Retrofit) : QuestionTypeService {
         return retrofit.create(QuestionTypeService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuestionService(retrofit: Retrofit) : QuestionService {
+        return retrofit.create(QuestionService::class.java)
     }
 
 }

@@ -19,4 +19,7 @@ public class CreateHistoryAnswerDTO {
     @NotNull(message = "Không được thiếu trường 'isCorrect'")
     @Digits(integer = 10,fraction = 0,message = "Trường 'isCorrect' phải là số nguyên")
     private Boolean isCorrect;
+
+
+    private Integer answerId;
 }

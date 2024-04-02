@@ -104,7 +104,8 @@ fun HomeScreen(
                                 )
                                 SectionQuiz(
                                     "Mới Nhất",
-                                    (quizLatest as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data
+                                    (quizLatest as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data,
+                                    navController
                                 )
                                 Spacer(
                                     modifier = Modifier
@@ -112,7 +113,8 @@ fun HomeScreen(
                                 )
                                 SectionQuiz(
                                     "Được Yêu Thích Nhất",
-                                    (quizTop10 as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data
+                                    (quizTop10 as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data,
+                                    navController
                                 )
                                 Spacer(
                                     modifier = Modifier
@@ -197,7 +199,7 @@ fun QuizCardScroll(quiz: Quiz){
                     .fillMaxSize()
             ) {
                 AsyncImage(
-                    model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
+                    model = quiz.thumbnail,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -292,7 +294,7 @@ fun UserHeader(user:User){
 }
 
 @Composable
-fun SectionQuiz(title:String,items: List<Quiz>){
+fun SectionQuiz(title:String,items: List<Quiz>,navController: NavController){
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -313,7 +315,7 @@ fun SectionQuiz(title:String,items: List<Quiz>){
             horizontalArrangement  = Arrangement.spacedBy(8.dp)
         ) {
             items(items){ item ->
-                QuizCard(item)
+                QuizCard(item, navController)
             }
         }
     }
