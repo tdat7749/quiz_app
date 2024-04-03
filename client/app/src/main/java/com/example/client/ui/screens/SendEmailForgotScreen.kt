@@ -1,11 +1,14 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +32,8 @@ import com.example.client.ui.viewmodel.SendEmailForgotViewModel
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SendEmailForgotScreen (
     navController: NavController,
@@ -47,54 +52,60 @@ fun SendEmailForgotScreen (
         (send as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
     }
 
-    Surface(
-    modifier = Modifier
-    .fillMaxSize()
-    .verticalScroll(rememberScrollState())
-    .background(Color.White)
-
-    ) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(id = R.dimen.padding_app))
-        ){
+    Scaffold(
+        topBar = {
             TopBar(
                 title = stringResource(id = R.string.forgot_password),
                 navController = navController
             )
-            HeaderApp(
-                painterResource(id = R.drawable.verify),
-                stringResource(id = R.string.app_name),
-                stringResource(id = R.string.send_email_forgot)
-            )
-            Spacer(
+        },
+        content = {
+            Surface(
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            TextFieldOutlined(
-                sendEmailForgotViewModel.email,
-                onChangeValue = {
-                    sendEmailForgotViewModel.onChangeEmail(it)
-                },
-                stringResource(id = R.string.email),
-                painterResource(id = R.drawable.email)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
-            ButtonComponent(
-                onClick = {
-                    sendEmailForgotViewModel.resendEmail()
-                },
-                stringResource(id = R.string.send),
-                MaterialTheme.colorScheme.primary,
-                send is ResourceState.Loading,
-                send !is ResourceState.Loading
-            )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .background(Color.White)
+
+            ) {
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(id = R.dimen.padding_app))
+                ){
+                    HeaderApp(
+                        painterResource(id = R.drawable.send_email),
+                        stringResource(id = R.string.app_name),
+                        stringResource(id = R.string.send_email_forgot)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    TextFieldOutlined(
+                        sendEmailForgotViewModel.email,
+                        onChangeValue = {
+                            sendEmailForgotViewModel.onChangeEmail(it)
+                        },
+                        stringResource(id = R.string.email),
+                        painterResource(id = R.drawable.email)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_normal))
+                    )
+                    ButtonComponent(
+                        onClick = {
+                            sendEmailForgotViewModel.resendEmail()
+                        },
+                        stringResource(id = R.string.send),
+                        MaterialTheme.colorScheme.primary,
+                        send is ResourceState.Loading,
+                        send !is ResourceState.Loading
+                    )
+                }
+            }
         }
-    }
+    )
 }
 
 @Composable

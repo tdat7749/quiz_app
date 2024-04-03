@@ -10,6 +10,7 @@ import com.example.backend.modules.room.constant.RoomConstants;
 import com.example.backend.modules.room.dtos.CreateRoomDTO;
 import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.exceptions.RoomClosedException;
+import com.example.backend.modules.room.exceptions.RoomHasNotStarted;
 import com.example.backend.modules.room.exceptions.RoomNotFoundException;
 import com.example.backend.modules.room.exceptions.RoomOwnerException;
 import com.example.backend.modules.room.models.Room;
@@ -43,34 +44,10 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public Optional<Room> findById(int id) {
+
         return roomRepository.findById(id);
     }
-
-    @Override
-    public boolean isRoomOwner(User user, int roomId) {
-        boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
-        return isOwner;
-    }
-
-    @Override
-    public ResponseSuccess<RoomVm> joinRoom(String roomPin) {
-        var room = roomRepository.findByRoomPin(roomPin);
-        if(room.isEmpty()){
-            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
-        }
-
-        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
-            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
-        }
-
-        if (room.get().isClosed()){
-            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
-        }
-
-        RoomVm roomVm = Utilities.getRoomVm(room.get());
-
-        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,roomVm);
-    }
+    
 
     @Override
     public ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto) {
@@ -87,12 +64,58 @@ public class RoomServiceImpl implements RoomService{
                 .user(user)
                 .roomPin(Utilities.generateCode())
                 .isClosed(false)
+                .roomName(dto.getRoomName())
                 .build();
 
         var save = roomRepository.save(newRoom);
         RoomVm roomVm = Utilities.getRoomVm(save);
 
         return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
+    }
+
+    @Override
+    public ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword, String sortBy, int pageIndex,User user) {
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
+
+        Page<Room> pagingResult = roomRepository.getMyListRooms(user,paging);
+        List<RoomVm> roomVmList = pagingResult.stream().map(Utilities::getRoomVm).toList();
+
+        ResponsePaging result = ResponsePaging.builder()
+                .data(roomVmList)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
+    @Override
+    public boolean isRoomOwner(User user, int roomId) {
+        boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
+        return isOwner;
+    }
+
+    @Override
+    public ResponseSuccess<RoomVm> joinRoom(String roomPin) {
+        var room = roomRepository.findByRoomPin(roomPin);
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        if(room.get().getTimeStart() != null && room.get().getTimeStart().after(new Date())){
+            throw new RoomHasNotStarted(RoomConstants.ROOM_HAS_NOT_STARTED);
+        }
+
+        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
+            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
+        }
+
+        if (room.get().isClosed()){
+            throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
+        }
+
+        RoomVm roomVm = Utilities.getRoomVm(room.get());
+
+        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,roomVm);
     }
 
     @Override
@@ -114,6 +137,22 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
+    public ResponseSuccess<Boolean> deleteRoom(User user, int roomId) {
+        var room = roomRepository.findById(roomId);
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        var isOwner = this.isRoomOwner(user,roomId);
+        if(!isOwner){
+            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
+        }
+
+        roomRepository.delete(room.get());
+        return new ResponseSuccess<>(RoomConstants.DELETE_ROOM,true);
+    }
+
+    @Override
     public ResponseSuccess<Boolean> editRoom(User user, EditRoomDTO dto) {
         var room = roomRepository.findById(dto.getRoomId());
         if(room.isEmpty()){
@@ -130,42 +169,11 @@ public class RoomServiceImpl implements RoomService{
         room.get()
                 .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
 
+        room.get()
+                .setRoomName(dto.getRoomName());
+
         roomRepository.save(room.get());
 
         return new ResponseSuccess<>(RoomConstants.EDIT_ROOM,true);
-    }
-
-    @Override
-    public ResponseSuccess<Boolean> deleteRoom(User user, int roomId) {
-        var room = roomRepository.findById(roomId);
-        if(room.isEmpty()){
-            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
-        }
-
-        var isOwner = this.isRoomOwner(user,roomId);
-        if(!isOwner){
-            throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
-        }
-
-        roomRepository.delete(room.get());
-
-        return new ResponseSuccess<>(RoomConstants.DELETE_ROOM,true);
-    }
-
-    @Override
-    public ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword, String sortBy, int pageIndex,User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
-
-        Page<Room> pagingResult = roomRepository.getMyListRooms(user,paging);
-
-        List<RoomVm> roomVmList = pagingResult.stream().map(Utilities::getRoomVm).toList();
-
-        ResponsePaging result = ResponsePaging.builder()
-                .data(roomVmList)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",result);
     }
 }

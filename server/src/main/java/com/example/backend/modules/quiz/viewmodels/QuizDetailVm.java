@@ -15,6 +15,7 @@ public class QuizDetailVm {
     private String thumbnail;
     private String title;
     private boolean isPublic;
+    private boolean isCollect;
     private String slug;
     private String createdAt;
     private String updatedAt;

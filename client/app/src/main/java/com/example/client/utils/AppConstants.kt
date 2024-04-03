@@ -16,6 +16,7 @@ object AppConstants {
         "/api/quizzes/top-10",
         "/api/quizzes/latest",
         "/api/users/forgot-mail",
-        "/api/users/forgot"
+        "/api/users/forgot",
+        "/api/types/"
     )
 }

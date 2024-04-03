@@ -4,6 +4,7 @@ package com.example.backend.modules.quiz.services;
 import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
+import com.example.backend.modules.collection.services.CollectionService;
 import com.example.backend.modules.filestorage.services.FileStorageService;
 import com.example.backend.modules.quiz.constant.QuizConstants;
 import com.example.backend.modules.quiz.dtos.CreateQuizDTO;
@@ -24,6 +25,7 @@ import com.example.backend.modules.topic.exceptions.TopicNotFoundException;
 import com.example.backend.modules.topic.services.TopicService;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.utils.Utilities;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -44,16 +47,20 @@ public class QuizServiceImpl implements QuizService{
 
     private final QuestionService questionService;
 
+    private final CollectionService collectionService;
+
     public QuizServiceImpl(
             QuizRepository quizRepository,
             TopicService topicService,
             FileStorageService fileStorageService,
-            QuestionService questionService
+            QuestionService questionService,
+            @Lazy CollectionService collectionService
     ){
         this.topicService = topicService;
         this.quizRepository = quizRepository;
         this.fileStorageService = fileStorageService;
         this.questionService = questionService;
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -156,7 +163,7 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
-    public ResponseSuccess<QuizDetailVm> getQuizDetail(int quizId) {
+    public ResponseSuccess<QuizDetailVm> getQuizDetail(User user,int quizId) {
         var quiz = quizRepository.findById(quizId);
         if(quiz.isEmpty()){
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
@@ -166,7 +173,9 @@ public class QuizServiceImpl implements QuizService{
             throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
         }
 
-        var result = Utilities.getQuizDetailVm(quiz.get());
+        var isCollect = this.collectionService.isCollected(user,quiz.get());
+
+        var result = Utilities.getQuizDetailVm(quiz.get(),isCollect);
 
         return new ResponseSuccess<>("Thành công",result);
     }

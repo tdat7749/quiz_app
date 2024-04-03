@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
-import com.example.client.ui.components.QuizCard
-import com.example.client.ui.components.ScreenHeader
-import com.example.client.ui.components.TextFieldOutlined
+import com.example.client.ui.components.*
 import com.example.client.ui.viewmodel.SearchViewModel
 
 
@@ -37,6 +37,7 @@ fun TopicScreen(
     topicId:Int,
     title:String,
     thumbnail:String,
+    navController: NavController,
     searchViewModel:SearchViewModel = hiltViewModel()
 ) {
 
@@ -51,7 +52,9 @@ fun TopicScreen(
         ) {
             ScreenHeader(
                 title = title,
-                thumbnail = thumbnail
+                thumbnail = thumbnail,
+                navController = navController,
+                showBackIcon = true
             )
             Spacer(
                 modifier = Modifier
@@ -75,14 +78,14 @@ fun TopicScreen(
                         .height(dimensionResource(id = R.dimen.space_app_normal))
                 )
 
-                QuizList(topicId,searchViewModel)
+                QuizList(topicId,searchViewModel,navController)
             }
         }
     }
 }
 
 @Composable
-fun QuizList(topicId:Int,searchViewModel:SearchViewModel){
+fun QuizList(topicId:Int,searchViewModel:SearchViewModel,navController: NavController){
         val quizzes = searchViewModel.getQuizzes(topicId).collectAsLazyPagingItems()
         LazyColumn (
             contentPadding =  PaddingValues(
@@ -95,7 +98,12 @@ fun QuizList(topicId:Int,searchViewModel:SearchViewModel){
                 .fillMaxWidth()
         ){
             items(quizzes.itemCount){index ->
-                QuizCard(quizzes[index]!!)
+                QuizCard(quizzes[index]!!,navController)
+            }
+            item {
+                if(quizzes.loadState.append is LoadState.Loading){
+                    LoadingCircle()
+                }
             }
         }
 }

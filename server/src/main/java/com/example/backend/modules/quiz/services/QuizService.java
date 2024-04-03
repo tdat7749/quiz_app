@@ -36,7 +36,7 @@ public interface QuizService {
 
     ResponseSuccess<List<QuizVm>> get10QuizLatest();
 
-    ResponseSuccess<QuizDetailVm> getQuizDetail(int quizId);
+    ResponseSuccess<QuizDetailVm> getQuizDetail(User user,int quizId);
 
     ResponseSuccess<QuizVm> createQuiz(User user, CreateQuizDTO dto) throws IOException;
 

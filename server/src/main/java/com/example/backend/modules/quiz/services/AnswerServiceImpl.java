@@ -6,6 +6,7 @@ import com.example.backend.modules.quiz.dtos.EditAnswerDTO;
 import com.example.backend.modules.quiz.exceptions.AnswerNotFoundException;
 import com.example.backend.modules.quiz.exceptions.NotOwnerAnswerException;
 import com.example.backend.modules.quiz.exceptions.NotOwnerQuizException;
+import com.example.backend.modules.quiz.models.Answer;
 import com.example.backend.modules.quiz.repositories.AnswerRepository;
 import com.example.backend.modules.quiz.viewmodels.AnswerVm;
 import com.example.backend.modules.user.models.User;
@@ -13,6 +14,7 @@ import com.example.backend.utils.Utilities;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class AnswerServiceImpl implements AnswerService{
@@ -26,6 +28,11 @@ public class AnswerServiceImpl implements AnswerService{
     ){
         this.answerRepository = answerRepository;
         this.quizService = quizService;
+    }
+
+    @Override
+    public Optional<Answer> findById(int id) {
+        return answerRepository.findById(id);
     }
 
     @Override

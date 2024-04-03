@@ -40,6 +40,21 @@ public class JwtServiceImpl implements JwtService{
 
 
 
+
+    @Override
+    public boolean isTokenValid(String token,UserDetails user){
+        String userName = extractUsername(token);
+
+        return ((userName.equals(user.getUsername())) && !isTokenExpired(token));
+    }
+
+
+    private Key getSignInKey(){
+        byte[] keyBytes = Decoders.BASE64.decode(serectKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
     @Override
     public String buildToken(Map<String, Object> extraClaims, UserDetails user,long tokenTime) {
         return Jwts
@@ -52,12 +67,6 @@ public class JwtServiceImpl implements JwtService{
                 .compact();
     }
 
-    @Override
-    public boolean isTokenValid(String token,UserDetails user){
-        String userName = extractUsername(token);
-
-        return ((userName.equals(user.getUsername())) && !isTokenExpired(token));
-    }
 
     private Claims extractClaims(String token) {
         return Jwts
@@ -82,9 +91,4 @@ public class JwtServiceImpl implements JwtService{
     }
 
 
-
-    private Key getSignInKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(serectKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.client.ui.navigation.AppNavigationGraph
-import com.example.client.ui.theme.ClientTheme
+import com.example.compose.ClientTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 

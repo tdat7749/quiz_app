@@ -6,7 +6,9 @@ import com.example.backend.modules.history.dtos.CreateHistoryDTO;
 import com.example.backend.modules.history.services.HistoryAnswerService;
 import com.example.backend.modules.history.services.HistoryService;
 import com.example.backend.modules.history.viewmodels.HistoryAnswerVm;
+import com.example.backend.modules.history.viewmodels.HistoryRankVm;
 import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
+import com.example.backend.modules.history.viewmodels.HistorySingleVm;
 import com.example.backend.modules.user.models.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,11 +55,33 @@ public class HistoryController {
 
     @GetMapping("/single")
     @ResponseBody
-    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>>> getHistorySingle(
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistorySingleVm>>>> getHistorySingle(
             @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
             @AuthenticationPrincipal User user
     ) {
         var result = historyService.getHistorySingle(pageIndex,user);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/single/{quizId}/rank")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRankVm>>>> getHistoryRankSingle(
+            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
+            @PathVariable int quizId
+    ) {
+        var result = historyService.getHistoryRankSingle(quizId,pageIndex);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/room/{roomId}/rank")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRankVm>>>> getHistoryRankRoom(
+            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
+            @PathVariable int roomId
+    ) {
+        var result = historyService.getHistoryRankRoom(roomId,pageIndex);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

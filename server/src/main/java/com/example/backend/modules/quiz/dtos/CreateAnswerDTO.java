@@ -18,5 +18,5 @@ public class CreateAnswerDTO {
     private String title;
 
     @NotNull(message = "Không được thiếu trường 'isCorrect'")
-    private boolean isCorrect;
+    private String isCorrect;
 }

@@ -33,16 +33,37 @@ class LoginViewModel @Inject constructor(
     private val _auth : MutableStateFlow<ResourceState<ApiResponse<AuthToken>>> = MutableStateFlow(ResourceState.Nothing)
     val auth = _auth.asStateFlow()
 
+    private val _checkLogin: MutableStateFlow<ResourceState<ApiResponse<User>>> = MutableStateFlow(ResourceState.Nothing)
+    val checkLogin = _checkLogin.asStateFlow()
 
     var userName by  mutableStateOf("")
         private set
 
     var password by  mutableStateOf("")
         private set
-
     fun onChangeUserName(newValue: String) { userName = newValue }
     fun onChangePassword(newValue: String) { password = newValue }
 
+
+    fun checkLogin(navController: NavController){
+        val accessToken = SharedPreferencesManager.getAccessToken()
+        if(accessToken != null){
+            _checkLogin.value = ResourceState.Loading
+            viewModelScope.launch(Dispatchers.Main) {
+                val response =  userRepository.getMe()
+                if(response is ResourceState.Success){
+                    navController.navigate(Routes.HOME_SCREEN)
+                    val user = SharedPreferencesManager.getUser(User::class.java)
+                    if(user == null){
+                        with(SharedPreferencesManager){
+                            saveUser(response.value.data)
+                        }
+                    }
+                }
+                _checkLogin.value = response
+            }
+        }
+    }
 
     fun login(){
         val login:Login = Login(
@@ -61,25 +82,8 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun checkLogin(navController: NavController){
-        val accessToken = SharedPreferencesManager.getAccessToken()
-        if(accessToken != null){
-            viewModelScope.launch(Dispatchers.Main) {
-                val response =  userRepository.getMe()
-                if(response is ResourceState.Success){
-                    navController.navigate(Routes.HOME_SCREEN)
-                    val user = SharedPreferencesManager.getUser(User::class.java)
-                    if(user == null){
-                        with(SharedPreferencesManager){
-                            saveUser(response.value.data)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     fun resetState() {
         _auth.value = ResourceState.Nothing
+        _checkLogin.value = ResourceState.Nothing
     }
 }

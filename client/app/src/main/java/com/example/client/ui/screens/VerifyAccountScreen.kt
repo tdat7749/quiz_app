@@ -42,6 +42,11 @@ fun VerifyAccountScreen (
 
     verifyViewModel.onChangeEmail(email)
 
+
+    if(verify is ResourceState.Error){
+        (verify as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
+    }
+
     if(verify is ResourceState.Success){
         ShowMessage((verify as ResourceState.Success<ApiResponse<Boolean>>).value.message)
         LaunchedEffect(Unit){
@@ -49,9 +54,6 @@ fun VerifyAccountScreen (
         }
     }
 
-    if(verify is ResourceState.Error){
-        (verify as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
-    }
 
     Surface(
         modifier = Modifier

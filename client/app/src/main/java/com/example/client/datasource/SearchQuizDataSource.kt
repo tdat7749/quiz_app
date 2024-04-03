@@ -4,12 +4,8 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.client.model.Quiz
-import com.example.client.repositories.ApiHelper
 import com.example.client.repositories.QuizRepository
-import com.example.client.utils.ApiResponse
-import com.example.client.utils.PagingResponse
 import com.example.client.utils.ResourceState
-import com.example.client.utils.Search
 import java.io.IOException
 import javax.inject.Inject
 
