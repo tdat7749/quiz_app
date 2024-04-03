@@ -26,4 +26,10 @@ public class RoomExceptionHandler {
     public ResponseError roomClosedExceptionHandler(RoomClosedException ex){
         return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
+
+    @ExceptionHandler(RoomHasNotStarted.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError roomHasNotStartedExceptionHandler(RoomHasNotStarted ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
 }

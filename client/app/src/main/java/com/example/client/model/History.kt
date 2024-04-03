@@ -25,3 +25,10 @@ data class Answered(
     val isCorrect:Boolean,
     val score:Int
 )
+
+
+data class HistoryRank(
+    val totalCorrect:Int,
+    val totalScore: Int,
+    val user:User,
+)

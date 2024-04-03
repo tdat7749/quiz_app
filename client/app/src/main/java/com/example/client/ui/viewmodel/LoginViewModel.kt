@@ -33,6 +33,8 @@ class LoginViewModel @Inject constructor(
     private val _auth : MutableStateFlow<ResourceState<ApiResponse<AuthToken>>> = MutableStateFlow(ResourceState.Nothing)
     val auth = _auth.asStateFlow()
 
+    private val _checkLogin: MutableStateFlow<ResourceState<ApiResponse<User>>> = MutableStateFlow(ResourceState.Nothing)
+    val checkLogin = _checkLogin.asStateFlow()
 
     var userName by  mutableStateOf("")
         private set
@@ -46,6 +48,7 @@ class LoginViewModel @Inject constructor(
     fun checkLogin(navController: NavController){
         val accessToken = SharedPreferencesManager.getAccessToken()
         if(accessToken != null){
+            _checkLogin.value = ResourceState.Loading
             viewModelScope.launch(Dispatchers.Main) {
                 val response =  userRepository.getMe()
                 if(response is ResourceState.Success){
@@ -57,6 +60,7 @@ class LoginViewModel @Inject constructor(
                         }
                     }
                 }
+                _checkLogin.value = response
             }
         }
     }
@@ -80,5 +84,6 @@ class LoginViewModel @Inject constructor(
 
     fun resetState() {
         _auth.value = ResourceState.Nothing
+        _checkLogin.value = ResourceState.Nothing
     }
 }

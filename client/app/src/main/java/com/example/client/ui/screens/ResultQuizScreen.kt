@@ -1,6 +1,7 @@
 package com.example.client.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,17 +25,16 @@ import com.example.client.ui.viewmodel.PlayQuizViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultQuizScreen(
+    quizId:Int,
+    roomId:Int?,
     navController: NavController,
     playQuizViewModel: PlayQuizViewModel
 ){
 
-    DisposableEffect(Unit){
-        onDispose {
-            playQuizViewModel.resetState()
-        }
+    BackHandler(enabled = true){
+        // không cho người dùng quay lại bài làm
     }
 
     Scaffold(
@@ -92,7 +92,7 @@ fun ResultQuizScreen(
 
                 ButtonNavigate(
                     onClick = {
-                        //chuyeeren hướng sang trang rank
+                        navController.navigate("${Routes.QUIZ_RANK_SCREEN}/${quizId}/${roomId.toString()}")
                     },
                     "Xem Xếp Hạng",
                     MaterialTheme.colorScheme.primary
@@ -105,6 +105,7 @@ fun ResultQuizScreen(
 
                 ButtonNavigate(
                     onClick = {
+                        playQuizViewModel.resetState()
                         navController.navigate(Routes.HOME_SCREEN)
                     },
                     "Thoát",

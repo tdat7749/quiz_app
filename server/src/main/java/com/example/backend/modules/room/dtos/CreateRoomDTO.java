@@ -18,6 +18,10 @@ public class CreateRoomDTO {
     @Digits(integer = 10,fraction = 0,message = "Trường 'quizId' phải là số nguyên")
     private int quizId;
 
+    @NotBlank(message = "Không được bỏ trống trường 'roomName'")
+    @NotNull(message = "Không được thiếu trường 'roomName'")
+    @Length(max = 100,message = "Tài khoản có độ dài tối đa là 100 ký tự")
+    private String roomName;
 
     private Date timeStart;
     private Date timeEnd;

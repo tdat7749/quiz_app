@@ -1,6 +1,7 @@
 package com.example.client.di
 
 import android.util.Log
+import com.example.client.adapter.DateJsonAdapter
 import com.example.client.model.QuestionType
 import com.example.client.utils.AppConstants
 import com.example.client.network.ApiService
@@ -10,6 +11,7 @@ import com.example.client.network.history.HistoryService
 import com.example.client.network.quiz.QuestionService
 import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
+import com.example.client.network.room.RoomService
 import com.example.client.network.topic.TopicService
 import com.example.client.network.user.UserService
 import com.example.client.repositories.*
@@ -55,6 +57,7 @@ class AppModule {
         }
 
         val moshi = Moshi.Builder()
+            .add(DateJsonAdapter())
             .add(KotlinJsonAdapterFactory()).build()
 
         return Retrofit.Builder()
@@ -144,6 +147,18 @@ class AppModule {
     @Singleton
     fun providesHisotryRepository(historyService: HistoryService) : HistoryRepository {
         return HistoryRepository(historyService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesRoomService(retrofit: Retrofit) : RoomService {
+        return retrofit.create(RoomService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesRoomRepository(roomService: RoomService) : RoomRepository {
+        return RoomRepository(roomService)
     }
 
 

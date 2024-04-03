@@ -10,6 +10,7 @@ import com.example.backend.modules.room.constant.RoomConstants;
 import com.example.backend.modules.room.dtos.CreateRoomDTO;
 import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.exceptions.RoomClosedException;
+import com.example.backend.modules.room.exceptions.RoomHasNotStarted;
 import com.example.backend.modules.room.exceptions.RoomNotFoundException;
 import com.example.backend.modules.room.exceptions.RoomOwnerException;
 import com.example.backend.modules.room.models.Room;
@@ -63,6 +64,7 @@ public class RoomServiceImpl implements RoomService{
                 .user(user)
                 .roomPin(Utilities.generateCode())
                 .isClosed(false)
+                .roomName(dto.getRoomName())
                 .build();
 
         var save = roomRepository.save(newRoom);
@@ -97,6 +99,10 @@ public class RoomServiceImpl implements RoomService{
         var room = roomRepository.findByRoomPin(roomPin);
         if(room.isEmpty()){
             throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        if(room.get().getTimeStart() != null && room.get().getTimeStart().after(new Date())){
+            throw new RoomHasNotStarted(RoomConstants.ROOM_HAS_NOT_STARTED);
         }
 
         if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
@@ -162,6 +168,9 @@ public class RoomServiceImpl implements RoomService{
                 .setTimeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null);
         room.get()
                 .setTimeEnd(dto.getTimeEnd() != null ? dto.getTimeEnd() : null);
+
+        room.get()
+                .setRoomName(dto.getRoomName());
 
         roomRepository.save(room.get());
 

@@ -24,12 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
-import com.example.client.ui.components.QuizCard
-import com.example.client.ui.components.ScreenHeader
-import com.example.client.ui.components.TextFieldOutlined
+import com.example.client.ui.components.*
 import com.example.client.ui.viewmodel.SearchViewModel
 
 
@@ -100,6 +99,11 @@ fun QuizList(topicId:Int,searchViewModel:SearchViewModel,navController: NavContr
         ){
             items(quizzes.itemCount){index ->
                 QuizCard(quizzes[index]!!,navController)
+            }
+            item {
+                if(quizzes.loadState.append is LoadState.Loading){
+                    LoadingCircle()
+                }
             }
         }
 }

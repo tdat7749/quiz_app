@@ -49,6 +49,10 @@ fun AppNavigationGraph(){
                 SendEmailVerifyScreen(navController)
             }
 
+            composable(Routes.FIND_ROOM_SCREEN){
+                FindRoomScreen(navController)
+            }
+
             composable(Routes.CREATE_QUIZ_SCREEN){
                 CreateQuizScreen(navController,createQuizViewModel)
             }
@@ -82,8 +86,40 @@ fun AppNavigationGraph(){
                 PlayQuizScreen(id!!,roomId = roomId,navController = navController, playQuizViewModel =playQuizViewModel)
             }
 
-            composable(Routes.QUIZ_RESULT_SCREEN){
-                ResultQuizScreen(navController,playQuizViewModel)
+            composable(
+                route = "${Routes.QUIZ_RESULT_SCREEN}/{id}/{roomId}",
+                arguments = listOf(
+                    navArgument("id"){ type = NavType.IntType},
+                    navArgument("roomId"){ type = NavType.StringType}
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("id")
+                val roomIdString = navStackEntry.arguments?.getString("roomId")
+                var roomId: Int? = null;
+                if(roomIdString.equals("null")){
+                    roomId = null
+                }else{
+                    roomId = roomIdString?.let { parseInt(it) }
+                }
+                ResultQuizScreen(id!!,roomId,navController,playQuizViewModel)
+            }
+
+            composable(
+                route = "${Routes.QUIZ_RANK_SCREEN}/{id}/{roomId}",
+                arguments = listOf(
+                    navArgument("id"){ type = NavType.IntType},
+                    navArgument("roomId"){ type = NavType.StringType}
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("id")
+                val roomIdString = navStackEntry.arguments?.getString("roomId")
+                var roomId: Int? = null;
+                if(roomIdString.equals("null")){
+                    roomId = null
+                }else{
+                    roomId = roomIdString?.let { parseInt(it) }
+                }
+                RankScreen(id!!,roomId,navController)
             }
 
             composable(
@@ -114,6 +150,20 @@ fun AppNavigationGraph(){
             ){navStackEntry ->
                 val email = navStackEntry.arguments?.getString("email")
                 VerifyAccountScreen(email!!,navController)
+            }
+
+            composable(
+                route = "${Routes.CREATE_ROOM_SCREEN}/{quizId}/{title}/{thumbnail}",
+                arguments = listOf(
+                    navArgument("quizId") { type = NavType.IntType },
+                    navArgument("title") { type = NavType.StringType },
+                    navArgument("thumbnail") { type = NavType.StringType }
+                )
+            ){backStackEntry ->
+                val quizId = backStackEntry.arguments?.getInt("quizId")
+                val title = backStackEntry.arguments?.getString("title")
+                val thumbnail = backStackEntry.arguments?.getString("thumbnail")
+                CreateRoomScreen(quizId!!, Uri.decode(title!!),Uri.decode(thumbnail!!),navController)
             }
 
             composable(
