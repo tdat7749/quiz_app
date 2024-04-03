@@ -10,6 +10,19 @@ import javax.inject.Inject
 class UserRepository @Inject constructor(
     private val userService: UserService
 ) {
+    
+    suspend fun changePassword(data: ChangePassword) = ApiHelper.safeCallApi {
+        userService.changePassword(data)
+    }
+
+    suspend fun sendEmailForgotPassword(data:SendEmailForgot) = ApiHelper.safeCallApi {
+        userService.sendEmailForgotPassword(data)
+    }
+
+    suspend fun changeDisplayName(data: ChangeDisplayName) = ApiHelper.safeCallApi {
+        userService.changeDisplayName(data)
+    }
+
     suspend fun getMe() = ApiHelper.safeCallApi {
         userService.getMe()
     }
@@ -17,16 +30,5 @@ class UserRepository @Inject constructor(
     suspend fun forgotPassword(data: ForgotPassword) = ApiHelper.safeCallApi {
         userService.forgotPassword(data)
     }
-
-    suspend fun changePassword(data: ChangePassword) = ApiHelper.safeCallApi {
-        userService.changePassword(data)
-    }
-
-    suspend fun changeDisplayName(data: ChangeDisplayName) = ApiHelper.safeCallApi {
-        userService.changeDisplayName(data)
-    }
-
-    suspend fun sendEmailForgotPassword(data:SendEmailForgot) = ApiHelper.safeCallApi {
-        userService.sendEmailForgotPassword(data)
-    }
+   
 }
