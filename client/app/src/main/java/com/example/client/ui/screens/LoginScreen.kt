@@ -1,11 +1,13 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,12 +36,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel(),
 ){
     val auth by loginViewModel.auth.collectAsState()
+    val checkLogin by loginViewModel.checkLogin.collectAsState()
 
     LaunchedEffect(Unit){
         loginViewModel.checkLogin(navController)
@@ -60,98 +64,121 @@ fun LoginScreen(
         }
     }
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_app))
-            .verticalScroll(rememberScrollState()),
-        color = Color.White
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            HeaderApp(
-                painterResource(id = R.drawable.choose),
-                stringResource(id = R.string.app_name),
-                stringResource(id = R.string.login)
-            )
-            TextFieldOutlined(
-                loginViewModel.userName,
-                onChangeValue = {
-                    loginViewModel.onChangeUserName(it)
-                },
-                stringResource(id = R.string.user_name),
-                painterResource(id = R.drawable.person)
-            )
-            Spacer(
+    Scaffold(
+        content = {
+            Surface(
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                loginViewModel.password,
-                onChangeValue = {
-                    loginViewModel.onChangePassword(it)
-                },
-                stringResource(id = R.string.password),
-                painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .verticalScroll(rememberScrollState()),
+                color = Color.White
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
 
-            ButtonComponent(
-                onClick = {
-                  loginViewModel.login()
-                },
-                stringResource(id = R.string.login),
-                MaterialTheme.colorScheme.primary,
-                auth is ResourceState.Loading,
-                auth !is ResourceState.Loading
-            )
+                ) {
+                    when(checkLogin){
+                        is ResourceState.Loading -> {
+                            Loading()
+                        }
+                        is ResourceState.Success -> {
+                            HeaderApp(
+                                painterResource(id = R.drawable.choose),
+                                stringResource(id = R.string.app_name),
+                                stringResource(id = R.string.login)
+                            )
+                            TextFieldOutlined(
+                                loginViewModel.userName,
+                                onChangeValue = {
+                                    loginViewModel.onChangeUserName(it)
+                                },
+                                stringResource(id = R.string.user_name),
+                                painterResource(id = R.drawable.person)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            PasswordFieldOutlined(
+                                loginViewModel.password,
+                                onChangeValue = {
+                                    loginViewModel.onChangePassword(it)
+                                },
+                                stringResource(id = R.string.password),
+                                painterResource(id = R.drawable.password)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
 
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
-            SmallText(
-                stringResource(id = R.string.havent_account),
-                TextAlign.Start,
-                MaterialTheme.colorScheme.onBackground,
-                navController,
-                Routes.REGISTER_SCREEN)
+                            ButtonComponent(
+                                onClick = {
+                                    loginViewModel.login()
+                                },
+                                stringResource(id = R.string.login),
+                                MaterialTheme.colorScheme.primary,
+                                auth is ResourceState.Loading,
+                                auth !is ResourceState.Loading
+                            )
 
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
+                            SmallText(
+                                stringResource(id = R.string.havent_account),
+                                TextAlign.Start,
+                                MaterialTheme.colorScheme.onBackground,
+                                navController,
+                                Routes.REGISTER_SCREEN)
 
-            SmallText(
-                stringResource(id = R.string.to_verify_email),
-                TextAlign.Start,
-                MaterialTheme.colorScheme.onBackground,
-                navController,
-                Routes.SEND_EMAIL_VERIFY_SCREEN)
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
 
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                            SmallText(
+                                stringResource(id = R.string.to_verify_email),
+                                TextAlign.Start,
+                                MaterialTheme.colorScheme.onBackground,
+                                navController,
+                                Routes.SEND_EMAIL_VERIFY_SCREEN)
 
-            SmallText(
-                stringResource(id = R.string.forgot_password),
-                TextAlign.Start,
-                MaterialTheme.colorScheme.onBackground,
-                navController,
-                Routes.SEND_EMAIL_FORGOT_SCREEN)
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
 
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
+                            SmallText(
+                                stringResource(id = R.string.forgot_password),
+                                TextAlign.Start,
+                                MaterialTheme.colorScheme.onBackground,
+                                navController,
+                                Routes.SEND_EMAIL_FORGOT_SCREEN)
+
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
+                        }
+                        is ResourceState.Error -> {
+                            ShowMessage(
+                                message = "Phiên đăng nhập hết hạn",
+                                onReset = {
+                                    loginViewModel.resetState()
+                                }
+                            )
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+            }
         }
-    }
+    )
 }
 
 @Composable

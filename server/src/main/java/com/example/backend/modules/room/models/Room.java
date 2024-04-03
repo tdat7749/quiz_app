@@ -28,6 +28,9 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "room_name",nullable = false,length = 100)
+    private String roomName;
+
     @Column(name = "room_pin",nullable = false)
     private String roomPin;
 

@@ -15,5 +15,6 @@ object Routes {
     const val PLAY_QUIZ_SCREEN = "PLAY_QUIZ"
     const val QUIZ_RESULT_SCREEN = "QUIZ_RESULT"
     const val QUIZ_RANK_SCREEN = "QUIZ_RANK"
-
+    const val CREATE_ROOM_SCREEN = "CREATE_ROOM"
+    const val FIND_ROOM_SCREEN = "FIND_ROOM_SCREEN"
 }

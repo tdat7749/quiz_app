@@ -1,4 +1,4 @@
-package com.example.client.ui.theme
+package com.example.compose
 
 import android.app.Activity
 import android.os.Build
@@ -14,6 +14,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.client.ui.theme.Shapes
+import com.example.client.ui.theme.Typography
+
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -79,6 +82,7 @@ private val DarkColors = darkColorScheme(
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
 )
+
 @Composable
 fun ClientTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

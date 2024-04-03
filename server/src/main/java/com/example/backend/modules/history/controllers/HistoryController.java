@@ -64,7 +64,7 @@ public class HistoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/rank/{quizId}")
+    @GetMapping("/single/{quizId}/rank")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRankVm>>>> getHistoryRankSingle(
             @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
@@ -75,7 +75,7 @@ public class HistoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/rank/{roomId}")
+    @GetMapping("/room/{roomId}/rank")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRankVm>>>> getHistoryRankRoom(
             @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,

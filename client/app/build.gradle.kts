@@ -50,9 +50,15 @@ android {
 }
 
 dependencies {
-    implementation("com.google.dagger:hilt-android:2.50") // dagger hilt
+    implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50") // dagger hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0") // to navigate
+    implementation ("com.airbnb.android:lottie-compose:6.4.0")
+
+    // date picker
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.3.0")
+    //
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.okhttp3:okhttp")

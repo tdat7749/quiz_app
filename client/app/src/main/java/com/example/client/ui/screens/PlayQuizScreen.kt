@@ -67,7 +67,7 @@ fun PlayQuizScreen(
 
     if(saveResult is ResourceState.Success){
         LaunchedEffect(Unit){
-            navController.navigate(Routes.QUIZ_RESULT_SCREEN)
+            navController.navigate("${Routes.QUIZ_RESULT_SCREEN}/${quizId}/${roomId.toString()}")
         }
     }
 

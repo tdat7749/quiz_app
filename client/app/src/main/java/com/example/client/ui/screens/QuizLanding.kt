@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -127,13 +128,26 @@ fun QuizLanding(
 
                            Spacer(
                                modifier = Modifier
-                                   .height(dimensionResource(id = R.dimen.space_app_large))
+                                   .height(dimensionResource(id = R.dimen.space_app_normal))
+                           )
+
+                           ButtonNavigate(
+                               onClick = {
+                                   navController.navigate("${Routes.QUIZ_RANK_SCREEN}/${id}/null")
+                               },
+                               "Bảng Xếp Hạng",
+                               MaterialTheme.colorScheme.primary
+                           )
+
+                           Spacer(
+                               modifier = Modifier
+                                   .height(dimensionResource(id = R.dimen.space_app_normal))
                            )
 
                            if(quizDetail.collect){
                                ButtonNavigate(
                                    onClick = {
-                                        // navigate qua tao phong
+                                        navController.navigate("${Routes.CREATE_ROOM_SCREEN}/${id}/${Uri.encode(quizDetail.title)}/${Uri.encode(quizDetail.thumbnail)}")
                                    },
                                    "Tạo Phòng",
                                    MaterialTheme.colorScheme.secondary

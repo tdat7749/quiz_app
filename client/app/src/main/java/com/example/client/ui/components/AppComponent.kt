@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.*
 import com.example.client.ui.theme.Shapes
 import com.example.client.R
 import com.example.client.model.QuestionType
@@ -363,15 +364,22 @@ fun ButtonNavigate(
 
 @Composable
 fun Loading(){
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
-        CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .width(100.dp)
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
@@ -610,7 +618,7 @@ fun BottomBar(navController:NavController){
         IconButton(
             onClick = {
                 selected.value = Icons.Default.Search
-                navController.navigate(Routes.CREATE_QUIZ_SCREEN)
+                navController.navigate(Routes.FIND_ROOM_SCREEN)
             },
             modifier = Modifier.weight(1f)
         ) {
@@ -805,6 +813,21 @@ fun ImageCard(imageUri:Uri?){
                 )
             }
         }
+    }
+}
+
+@Composable
+fun LoadingCircle(){
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .width(30.dp)
+        )
     }
 }
 
