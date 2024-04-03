@@ -29,6 +29,17 @@ import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 
 @Composable
+private fun ShowMessage(
+        message: String,
+) {
+    Toast.makeText(
+            LocalContext.current,
+            message,
+            Toast.LENGTH_LONG
+    ).show()
+}
+
+@Composable
 fun ChangePasswordScreen (
     navController:NavController,
     changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
@@ -114,13 +125,4 @@ fun ChangePasswordScreen (
        }
    }
 }
-@Composable
-private fun ShowMessage(
-    message: String,
-) {
-    Toast.makeText(
-        LocalContext.current,
-        message,
-        Toast.LENGTH_LONG
-    ).show()
-}
+

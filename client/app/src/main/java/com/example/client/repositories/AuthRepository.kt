@@ -11,19 +11,19 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val authService: AuthService
 ){
-    suspend fun login(login:Login) = ApiHelper.safeCallApi {
-        authService.login(login)
-    }
-
     suspend fun register(register: Register) = ApiHelper.safeCallApi {
         authService.register(register)
     }
 
-    suspend fun verify(verify: Verify) = ApiHelper.safeCallApi {
-        authService.verify(verify)
+    suspend fun login(login:Login) = ApiHelper.safeCallApi {
+        authService.login(login)
     }
 
     suspend fun resendEmail(resendEmail: ResendEmail) = ApiHelper.safeCallApi {
         authService.resendEmail(resendEmail)
+    }
+
+    suspend fun verify(verify: Verify) = ApiHelper.safeCallApi {
+        authService.verify(verify)
     }
 }
