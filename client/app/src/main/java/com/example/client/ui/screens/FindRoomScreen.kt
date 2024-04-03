@@ -36,13 +36,22 @@ fun FindRoomScreen(
     findRoomViewModel: FindRoomViewModel = hiltViewModel()
 ){
 
-    val join by findRoomViewModel.join.collectAsState()
+    
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.join_room))
     val progress by animateLottieCompositionAsState(
         composition,
         iterations = LottieConstants.IterateForever
     )
+
+val join by findRoomViewModel.join.collectAsState()
+
+DisposableEffect(Unit){
+        onDispose {
+            findRoomViewModel.resetState()
+        }
+    }
+
 
     when(join){
         is ResourceState.Success -> {
@@ -59,12 +68,7 @@ fun FindRoomScreen(
         }
     }
 
-    DisposableEffect(Unit){
-        onDispose {
-            findRoomViewModel.resetState()
-        }
-    }
-
+   
     Scaffold(
         topBar = {
             TopBar(
