@@ -8,6 +8,20 @@ import javax.inject.Inject
 class RoomRepository @Inject constructor(
     private val roomService:RoomService
 ) {
+    
+    suspend fun getMyListRoom(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
+        roomService.getMyListRoom(keyword,pageIndex,sortBy)
+    }
+
+    suspend fun editRoom(data:EditRoom) = ApiHelper.safeCallApi {
+        roomService.editRoom(data)
+    }
+
+    suspend fun deleteRoom(roomId:Int) = ApiHelper.safeCallApi {
+        roomService.deleteRoom(roomId)
+    }
+
+
     suspend fun createRoom(data:CreateRoom) = ApiHelper.safeCallApi {
         roomService.createRoom(data)
     }
@@ -20,15 +34,4 @@ class RoomRepository @Inject constructor(
         roomService.endRoom(roomId)
     }
 
-    suspend fun editRoom(data:EditRoom) = ApiHelper.safeCallApi {
-        roomService.editRoom(data)
-    }
-
-    suspend fun deleteRoom(roomId:Int) = ApiHelper.safeCallApi {
-        roomService.deleteRoom(roomId)
-    }
-
-    suspend fun getMyListRoom(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
-        roomService.getMyListRoom(keyword,pageIndex,sortBy)
-    }
 }
