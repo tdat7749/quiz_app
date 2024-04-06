@@ -1,10 +1,12 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,6 +24,7 @@ import com.example.client.R
 import com.example.client.ui.components.ButtonComponent
 import com.example.client.ui.components.HeaderApp
 import com.example.client.ui.components.PasswordFieldOutlined
+import com.example.client.ui.components.TopBar
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.viewmodel.ChangePasswordViewModel
 import com.example.client.ui.viewmodel.LoginViewModel
@@ -39,6 +42,7 @@ private fun ShowMessage(
     ).show()
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ChangePasswordScreen (
     navController:NavController,
@@ -49,7 +53,6 @@ fun ChangePasswordScreen (
     when(changePassword){
         is ResourceState.Success -> {
             ShowMessage((changePassword as ResourceState.Success<ApiResponse<Boolean>>).value.message)
-            navController.navigate(Routes.LOGIN_SCREEN)
         }
         is ResourceState.Error -> {
             (changePassword as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
@@ -59,70 +62,71 @@ fun ChangePasswordScreen (
         }
     }
 
-   Surface (
-       modifier = Modifier
-           .fillMaxSize()
-           .padding(dimensionResource(id = R.dimen.padding_app))
-           .verticalScroll(rememberScrollState()),
-       color = Color.White
-   ) {
+   Scaffold(
+       topBar = {
+           TopBar("Đổi Mật Khẩu",navController)
+       },
+       content = {
+               Column (
+                   modifier = Modifier
+                       .fillMaxSize()
+                       .padding(dimensionResource(id = R.dimen.padding_app))
+                       .padding(it)
+                       .verticalScroll(rememberScrollState()),
+               ) {
+                   HeaderApp(
+                       painterResource(id = R.drawable.padlock),
+                       stringResource(id = R.string.app_name),
+                       stringResource(id = R.string.change_password)
+                   )
+                   PasswordFieldOutlined(
+                       value = changePasswordViewModel.oldPassword,
+                       onChangeValue = {
+                           changePasswordViewModel.onChangeOldPassword(it)
+                       },
+                       label = stringResource(id = R.string.old_password),
+                       painterResource = painterResource(id = R.drawable.password)
+                   )
+                   Spacer(
+                       modifier = Modifier
+                           .height(dimensionResource(id = R.dimen.space_app_normal))
+                   )
+                   PasswordFieldOutlined(
+                       value = changePasswordViewModel.newPassword,
+                       onChangeValue = {
+                           changePasswordViewModel.onChangeNewPassword(it)
+                       },
+                       label = stringResource(id = R.string.new_password),
+                       painterResource = painterResource(id = R.drawable.password)
+                   )
+                   Spacer(
+                       modifier = Modifier
+                           .height(dimensionResource(id = R.dimen.space_app_normal))
+                   )
+                   PasswordFieldOutlined(
+                       value = changePasswordViewModel.confirmPassword,
+                       onChangeValue = {
+                           changePasswordViewModel.onChangeConfirmPassword(it)
+                       },
+                       label = stringResource(id = R.string.confirm_password),
+                       painterResource = painterResource(id = R.drawable.password)
+                   )
+                   Spacer(
+                       modifier = Modifier
+                           .height(dimensionResource(id = R.dimen.space_app_normal))
+                   )
 
-       Column (
-           modifier = Modifier
-               .fillMaxSize()
-       ) {
-           HeaderApp(
-               painterResource(id = R.drawable.padlock),
-               stringResource(id = R.string.app_name),
-               stringResource(id = R.string.change_password)
-           )
-           PasswordFieldOutlined(
-               value = changePasswordViewModel.oldPassword,
-               onChangeValue = {
-                   changePasswordViewModel.onChangeOldPassword(it)
-               },
-               label = stringResource(id = R.string.old_password),
-               painterResource = painterResource(id = R.drawable.password)
-           )
-           Spacer(
-               modifier = Modifier
-                   .height(dimensionResource(id = R.dimen.space_app_normal))
-           )
-           PasswordFieldOutlined(
-               value = changePasswordViewModel.newPassword,
-               onChangeValue = {
-                   changePasswordViewModel.onChangeNewPassword(it)
-               },
-               label = stringResource(id = R.string.new_password),
-               painterResource = painterResource(id = R.drawable.password)
-           )
-           Spacer(
-               modifier = Modifier
-                   .height(dimensionResource(id = R.dimen.space_app_normal))
-           )
-           PasswordFieldOutlined(
-               value = changePasswordViewModel.confirmPassword,
-               onChangeValue = {
-                   changePasswordViewModel.onChangeConfirmPassword(it)
-               },
-               label = stringResource(id = R.string.confirm_password),
-               painterResource = painterResource(id = R.drawable.password)
-           )
-           Spacer(
-               modifier = Modifier
-                   .height(dimensionResource(id = R.dimen.space_app_normal))
-           )
+                   ButtonComponent(
+                       onClick = {
 
-           ButtonComponent(
-               onClick = {
-
-               },
-               stringResource(id = R.string.change_password),
-               MaterialTheme.colorScheme.primary,
-               false,
-               false
-           )
+                       },
+                       stringResource(id = R.string.change_password),
+                       MaterialTheme.colorScheme.primary,
+                       changePassword is ResourceState.Loading,
+                       changePassword !is ResourceState.Loading
+                   )
+               }
        }
-   }
+   )
 }
 

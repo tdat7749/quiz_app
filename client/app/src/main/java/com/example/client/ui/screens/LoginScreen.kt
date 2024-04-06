@@ -2,7 +2,9 @@ package com.example.client.ui.screens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -49,6 +51,10 @@ fun LoginScreen(
         loginViewModel.checkLogin(navController)
     }
 
+    BackHandler(enabled = true){
+
+    }
+
     when{
         auth is ResourceState.Error -> {
             (auth as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetState() } }
@@ -66,23 +72,27 @@ fun LoginScreen(
 
     Scaffold(
         content = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(dimensionResource(id = R.dimen.padding_app))
-                    .verticalScroll(rememberScrollState()),
-                color = Color.White
-            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .padding(dimensionResource(id = R.dimen.padding_app))
+                        .verticalScroll(rememberScrollState())
+                        .background(color = Color.White)
 
                 ) {
                     when(checkLogin){
                         is ResourceState.Loading -> {
                             Loading()
                         }
-                        is ResourceState.Success -> {
+                        is ResourceState.Error -> {
+                            ShowMessage(
+                                message = "Phiên đăng nhập hết hạn",
+                                onReset = {
+                                    loginViewModel.resetState()
+                                }
+                            )
+                        }
+                        is ResourceState.Nothing -> {
                             HeaderApp(
                                 painterResource(id = R.drawable.choose),
                                 stringResource(id = R.string.app_name),
@@ -163,20 +173,11 @@ fun LoginScreen(
                                     .height(dimensionResource(id = R.dimen.space_app_normal))
                             )
                         }
-                        is ResourceState.Error -> {
-                            ShowMessage(
-                                message = "Phiên đăng nhập hết hạn",
-                                onReset = {
-                                    loginViewModel.resetState()
-                                }
-                            )
-                        }
                         else -> {
 
                         }
                     }
                 }
-            }
         }
     )
 }

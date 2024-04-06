@@ -169,13 +169,16 @@ public class QuizServiceImpl implements QuizService{
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
         }
 
-        if(!quiz.get().getIsPublic()){
-            throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
+        var isOwner = this.existsByUserAndId(user,quizId);
+        if(!isOwner){
+            if(!quiz.get().getIsPublic()){
+                throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
+            }
         }
 
         var isCollect = this.collectionService.isCollected(user,quiz.get());
 
-        var result = Utilities.getQuizDetailVm(quiz.get(),isCollect);
+        var result = Utilities.getQuizDetailVm(quiz.get(),isCollect,isOwner);
 
         return new ResponseSuccess<>("Thành công",result);
     }
@@ -234,6 +237,8 @@ public class QuizServiceImpl implements QuizService{
                 .setTitle(dto.getTitle());
         quiz.get()
                 .setSlug(dto.getSlug());
+        quiz.get()
+                .setIsPublic(dto.getIsPublic());
 
         if(dto.getTopicId() != null){
             var topic = topicService.findById(dto.getTopicId());

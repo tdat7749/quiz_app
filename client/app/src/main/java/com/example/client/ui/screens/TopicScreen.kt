@@ -40,11 +40,6 @@ fun TopicScreen(
     navController: NavController,
     searchViewModel:SearchViewModel = hiltViewModel()
 ) {
-
-    Surface (
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -82,7 +77,6 @@ fun TopicScreen(
             }
         }
     }
-}
 
 @Composable
 fun QuizList(topicId:Int,searchViewModel:SearchViewModel,navController: NavController){

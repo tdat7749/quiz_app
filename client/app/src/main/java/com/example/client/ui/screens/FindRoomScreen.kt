@@ -77,17 +77,13 @@ DisposableEffect(Unit){
             )
         },
         content = {
-            Surface (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-                    .padding(it)
-            ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
+                        .background(Color.White)
+                        .verticalScroll(rememberScrollState())
+                        .padding(it)
                 ) {
                     LottieAnimation(
                         composition = composition,
@@ -120,7 +116,6 @@ DisposableEffect(Unit){
                         enable = join !is ResourceState.Loading
                     )
                 }
-            }
         }
     )
 }

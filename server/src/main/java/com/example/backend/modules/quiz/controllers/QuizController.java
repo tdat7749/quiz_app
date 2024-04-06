@@ -133,7 +133,7 @@ public class QuizController {
 
     @DeleteMapping("/{quizId}")
     @ResponseBody
-    public ResponseEntity<ResponseSuccess<Boolean>> editQuiz(
+    public ResponseEntity<ResponseSuccess<Boolean>> deleteQuiz(
             @AuthenticationPrincipal User user,
             @PathVariable int quizId
     ) throws IOException {

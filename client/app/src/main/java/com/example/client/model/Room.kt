@@ -1,23 +1,26 @@
 package com.example.client.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Date
 
 data class Room(
     val id:Int,
     val host:User,
-    val timeStart:String,
-    val timeEnd:String,
+    val timeStart:String?,
+    val timeEnd:String?,
     val quiz:Quiz,
     val roomPin:String,
-    val createdAt:String
+    val createdAt:String,
+    val roomName: String,
+    val closed:Boolean
 )
 
 
 data class CreateRoom(
     val quizId:Int,
-    val timeStart: LocalDate?,
-    val timeEnd:LocalDate?,
+    val timeStart: LocalDateTime?,
+    val timeEnd: LocalDateTime?,
     val roomName:String
 )
 

@@ -1,5 +1,6 @@
 package com.example.client.network.quiz
 
+import com.example.client.model.EditQuiz
 import com.example.client.model.Quiz
 import com.example.client.model.QuizDetail
 import com.example.client.utils.ApiResponse
@@ -23,6 +24,13 @@ interface QuizService {
         @Query("sortBy") sortBy:String = "createdAt",
     ) : ApiResponse<PagingResponse<List<Quiz>>>
 
+    @GET("api/quizzes/collect")
+    suspend fun getMyListCollection(
+        @Query("keyword") keyword:String,
+        @Query("pageIndex") pageIndex:Int,
+        @Query("sortBy") sortBy:String = "createdAt",
+    ) : ApiResponse<PagingResponse<List<Quiz>>>
+
 
     @GET("api/quizzes/latest")
     suspend fun get10QuizLatest(): ApiResponse<List<Quiz>>
@@ -41,4 +49,16 @@ interface QuizService {
     suspend fun getQuizDetail(
         @Path("quizId") quizId:Int
     ): ApiResponse<QuizDetail>
+
+
+    @PATCH("api/quizzes/")
+    suspend fun editQuiz(
+        @Body data:EditQuiz
+    ): ApiResponse<Quiz>
+
+    @Multipart
+    @PATCH("api/quizzes/thumbnail")
+    suspend fun changeThumbnail(
+        @Part thumbnail: List<MultipartBody.Part>
+    ):ApiResponse<String>
 }

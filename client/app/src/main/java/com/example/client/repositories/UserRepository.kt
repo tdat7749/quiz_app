@@ -1,10 +1,9 @@
 package com.example.client.repositories
 
-import com.example.client.model.ChangeDisplayName
-import com.example.client.model.ChangePassword
-import com.example.client.model.ForgotPassword
-import com.example.client.model.SendEmailForgot
+import com.example.client.model.*
 import com.example.client.network.user.UserService
+import com.example.client.utils.Utilities
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -27,8 +26,19 @@ class UserRepository @Inject constructor(
         userService.getMe()
     }
 
+    suspend fun getMeDetail() = ApiHelper.safeCallApi {
+        userService.getMeDetail()
+    }
+
     suspend fun forgotPassword(data: ForgotPassword) = ApiHelper.safeCallApi {
         userService.forgotPassword(data)
+    }
+
+    suspend fun changeAvatar(data: ChangeAvatar) = ApiHelper.safeCallApi{
+        val avatar = mutableListOf<MultipartBody.Part>()
+        avatar.add(Utilities.Companion.createFilePart("avatar", data.avatar))
+
+        userService.changeAvatar(avatar)
     }
    
 }

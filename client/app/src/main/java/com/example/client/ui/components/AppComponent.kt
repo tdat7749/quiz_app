@@ -434,7 +434,6 @@ fun HeaderApp(painterResource: Painter,headingText:String,normalText:String){
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizCard(quiz:Quiz,navController:NavController){
     Box(){
@@ -447,6 +446,58 @@ fun QuizCard(quiz:Quiz,navController:NavController){
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
             onClick = {
                 navController.navigate("${Routes.QUIZ_LADING_SCREEN}/${quiz.id}")
+            }
+        ){
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                AsyncImage(
+                    model = quiz.thumbnail,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.image_height))
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                )
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 8.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ){
+                    HeadingBoldText(
+                        quiz.title,
+                        TextAlign.Start,
+                        MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fontSize = 24.sp
+                    )
+
+                    UserInfo(quiz.user)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuizCardUser(quiz:Quiz,navController:NavController){
+    Box(){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.quiz_card_height))
+                .width(dimensionResource(id = R.dimen.quiz_card_height))
+                .shadow(4.dp,shape = RoundedCornerShape(8.dp)),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+            onClick = {
+                navController.navigate("${Routes.QUIZ_DETAIL_SCREEN}/${quiz.id}")
             }
         ){
             Column(
@@ -645,7 +696,7 @@ fun BottomBar(navController:NavController){
         IconButton(
             onClick = {
                 selected.value = Icons.Default.Person
-                //navController.navigate(Routes.CREATE_QUIZ_SCREEN) to UserScreen
+                navController.navigate(Routes.PROFILE_SCREEN)
             },
             modifier = Modifier.weight(1f)
         ) {
@@ -815,6 +866,8 @@ fun ImageCard(imageUri:Uri?){
         }
     }
 }
+
+
 
 @Composable
 fun LoadingCircle(){

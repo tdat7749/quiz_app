@@ -59,17 +59,12 @@ fun RegisterScreen(
             )
         },
         content = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(dimensionResource(id = R.dimen.padding_app))
-                    .verticalScroll(rememberScrollState()),
-                color = Color.White
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
+            Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(id = R.dimen.padding_app))
+                .verticalScroll(rememberScrollState()),
+        ) {
 //                    TopBar(
 //                        title = stringResource(id = R.string.register),
 //                        navController = navController
@@ -162,10 +157,8 @@ fun RegisterScreen(
                         navController,
                         Routes.LOGIN_SCREEN)
                 }
-            }
         }
     )
-
 }
 
 @Composable

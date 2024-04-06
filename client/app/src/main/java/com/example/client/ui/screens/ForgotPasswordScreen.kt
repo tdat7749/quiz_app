@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -58,76 +59,76 @@ fun ForgotPasswordScreen(
         }
     }
 
-    Surface (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState())
-            .padding(dimensionResource(id = R.dimen.padding_app))
-    ){
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            HeaderApp(
-                painterResource(id = R.drawable.forgot_password),
-                stringResource(id = R.string.app_name),
-                stringResource(id = R.string.forgot_password)
-            )
-            EmailDisplay(
-                email
-            )
-            Spacer(
+    Scaffold(
+        content = {
+            Column (
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                forgotPasswordViewModel.newPassword,
-                onChangeValue = {
-                    forgotPasswordViewModel.onChangeNewPassword(it)
-                },
-                stringResource(id = R.string.new_password),
-                painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                forgotPasswordViewModel.confirmPassword,
-                onChangeValue = {
-                    forgotPasswordViewModel.onChangeConfirmPassword(it)
-                },
-                stringResource(id = R.string.confirm_password),
-                painterResource(id = R.drawable.password)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                forgotPasswordViewModel.token,
-                onChangeValue = {
-                    forgotPasswordViewModel.onChangeToken(it)
-                },
-                stringResource(id = R.string.token),
-                painterResource(id = R.drawable.token)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
-            ButtonComponent(
-                onClick = {
-                    forgotPasswordViewModel.forgotPassword()
-                },
-                stringResource(id = R.string.send),
-                MaterialTheme.colorScheme.primary,
-                forgot is ResourceState.Loading,
-                forgot !is ResourceState.Loading
-            )
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .padding(it)
+            ) {
+                HeaderApp(
+                    painterResource(id = R.drawable.forgot_password),
+                    stringResource(id = R.string.app_name),
+                    stringResource(id = R.string.forgot_password)
+                )
+                EmailDisplay(
+                    email
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_small))
+                )
+                PasswordFieldOutlined(
+                    forgotPasswordViewModel.newPassword,
+                    onChangeValue = {
+                        forgotPasswordViewModel.onChangeNewPassword(it)
+                    },
+                    stringResource(id = R.string.new_password),
+                    painterResource(id = R.drawable.password)
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_small))
+                )
+                PasswordFieldOutlined(
+                    forgotPasswordViewModel.confirmPassword,
+                    onChangeValue = {
+                        forgotPasswordViewModel.onChangeConfirmPassword(it)
+                    },
+                    stringResource(id = R.string.confirm_password),
+                    painterResource(id = R.drawable.password)
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_small))
+                )
+                PasswordFieldOutlined(
+                    forgotPasswordViewModel.token,
+                    onChangeValue = {
+                        forgotPasswordViewModel.onChangeToken(it)
+                    },
+                    stringResource(id = R.string.token),
+                    painterResource(id = R.drawable.token)
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_normal))
+                )
+                ButtonComponent(
+                    onClick = {
+                        forgotPasswordViewModel.forgotPassword()
+                    },
+                    stringResource(id = R.string.send),
+                    MaterialTheme.colorScheme.primary,
+                    forgot is ResourceState.Loading,
+                    forgot !is ResourceState.Loading
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable

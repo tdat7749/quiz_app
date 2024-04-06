@@ -29,4 +29,6 @@ public interface RoomService {
 
     ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword,String sortBy,int pageIndex,User user); // phân trang
 
+    ResponseSuccess<RoomVm> getRoomDetail(int roomId);
+
 }
