@@ -36,6 +36,11 @@ public class EditQuizDTO {
     @NotNull(message = "Không được thiếu trường 'slug'")
     private String slug;
 
+    @NotNull(message = "Không được thiếu trường 'slug'")
+    private Boolean isPublic;
+
     @Digits(integer = 10,fraction = 0,message = "Trường 'topicId' phải là số nguyên")
     private Integer topicId;
+
+
 }

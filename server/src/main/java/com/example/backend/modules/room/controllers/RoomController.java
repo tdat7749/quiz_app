@@ -93,4 +93,14 @@ public class RoomController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping("/{roomId}")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<RoomVm>> getRoomDetail(
+            @PathVariable("roomId") int roomId
+    ) {
+        var result = roomService.getRoomDetail(roomId);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

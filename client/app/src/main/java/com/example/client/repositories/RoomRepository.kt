@@ -13,6 +13,10 @@ class RoomRepository @Inject constructor(
         roomService.getMyListRoom(keyword,pageIndex,sortBy)
     }
 
+    suspend fun getRoomDetail(roomId:Int) = ApiHelper.safeCallApi {
+        roomService.getRoomDetail(roomId)
+    }
+
     suspend fun editRoom(data:EditRoom) = ApiHelper.safeCallApi {
         roomService.editRoom(data)
     }

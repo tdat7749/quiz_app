@@ -58,6 +58,8 @@ dependencies {
     // date picker
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
     implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.3.0")
+
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.3.0")
     //
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

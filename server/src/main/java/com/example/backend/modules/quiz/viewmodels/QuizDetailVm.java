@@ -22,4 +22,5 @@ public class QuizDetailVm {
     private UserVm user;
     private TopicVm topic;
     private int totalScore;
+    private boolean isOwner;
 }

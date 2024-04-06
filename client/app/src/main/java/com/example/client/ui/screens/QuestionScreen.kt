@@ -80,18 +80,14 @@ fun QuestionScreen (
             )
         },
         content = {
-            Surface (
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
                     .background(Color.White)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
-            ){
-                Column (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(id = R.dimen.padding_app))
-                ) {
+            ) {
                     when(types){
                         is ResourceState.Loading -> {
                             Loading()
@@ -151,7 +147,7 @@ fun QuestionScreen (
                             NumberFieldOutlined(
                                 createQuizViewModel.timeLimit,
                                 onChangeValue = {value ->
-                                    val newValue =  value.toIntOrNull() ?: 0
+                                    val newValue =  value.toIntOrNull() ?: 10
                                     createQuizViewModel.onChangeTimeLimit(newValue)
                                 },
                                 stringResource(id = R.string.time_limit),
@@ -217,7 +213,6 @@ fun QuestionScreen (
                         }
                     }
                 }
-            }
         }
     )
 }

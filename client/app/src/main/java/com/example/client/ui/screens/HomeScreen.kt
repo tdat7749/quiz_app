@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -61,16 +62,12 @@ fun HomeScreen(
             BottomBar(navController)
         },
         content = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-                color = MaterialTheme.colorScheme.background
-            ) {
                 Column (
                     modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Top
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .background(color = MaterialTheme.colorScheme.background),
+                    verticalArrangement = Arrangement.Top,
                 ) {
                     ScreenHeader("", painterResource = painterResource(id = R.drawable.quiz_time), navController = navController)
                     Spacer(
@@ -139,7 +136,6 @@ fun HomeScreen(
                         }
                     }
                 }
-            }
         }
     )
 }

@@ -4,6 +4,7 @@ import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.user.dtos.*;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.services.UserService;
+import com.example.backend.modules.user.viewmodels.UserDetailVm;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -77,5 +78,11 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/me/detail")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<UserDetailVm>> getMeDetail(@AuthenticationPrincipal User user) {
+        var result = userService.getMeDetail(user);
 
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

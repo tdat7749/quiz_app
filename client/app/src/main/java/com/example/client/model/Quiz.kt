@@ -23,7 +23,8 @@ data class QuizDetail(
     val topic:Topic,
     val totalScore:Int,
     val collect:Boolean,
-    val public:Boolean
+    val public:Boolean,
+    val owner:Boolean
 )
 
 data class CreateQuiz(
@@ -34,4 +35,19 @@ data class CreateQuiz(
     val topicId: Int,
     val isPublic: String,
     val questions : List<CreateQuestion>
+)
+
+data class EditQuiz(
+    val summary:String,
+    val description:String,
+    val title:String,
+    val topicId: Int,
+    val isPublic: Boolean,
+    val quizId: Int,
+    val slug:String
+)
+
+data class ChangeQuizThumbnail(
+    val thumbnail: String,
+    val quizId: Int
 )

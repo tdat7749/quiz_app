@@ -12,4 +12,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChangeAvatarDTO {
     @NotNull(message = "Không được thiếu trường 'avatar'")
     private MultipartFile avatar;
+    private String a;
 }

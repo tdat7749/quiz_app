@@ -1,5 +1,7 @@
 package com.example.client.model
 
+import android.net.Uri
+
 data class ForgotPassword(
     val token:String,
     val email:String,
@@ -15,6 +17,10 @@ data class ChangePassword(
 
 data class ChangeDisplayName(
     val displayName: String
+)
+
+data class ChangeAvatar(
+    val avatar: String
 )
 
 data class SendEmailForgot(

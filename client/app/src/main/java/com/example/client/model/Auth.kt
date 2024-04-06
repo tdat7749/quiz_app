@@ -29,6 +29,15 @@ data class User(
     val avatar :String
 )
 
+data class UserDetail(
+    val id:Int,
+    val displayName:String,
+    val avatar :String,
+    val role:String,
+    val userName:String,
+    val email:String
+)
+
 data class ResendEmail(
     val email:String
 )

@@ -74,12 +74,14 @@ fun PlayQuizScreen(
 
     Scaffold(
         content = {
-            Surface (
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
                     .background(Color.White)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
+
             ) {
                 when(startQuizState){
                     is ResourceState.Loading -> {
@@ -108,12 +110,6 @@ fun PlayQuizScreen(
                             }
                         }
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(dimensionResource(id = R.dimen.padding_app))
-
-                        ) {
                             QuizSection(
                                 questionIndex = playQuizViewModel.questionIndex,
                                 quizData = questions,
@@ -150,12 +146,11 @@ fun PlayQuizScreen(
                                 }
                             )
                         }
-                    }
                     else -> {
 
                     }
+                    }
                 }
-            }
         }
     )
 

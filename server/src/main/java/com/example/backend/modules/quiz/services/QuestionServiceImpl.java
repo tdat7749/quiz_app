@@ -6,6 +6,7 @@ import com.example.backend.modules.quiz.constant.QuizConstants;
 import com.example.backend.modules.quiz.dtos.CreateAnswerDTO;
 import com.example.backend.modules.quiz.dtos.CreateQuestionDTO;
 import com.example.backend.modules.quiz.dtos.EditQuestionDTO;
+import com.example.backend.modules.quiz.dtos.EditQuestionThumbnailDTO;
 import com.example.backend.modules.quiz.exceptions.*;
 import com.example.backend.modules.quiz.models.Answer;
 import com.example.backend.modules.quiz.models.Question;
@@ -106,7 +107,7 @@ public class QuestionServiceImpl implements QuestionService{
     }
 
     @Override
-    public ResponseSuccess<Boolean> editQuestion(User user,EditQuestionDTO dto) throws IOException {
+    public ResponseSuccess<QuestionDetailVm> editQuestion(User user,EditQuestionDTO dto){
         var isQuizOwner = quizService.existsByUserAndId(user,dto.getQuizId());
         if(!isQuizOwner){
             throw new NotOwnerQuizException(QuizConstants.NOT_OWNER_QUIZ);
@@ -117,22 +118,23 @@ public class QuestionServiceImpl implements QuestionService{
             throw new QuestionNotFoundException(QuizConstants.QUESTION_NOT_FOUND);
         }
 
+        var questionType = questionTypeService.findById(dto.getQuestionTypeId());
+        if(questionType.isEmpty()){
+            throw new QuestionTypeNotFoundException(QuizConstants.QUESTION_TYPE_NOT_FOUND);
+        }
+
         question.get()
                 .setTitle(dto.getTitle());
         question.get()
                 .setScore(dto.getScore());
         question.get()
                 .setTimeLimit(dto.getTimeLimit());
+        question.get()
+                .setQuestionType(questionType.get());
 
-        if(dto.getThumbnail() != null){
-            String thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
-            question.get()
-                    .setThumbnail(thumbnailUrl);
-        }
+        var save = questionRepository.save(question.get());
 
-        questionRepository.save(question.get());
-
-        return new ResponseSuccess<>(QuizConstants.EDIT_QUESTION,true);
+        return new ResponseSuccess<>(QuizConstants.EDIT_QUESTION,Utilities.getQuestionDetailVm(save));
     }
 
 
@@ -160,9 +162,10 @@ public class QuestionServiceImpl implements QuestionService{
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
         }
 
-        if(!quiz.get().getIsPublic()){
-            if(!quiz.get().getUser().equals(user)){
-                throw new QuizNotPublicException(QuizConstants.GET_QUESTION_QUIZ_NOT_PUBLIC);
+        var isOwner = this.quizService.existsByUserAndId(user,quizId);
+        if(!isOwner){
+            if(!quiz.get().getIsPublic()){
+                throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
             }
         }
 
@@ -173,5 +176,84 @@ public class QuestionServiceImpl implements QuestionService{
                 .toList();
 
         return new ResponseSuccess<>("Thành công",listQuestion);
+    }
+
+    @Override
+    public ResponseSuccess<QuestionDetailVm> createQuestion(User user,CreateQuestionDTO dto,int quizId) throws IOException {
+        var questionType = questionTypeService.findById(dto.getQuestionTypeId());
+        if(questionType.isEmpty()){
+            throw new QuestionTypeNotFoundException(QuizConstants.QUESTION_TYPE_NOT_FOUND);
+        }
+
+        var quiz = quizService.findById(quizId);
+        if(quiz.isEmpty()){
+            throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
+        }
+
+        var isOnwer = this.quizService.existsByUserAndId(user,quiz.get().getId());
+        if(!isOnwer){
+            throw new NotOwnerQuizException(QuizConstants.NOT_OWNER_QUIZ);
+        }
+
+        String thumbnailUrl = null;
+
+        if(dto.getThumbnail() != null){
+            thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
+        }
+
+        var questionBuilder = Question.builder()
+                .createdAt(new Date())
+                .order(dto.getOrder())
+                .score(dto.getScore())
+                .quiz(quiz.get())
+                .thumbnail(thumbnailUrl)
+                .title(dto.getTitle())
+                .timeLimit(dto.getTimeLimit())
+                .questionType(questionType.get())
+                .updatedAt(new Date())
+                .build();
+
+        var newQuestion = questionRepository.save(questionBuilder);
+
+        List<Answer> answerList = new ArrayList<>();
+
+        for(CreateAnswerDTO i : dto.getAnswers()){
+            var isCorrect = i.getIsCorrect().equals("true");
+            var newAnswer = Answer.builder()
+                    .createdAt(new Date())
+                    .title(i.getTitle())
+                    .updatedAt(new Date())
+                    .isCorrect(isCorrect)
+                    .question(newQuestion)
+                    .build();
+            answerList.add(newAnswer);
+        }
+
+        answerRepository.saveAll(answerList);
+
+        return new ResponseSuccess<>("Thêm câu hỏi mới thành công",Utilities.getQuestionDetailVm(newQuestion));
+    }
+
+    @Override
+    @Transactional
+    public ResponseSuccess<String> editQuestionThumbnail(User user, EditQuestionThumbnailDTO dto) throws IOException {
+        var isQuizOwner = quizService.existsByUserAndId(user,dto.getQuizId());
+        if(!isQuizOwner){
+            throw new NotOwnerQuizException(QuizConstants.NOT_OWNER_QUIZ);
+        }
+
+        var question = questionRepository.findById(dto.getQuestionId());
+        if(question.isEmpty()){
+            throw new QuestionNotFoundException(QuizConstants.QUESTION_NOT_FOUND);
+        }
+
+        var thumbnailUrl = this.fileStorageService.uploadFile(dto.getThumbnail());
+
+        question.get()
+                .setThumbnail(thumbnailUrl);
+
+        questionRepository.save(question.get());
+
+        return new ResponseSuccess<>("Thay đổi hình ảnh câu hỏi thành công",thumbnailUrl);
     }
 }

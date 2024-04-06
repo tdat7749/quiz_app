@@ -88,6 +88,19 @@ public class RoomServiceImpl implements RoomService{
 
         return new ResponseSuccess<>("Thành công",result);
     }
+
+    @Override
+    public ResponseSuccess<RoomVm> getRoomDetail(int roomId) {
+        var room = roomRepository.findById(roomId);
+        if(room.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        RoomVm roomVm = Utilities.getRoomVm(room.get());
+
+        return new ResponseSuccess<>("Thành Công",roomVm);
+    }
+
     @Override
     public boolean isRoomOwner(User user, int roomId) {
         boolean isOwner = roomRepository.existsByUserAndId(user,roomId);

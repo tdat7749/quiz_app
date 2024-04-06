@@ -71,13 +71,6 @@ fun RankScreen(
             TopBar("Xếp Hạng",navController)
         },
         content = {
-            Surface (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-                    .padding(it)
-            ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -85,7 +78,10 @@ fun RankScreen(
                             top = 32.dp,
                             start = 16.dp,
                             end = 16.dp
-                        ),
+                        )
+                        .background(Color.White)
+                        .verticalScroll(rememberScrollState())
+                        .padding(it),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -111,7 +107,6 @@ fun RankScreen(
                         )
                     }
                 }
-            }
         }
     )
 }

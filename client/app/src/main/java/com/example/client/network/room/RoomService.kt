@@ -25,6 +25,11 @@ interface RoomService {
         @Path("roomPin") roomPin:String
     ): ApiResponse<Room>
 
+    @GET("api/rooms/{roomId}")
+    suspend fun getRoomDetail(
+        @Path("roomId") roomId:Int
+    ): ApiResponse<Room>
+
     @PATCH("api/rooms/{roomId}/end")
     suspend fun endRoom(
         @Path("roomId") roomId:Int

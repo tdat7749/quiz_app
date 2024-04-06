@@ -55,18 +55,13 @@ fun SendEmailVerifyScreen(
             )
         },
         content = {
-            Surface(
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
                     .verticalScroll(rememberScrollState())
                     .background(Color.White)
-
-            ) {
-                Column (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(id = R.dimen.padding_app))
-                ){
+            ){
 
                     HeaderApp(
                         painterResource(id = R.drawable.send_email),
@@ -99,7 +94,6 @@ fun SendEmailVerifyScreen(
                         send !is ResourceState.Loading
                     )
                 }
-            }
         }
     )
 }
