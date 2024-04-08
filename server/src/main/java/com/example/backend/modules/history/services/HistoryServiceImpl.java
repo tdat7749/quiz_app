@@ -98,40 +98,6 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>> getHistoryRoom(int pageIndex, User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
-
-        Page<History> pagingResult = historyRepository.getHistoryRoom(user,paging);
-
-        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistoryRoomVm).toList();
-
-        ResponsePaging responsePaging = ResponsePaging.builder()
-                .data(listHistoryRoomVm)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",responsePaging);
-    }
-
-    @Override
-    public ResponseSuccess<ResponsePaging<List<HistorySingleVm>>> getHistorySingle(int pageIndex, User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
-
-        Page<History> pagingResult = historyRepository.getHistorySingle(user,paging);
-
-        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistorySingleVm).toList();
-
-        ResponsePaging responsePaging = ResponsePaging.builder()
-                .data(listHistoryRoomVm)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",responsePaging);
-    }
-
-    @Override
     public ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankSingle(int quizId, int pageIndex) {
         Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"score"));
 

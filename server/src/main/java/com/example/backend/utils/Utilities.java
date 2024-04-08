@@ -196,6 +196,7 @@ public class Utilities {
                 .id(historyAnswer.getId())
                 .isCorrect(historyAnswer.getIsCorrect())
                 .question(getQuestionVm(historyAnswer.getQuestion()))
+                .answer(historyAnswer.getAnswer() != null ? getAnswerVm(historyAnswer.getAnswer()) :null)
                 .build();
     }
 

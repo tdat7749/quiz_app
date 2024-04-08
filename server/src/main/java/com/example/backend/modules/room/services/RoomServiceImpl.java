@@ -4,6 +4,7 @@ import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.quiz.constant.QuizConstants;
+import com.example.backend.modules.quiz.exceptions.QuizHasNotQuestions;
 import com.example.backend.modules.quiz.exceptions.QuizNotFoundException;
 import com.example.backend.modules.quiz.services.QuizService;
 import com.example.backend.modules.room.constant.RoomConstants;
@@ -24,6 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +60,10 @@ public class RoomServiceImpl implements RoomService{
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
         }
 
+        if(quiz.get().getQuestions().isEmpty()){
+            throw new QuizHasNotQuestions(QuizConstants.QUIZ_HAS_NOT_QUESTION);
+        }
+
         var newRoom = Room.builder()
                 .createdAt(new Date())
                 .timeStart(dto.getTimeStart() != null ? dto.getTimeStart() : null)
@@ -77,7 +85,7 @@ public class RoomServiceImpl implements RoomService{
     public ResponseSuccess<ResponsePaging<List<RoomVm>>> getMyListRooms(String keyword, String sortBy, int pageIndex,User user) {
         Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,sortBy));
 
-        Page<Room> pagingResult = roomRepository.getMyListRooms(user,paging);
+        Page<Room> pagingResult = roomRepository.getMyListRooms(user,keyword,paging);
         List<RoomVm> roomVmList = pagingResult.stream().map(Utilities::getRoomVm).toList();
 
         ResponsePaging result = ResponsePaging.builder()
@@ -114,11 +122,11 @@ public class RoomServiceImpl implements RoomService{
             throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
         }
 
-        if(room.get().getTimeStart() != null && room.get().getTimeStart().after(new Date())){
+        if(room.get().getTimeStart() != null && room.get().getTimeStart().isAfter(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
             throw new RoomHasNotStarted(RoomConstants.ROOM_HAS_NOT_STARTED);
         }
 
-        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().before(new Date())){
+        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().isAfter(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
             throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
         }
 
@@ -184,6 +192,8 @@ public class RoomServiceImpl implements RoomService{
 
         room.get()
                 .setRoomName(dto.getRoomName());
+        room.get()
+                        .setClosed(dto.isClosed());
 
         roomRepository.save(room.get());
 

@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.client.R
+import com.example.client.model.Answer
+import com.example.client.model.QuestionDetail
 import com.example.client.model.QuestionType
 import com.example.client.ui.components.*
 import com.example.client.ui.components.quiz.LandingImage
@@ -60,6 +62,85 @@ fun EditQuestionScreen(
     }
 
     val types by editQuizViewModel.types.collectAsState()
+    val editQuestion by editQuizViewModel.editQuestion.collectAsState()
+    val changeQuestionThumbnail by editQuizViewModel.changeQuestionThumbnail.collectAsState()
+    val createQuestion by editQuizViewModel.createQuestion.collectAsState()
+    val editAnswer by editQuizViewModel.editAnswer.collectAsState()
+
+    when(editQuestion){
+        is ResourceState.Success ->{
+            ShowMessage(
+                message = (editQuestion as ResourceState.Success<ApiResponse<QuestionDetail>>).value.message,
+                onReset = {
+                    editQuizViewModel.resetEditQuestionState()
+                }
+            )
+        }
+        is ResourceState.Error ->{
+            (editQuestion as ResourceState.Error).errorBody?.let {
+                ShowMessage(
+                    message = it.message,
+                    onReset = {
+                        editQuizViewModel.resetEditQuestionState()
+                    }
+                )
+            }
+        }
+        else ->{
+
+        }
+    }
+
+    when(editAnswer){
+        is ResourceState.Success ->{
+            ShowMessage(
+                message = (editAnswer as ResourceState.Success<ApiResponse<List<Answer>>>).value.message,
+                onReset = {
+                    editQuizViewModel.resetEditAnswerState()
+                }
+            )
+        }
+        is ResourceState.Error ->{
+            (editAnswer as ResourceState.Error).errorBody?.let {
+                ShowMessage(
+                    message = it.message,
+                    onReset = {
+                        editQuizViewModel.resetEditAnswerState()
+                    }
+                )
+            }
+        }
+        else ->{
+
+        }
+    }
+
+    when(createQuestion){
+        is ResourceState.Success ->{
+            ShowMessage(
+                message = (createQuestion as ResourceState.Success<ApiResponse<QuestionDetail>>).value.message,
+                onReset = {
+                    editQuizViewModel.resetCreateQuestionState()
+                }
+            )
+            LaunchedEffect(Unit){
+                navController.popBackStack()
+            }
+        }
+        is ResourceState.Error ->{
+            (createQuestion as ResourceState.Error).errorBody?.let {
+                ShowMessage(
+                    message = it.message,
+                    onReset = {
+                        editQuizViewModel.resetCreateQuestionState()
+                    }
+                )
+            }
+        }
+        else ->{
+
+        }
+    }
 
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
@@ -67,7 +148,7 @@ fun EditQuestionScreen(
 
     val context = LocalContext.current
 
-    val launcher =
+    val launcherEdit =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
 
             if(uri != null){
@@ -75,9 +156,18 @@ fun EditQuestionScreen(
                 val path = Utilities.getRealPathFromURI(uri, context)
                 if (path != null) {
                     editQuizViewModel.resetChangeThumbnailState()
-                    editQuizViewModel.onChangeBottomSheetThumbnail(path)
+                    editQuizViewModel.onChangeBottomSheetQuestionThumbnail(path)
                     openBottomSheet = true
                 }
+            }
+        }
+
+    val launcherCreate =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            editQuizViewModel.onChangeQuestionImage(uri)
+            val path = Utilities.Companion.getRealPathFromURI(uri!!,context)
+            if(path != null){
+                editQuizViewModel.onChangeQuestionThumbnailPath(path)
             }
         }
 
@@ -91,13 +181,18 @@ fun EditQuestionScreen(
         coroutineScope.launch { sheetState.hide() }
     }
 
-
+    DisposableEffect(Unit){
+        onDispose {
+            editQuizViewModel.resetQuestion()
+            editQuizViewModel.resetAnswer()
+        }
+    }
 
 
     Scaffold (
         topBar = {
             TopBar(
-                "",
+                "Cập Nhật Câu Hỏi",
                 navController
             )
         },
@@ -115,17 +210,33 @@ fun EditQuestionScreen(
                         Loading()
                     }
                     is ResourceState.Success -> {
-                        LandingImage(editQuizViewModel.questionThumbnailPath)
+                        if(index != -1){
+                            LandingImage(editQuizViewModel.questionThumbnail)
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Button(
-                                onClick = { launcher.launch("image/*") },
-                                modifier = Modifier.padding(16.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Text(text = "Chọn ảnh")
+                                Button(
+                                    onClick = { launcherEdit.launch("image/*") },
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    Text(text = "Chọn ảnh")
+                                }
+                            }
+                        }else{
+                            ImageCard(editQuizViewModel.qImageUri.value)
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Button(
+                                    onClick = { launcherCreate.launch("image/*") },
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    Text(text = "Chọn ảnh")
+                                }
                             }
                         }
 
@@ -180,6 +291,23 @@ fun EditQuestionScreen(
                                 .height(dimensionResource(id = R.dimen.space_app_small))
                         )
 
+                        if(index != -1){
+                            ButtonComponent(
+                                onClick = {
+                                    editQuizViewModel.editQuestion(quizId,index)
+                                },
+                                value = "Sửa Câu Hỏi",
+                                color = MaterialTheme.colorScheme.primary,
+                                loading =  editQuestion is ResourceState.Loading,
+                                enable = editQuestion !is ResourceState.Loading
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+
                         AnswersContent(
                             answer = {value ->
                                 editQuizViewModel.setAnswersFieldsValue(index = value)
@@ -200,24 +328,29 @@ fun EditQuestionScreen(
                         )
 
                         if(index == -1){
-                            ButtonNavigate(
+                            ButtonComponent(
                                 onClick = {
                                     editQuizViewModel.addQuestion(quizId)
-                                    navController.popBackStack()
                                 },
-                                "Thêm Câu Hỏi",
-                                MaterialTheme.colorScheme.primary,
-                            )
-                        }else{
-                            ButtonNavigate(
-                                onClick = {
-                                    editQuizViewModel.editQuestion(quizId,index)
-                                    navController.popBackStack()
-                                },
-                                "Sửa Câu Hỏi",
-                                MaterialTheme.colorScheme.primary,
+                                value= "Thêm Câu Hỏi",
+                                color = MaterialTheme.colorScheme.primary,
+                                loading =  createQuestion is ResourceState.Loading,
+                                enable = createQuestion !is ResourceState.Loading
                             )
                         }
+
+                        if(index != -1){
+                            ButtonComponent(
+                                onClick = {
+                                    editQuizViewModel.editAnswer(quizId,index)
+                                },
+                                value = "Sửa Câu Trả Lời",
+                                color = MaterialTheme.colorScheme.primary,
+                                loading =  editAnswer is ResourceState.Loading,
+                                enable = editAnswer !is ResourceState.Loading
+                            )
+                        }
+
                         Spacer(
                             modifier = Modifier
                                 .height(dimensionResource(id = R.dimen.space_app_small))
@@ -229,6 +362,32 @@ fun EditQuestionScreen(
                             "Hủy",
                             MaterialTheme.colorScheme.secondary,
                         )
+
+                        if (openBottomSheet) {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    openBottomSheet = false
+                                    editQuizViewModel.resetChangeQuestionThumbnailState()
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                content = {
+                                    SheetThumbnailContent(
+                                        thumbnailUrl = selectedImgUri,
+                                        coroutineScope = coroutineScope,
+                                        sheetState = sheetState,
+                                        openBottomSheet = {value ->
+                                            openBottomSheet = value
+                                        },
+                                        changeThumbnailState = changeQuestionThumbnail,
+                                        editQuizViewModel = editQuizViewModel,
+                                        quizId = quizId,
+                                        questionId = editQuizViewModel.questionId
+                                    )
+                                },
+                                sheetState = sheetState,
+                                containerColor = MaterialTheme.colorScheme.background
+                            )
+                        }
                     }
                     else -> {
 
@@ -301,7 +460,8 @@ private fun SheetThumbnailContent(
     sheetState: SheetState,
     openBottomSheet: (Boolean) -> Unit,
     editQuizViewModel: EditQuizViewModel,
-    quizId:Int
+    quizId:Int,
+    questionId:Int
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -310,7 +470,7 @@ private fun SheetThumbnailContent(
             modifier = Modifier,
             thumbnailUrl = thumbnailUrl,
             onSaveImgClick = {
-                editQuizViewModel.changeThumbnail(quizId)
+                editQuizViewModel.editQuestionThumbnail(questionId,quizId)
                 coroutineScope.launch {
                     if(changeThumbnailState is ResourceState.Success){
                         sheetState.hide()

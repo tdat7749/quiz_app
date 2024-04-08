@@ -16,10 +16,10 @@ import java.util.Optional;
 public interface HistoryRepository  extends JpaRepository<History,Integer> {
 
 
-    @Query("Select h from History as h left join h.user as u left join h.room as r where h.user = :user")
+    @Query("Select h from History as h left join h.user as u left join h.room as r where h.user = :user and r IS NOT NULL")
     Page<History> getHistoryRoom(User user,Pageable paging);
 
-    @Query("Select h from History as h left join h.user as u left join h.quiz as q where h.user = :user")
+    @Query("Select h from History as h left join h.user as u left join h.quiz as q where h.user = :user and q IS NOT NULL")
     Page<History> getHistorySingle(User user,Pageable paging);
 
     @Query("Select new com.example.backend.modules.history.viewmodels.HistoryRank(h.user,h.totalCorrect,h.score) from History as h left join h.user left join h.quiz as q where q.id = :quizId")

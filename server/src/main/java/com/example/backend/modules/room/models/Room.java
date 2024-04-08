@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -38,10 +39,10 @@ public class Room {
     private Date createdAt;
 
     @Column(name = "time_start",nullable = true)
-    private Date timeStart;
+    private LocalDateTime timeStart;
 
     @Column(name = "time_end",nullable = true)
-    private Date timeEnd;
+    private LocalDateTime timeEnd;
 
     @Column(name = "is_closed",nullable = false)
     private boolean isClosed;

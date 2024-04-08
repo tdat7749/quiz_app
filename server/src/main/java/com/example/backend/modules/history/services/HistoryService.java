@@ -21,15 +21,11 @@ public interface HistoryService {
 
     ResponseSuccess<Boolean> createHistory(CreateHistoryDTO dto,User user);
 
-
-    // hàm này cho xem lại history chơi ở room của chủ tài khoản.
-    ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>> getHistoryRoom(int pageIndex, User user);
-
-    ResponseSuccess<ResponsePaging<List<HistorySingleVm>>> getHistorySingle(int pageIndex, User user);
-
     ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankSingle(int quizId, int pageIndex);
 
     ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankRoom(int roomid, int pageIndex);
+
+
 
     // cần thêm 1 hàm get history cho host room xem lại history của các room, trả về list user và kết quả tham gia room.
 

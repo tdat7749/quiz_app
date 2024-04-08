@@ -17,6 +17,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     Optional<Room> findByRoomPin(String roomPin);
 
 
-    @Query("select r from Room as r left join r.user as u left join r.quiz where r.user = :user")
-    Page<Room> getMyListRooms(User user, Pageable paging);
+    @Query("select r from Room as r left join r.user as u left join r.quiz where r.user = :user and r.roomName LIKE %:keyword%")
+    Page<Room> getMyListRooms(User user,String keyword, Pageable paging);
 }

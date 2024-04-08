@@ -10,29 +10,35 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.client.datasource.MyRoomsDataSource
 import com.example.client.datasource.SearchQuizDataSource
 import com.example.client.model.Quiz
 import com.example.client.repositories.QuizRepository
 import com.example.client.utils.Search
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val quizRepository: QuizRepository
 ): ViewModel(){
-
-    var keyword by mutableStateOf("")
-        private set
+    private val _keywordStateFlow = MutableStateFlow("")
+    val keywordStateFlow = _keywordStateFlow.asStateFlow()
 
     fun searchOnChange(newValue: String) {
-        keyword = newValue
+        _keywordStateFlow.value = newValue
     }
 
-    fun getQuizzes(topicId:Int): Flow<PagingData<Quiz>> = Pager(
-        PagingConfig(10)
-    ){
-        SearchQuizDataSource(quizRepository,keyword,topicId)
-    }.flow.cachedIn(viewModelScope)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    fun getQuizzes(topicId:Int): Flow<PagingData<Quiz>> = _keywordStateFlow
+        .debounce(700)
+        .distinctUntilChanged()
+        .flatMapLatest {keyword ->
+            Pager(PagingConfig(pageSize = 10,prefetchDistance = 1)){
+                SearchQuizDataSource(quizRepository,keyword,topicId)
+            }.flow
+        }.cachedIn(viewModelScope)
 }

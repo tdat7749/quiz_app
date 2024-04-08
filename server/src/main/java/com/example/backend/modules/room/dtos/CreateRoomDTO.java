@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -23,6 +24,6 @@ public class CreateRoomDTO {
     @Length(max = 100,message = "Tài khoản có độ dài tối đa là 100 ký tự")
     private String roomName;
 
-    private Date timeStart;
-    private Date timeEnd;
+    private LocalDateTime timeStart;
+    private LocalDateTime timeEnd;
 }

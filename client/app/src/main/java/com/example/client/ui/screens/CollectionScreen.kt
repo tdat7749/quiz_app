@@ -9,6 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +35,8 @@ fun CollectionScreen(
     collectViewModel: CollectViewModel = hiltViewModel()
 ){
 
-    val collection: LazyPagingItems<Quiz> = collectViewModel.getCollection().collectAsLazyPagingItems()
-
+    val quizzes: LazyPagingItems<Quiz> = collectViewModel.getCollection().collectAsLazyPagingItems()
+    val keyword by collectViewModel.keywordStateFlow.collectAsState()
     Scaffold(
         topBar = {
             TopBar(
@@ -49,13 +51,16 @@ fun CollectionScreen(
                     .padding(dimensionResource(id = R.dimen.padding_app))
                     .padding(it),
             ) {
-                    if(collection.loadState.refresh is LoadState.Loading){
+                when {
+                    quizzes.loadState.refresh is LoadState.Loading -> {
                         Loading()
-                    }else if (collection.loadState.refresh is LoadState.NotLoading){
+                    }
+
+                    quizzes.loadState.refresh is LoadState.NotLoading -> {
                         TextFieldOutlined(
-                            value = collectViewModel.keyword,
-                            onChangeValue = {
-                                collectViewModel.searchOnChange(it)
+                            value = keyword,
+                            onChangeValue = { value ->
+                                collectViewModel.searchOnChange(value)
                             },
                             label = stringResource(id = R.string.search),
                             painterResource = painterResource(id = R.drawable.search)
@@ -65,15 +70,16 @@ fun CollectionScreen(
                                 .height(dimensionResource(id = R.dimen.space_app_normal))
                         )
 
-                        QuizList(collection, navController)
+                        QuizList(quizzes, navController)
                     }
                 }
+            }
         }
     )
 }
 
 @Composable
-private fun QuizList(collection:LazyPagingItems<Quiz>, navController: NavController){
+private fun QuizList(quizzes:LazyPagingItems<Quiz>, navController: NavController){
     LazyColumn (
         contentPadding =  PaddingValues(
             top = dimensionResource(id = R.dimen.space_app_normal),
@@ -84,11 +90,11 @@ private fun QuizList(collection:LazyPagingItems<Quiz>, navController: NavControl
         modifier = Modifier
             .fillMaxWidth()
     ){
-        items(collection.itemCount){index ->
-            QuizCardUser(collection[index]!!,navController)
+        items(quizzes.itemCount){index ->
+            QuizCardUser(quizzes[index]!!,navController)
         }
         item {
-            if(collection.loadState.append is LoadState.Loading){
+            if(quizzes.loadState.append is LoadState.Loading){
                 LoadingCircle()
             }
         }

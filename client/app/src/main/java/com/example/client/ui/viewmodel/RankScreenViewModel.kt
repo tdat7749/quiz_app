@@ -22,13 +22,13 @@ class RankScreenViewModel @Inject constructor(
 
 
     fun getHistoryRankRoom(roomId:Int): Flow<PagingData<HistoryRank>> = Pager(
-        PagingConfig(10)
+        PagingConfig(pageSize = 10,prefetchDistance = 1)
     ){
         HistoryRankRoomDataSource(historyRepository,roomId)
     }.flow.cachedIn(viewModelScope)
 
     fun getHistoryRankSingle(quizId:Int): Flow<PagingData<HistoryRank>> = Pager(
-        PagingConfig(10)
+        PagingConfig(pageSize = 10,prefetchDistance = 1)
     ){
         HistoryRankSingleDataSource(historyRepository,quizId)
     }.flow.cachedIn(viewModelScope)

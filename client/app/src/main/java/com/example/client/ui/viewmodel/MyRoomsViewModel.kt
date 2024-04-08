@@ -16,7 +16,9 @@ import com.example.client.model.Room
 import com.example.client.repositories.QuizRepository
 import com.example.client.repositories.RoomRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 
@@ -24,16 +26,20 @@ import javax.inject.Inject
 class MyRoomsViewModel @Inject constructor(
     private val roomRepository: RoomRepository
 ): ViewModel() {
-    var keyword by mutableStateOf("")
-        private set
+    private val _keywordStateFlow = MutableStateFlow("")
+    val keywordStateFlow = _keywordStateFlow.asStateFlow()
 
     fun searchOnChange(newValue: String) {
-        keyword = newValue
+        _keywordStateFlow.value = newValue
     }
 
-    fun getMyRooms(): Flow<PagingData<Room>> = Pager(
-        PagingConfig(10)
-    ){
-        MyRoomsDataSource(roomRepository,keyword)
-    }.flow.cachedIn(viewModelScope)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    fun getMyRooms(): Flow<PagingData<Room>> = _keywordStateFlow
+        .debounce(700)
+        .distinctUntilChanged()
+        .flatMapLatest {keyword ->
+            Pager(PagingConfig(pageSize = 10,prefetchDistance = 1)){
+                MyRoomsDataSource(roomRepository,keyword)
+            }.flow
+        }.cachedIn(viewModelScope)
 }

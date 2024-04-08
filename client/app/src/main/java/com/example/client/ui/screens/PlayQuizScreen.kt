@@ -100,10 +100,10 @@ fun PlayQuizScreen(
                                 timer.value--
                                 if (timer.value == 0) {
                                     if (playQuizViewModel.isLastQuestion()) {
-                                        playQuizViewModel.goNextQuestion()
+                                        playQuizViewModel.goNextQuestion(true,questions[playQuizViewModel.questionIndex].id)
                                         playQuizViewModel.finishQuiz(quizId, roomId)
                                     } else {
-                                        playQuizViewModel.goNextQuestion()
+                                        playQuizViewModel.goNextQuestion(true,questions[playQuizViewModel.questionIndex].id)
                                         timer.value = questions[playQuizViewModel.questionIndex].timeLimit
                                     }
                                 }
@@ -135,7 +135,7 @@ fun PlayQuizScreen(
                                         )
                                     )
                                     selectedAnswerId = -1
-                                    playQuizViewModel.goNextQuestion()
+                                    playQuizViewModel.goNextQuestion(false,questions[playQuizViewModel.questionIndex].id)
                                 },
                                 saveResult = saveResult,
                                 quizId = quizId,

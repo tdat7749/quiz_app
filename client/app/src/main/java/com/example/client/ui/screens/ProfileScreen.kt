@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -55,7 +56,8 @@ fun ProfileScreen(
         content = {
             Column(
                 modifier = Modifier.fillMaxSize()
-                    .padding(it),
+                    .padding(it)
+                    .padding(dimensionResource(id = R.dimen.padding_app)),
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
@@ -95,8 +97,7 @@ private fun ProfileSection(
     onPreferenceClick: (String) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-            .padding(top = 24.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
@@ -157,29 +158,17 @@ private fun EditProfileButton(onEditProfileClick: () -> Unit) {
 
 @Composable
 private fun Preferences(onPreferenceClick: (String) -> Unit) {
-    Column(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10)
-            )
-            .clip(RoundedCornerShape(topStartPercent = 10, topEndPercent = 10))
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp)
-    ) {
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(12.dp)
+    preferenceList.forEach {
+        Preference(
+            iconId = it.iconId,
+            text = it.text,
+            onPreferenceClick = { onPreferenceClick(it.routes) },
+            action = it.action,
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer
         )
-        preferenceList.forEach {
-            Preference(
-                iconId = it.iconId,
-                text = it.text,
-                onPreferenceClick = { onPreferenceClick(it.routes) },
-                action = it.action
-            )
-        }
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
     }
 }
 
@@ -189,18 +178,23 @@ private fun Preference(
     iconId: Int,
     text: String,
     onPreferenceClick: () -> Unit,
-    action: @Composable RowScope.() -> Unit
+    action: @Composable RowScope.() -> Unit,
+    backgroundColor: Color
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
             .clickable(onClick = onPreferenceClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .background(color = backgroundColor, shape = MaterialTheme.shapes.medium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+                .padding(start = 8.dp, end = 8.dp)
+        ) {
             Icon(painter = painterResource(id = iconId), contentDescription = null)
             Text(
                 modifier = modifier.padding(start = 16.dp),

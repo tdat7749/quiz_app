@@ -32,7 +32,7 @@ fun RoomCard(room: Room, navController: NavController){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .height(dimensionResource(id = R.dimen.category_card_height))
                 .shadow(2.dp,shape = RoundedCornerShape(8.dp)),
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
             onClick = {
@@ -42,7 +42,7 @@ fun RoomCard(room: Room, navController: NavController){
             Column (
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 2.dp, bottom = 2.dp),
+                    .padding(12.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 HeadingBoldText(
@@ -51,20 +51,18 @@ fun RoomCard(room: Room, navController: NavController){
                     MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    fontSize = 24.sp
+                    fontSize = 20.sp
                 )
 
-                Spacer(
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.space_app_small))
-                )
+                Spacer(modifier = Modifier.weight(1f))
 
                 NormalText(
-                    "Mã phòng: ${room.roomPin}",
+                    "PIN: ${room.roomPin}",
                     TextAlign.Start,
                     MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .fillMaxWidth(),
+                    fontSize = 18.sp
                 )
             }
         }
@@ -75,8 +73,7 @@ fun RoomCard(room: Room, navController: NavController){
 fun RoomName(name: String) {
     Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 64.dp),
+            .fillMaxWidth(),
         text = name,
         fontSize = 32.sp,
         textAlign = TextAlign.Start,

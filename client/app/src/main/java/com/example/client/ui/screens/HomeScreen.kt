@@ -167,7 +167,7 @@ fun TopicCard(topic: Topic,navController:NavController){
                     contentScale = ContentScale.Crop
                 )
                 HeadingBoldText(
-                    topic.title,
+                    "", //topic.title
                     TextAlign.Center,
                     MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
@@ -267,7 +267,7 @@ fun UserInfo(user:User){
         verticalAlignment = Alignment.CenterVertically
     ){
         AsyncImage(
-            model = "https://www.proprofs.com/quiz-school/topic_images/p191f89lnh17hs1qnk9fj1sm113b3.jpg",
+            model = user.avatar,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

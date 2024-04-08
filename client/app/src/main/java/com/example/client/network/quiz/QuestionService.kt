@@ -6,6 +6,7 @@ import com.example.client.model.QuestionDetail
 import com.example.client.utils.ApiResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
@@ -19,7 +20,8 @@ interface QuestionService {
         @Path("quizId") quizId:Int
     ): ApiResponse<List<QuestionDetail>>
 
-    @POST("api/question/{quizId}")
+    @Multipart
+    @POST("api/questions/{quizId}")
     suspend fun createQuestion(
         @Part part: List<MultipartBody.Part>,
         @Path("quizId") quizId:Int
@@ -36,4 +38,10 @@ interface QuestionService {
     suspend fun editQuestionThumbnail(
         @Part thumbnail: List<MultipartBody.Part>
     ): ApiResponse<String>
+
+    @DELETE("api/questions/{questionId}/quiz/{quizId}")
+    suspend fun deleteQuestion(
+        @Path("questionId") questionId:Int,
+        @Path("quizId") quizId:Int
+    ): ApiResponse<Boolean>
 }

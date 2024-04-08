@@ -8,6 +8,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ fun MyRoomsScreen(
     myRoomsViewModel: MyRoomsViewModel = hiltViewModel()
 ){
     val rooms: LazyPagingItems<Room> = myRoomsViewModel.getMyRooms().collectAsLazyPagingItems()
+    val keyword by myRoomsViewModel.keywordStateFlow.collectAsState()
 
     Scaffold(
         topBar = {
@@ -53,7 +56,7 @@ fun MyRoomsScreen(
                 }else if (rooms.loadState.refresh is LoadState.NotLoading){
 
                         TextFieldOutlined(
-                            value = myRoomsViewModel.keyword,
+                            value = keyword,
                             onChangeValue = {value ->
                                 myRoomsViewModel.searchOnChange(value)
                             },

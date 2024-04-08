@@ -58,7 +58,17 @@ class PlayQuizViewModel @Inject constructor(
         answers.add(answer)
     }
 
-    fun goNextQuestion() {
+    fun goNextQuestion(isNotSelected:Boolean,questionId:Int) {
+        if(isNotSelected){
+            answers.add(
+                Answered(
+                    questionId = questionId,
+                    answerId = null,
+                    isCorrect = false,
+                    score = 0
+                )
+            )
+        }
         if (!isLastQuestion()) {
             questionIndex++
         }
@@ -89,7 +99,7 @@ class PlayQuizViewModel @Inject constructor(
             finishedAt = Utilities.Companion.formatDate(Date()),
             startedAt = Utilities.Companion.formatDate(timeStart),
             quizId = if(roomId == null) quizId else null,
-            roomId = roomId
+            roomId = roomId,
         )
 
         saveResult(data)

@@ -12,7 +12,7 @@ import java.util.*
 
 class DateJsonAdapter {
     @RequiresApi(Build.VERSION_CODES.O)
-    private val dateFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
 
     @RequiresApi(Build.VERSION_CODES.O)
     @ToJson

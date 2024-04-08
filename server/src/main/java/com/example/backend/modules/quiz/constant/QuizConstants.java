@@ -33,4 +33,8 @@ public class QuizConstants {
     public static final String EDIT_ANSWER = "Chỉnh sửa câu hỏi thành công";
 
     public static final String DELETE_ANSWER = "Xóa câu trả lời thành công";
+
+    public static final String QUIZ_HAS_NOT_QUESTION = "Quiz này chưa có bộ câu hỏi";
+
+    public static final String AT_LEAST_ONE_ANSWER_IS_CORRECT = "Phải có ít nhất một câu hỏi đúng";
 }

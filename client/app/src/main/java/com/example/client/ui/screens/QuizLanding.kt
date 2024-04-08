@@ -1,7 +1,9 @@
 package com.example.client.ui.screens
 
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +30,9 @@ import com.example.client.ui.navigation.Routes
 import com.example.client.ui.viewmodel.QuizLandingViewModel
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
+import com.example.client.utils.Utilities
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizLanding(

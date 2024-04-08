@@ -1,5 +1,3 @@
-package com.example.client.ui.screens
-
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -12,7 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -32,7 +33,7 @@ import coil.compose.AsyncImage
 import com.example.client.R
 import com.example.client.model.Room
 import com.example.client.ui.components.*
-import com.example.client.ui.viewmodel.CreateRoomViewModel
+import com.example.client.ui.viewmodel.EditRoomViewModel
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
@@ -44,124 +45,147 @@ import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun CreateRoomScreen(
-    quizId:Int,
-    title:String,
-    thumbnail:String,
-    navController: NavController,
-    createRoomViewModel: CreateRoomViewModel = hiltViewModel()
+fun EditRoomScreen(
+    id:Int,
+    navController:NavController,
+    editRoomViewModel:EditRoomViewModel = hiltViewModel()
 ){
+    val edit by editRoomViewModel.edit.collectAsState()
+    val room by editRoomViewModel.room.collectAsState()
 
-    val create by createRoomViewModel.create.collectAsState()
 
+    LaunchedEffect(key1 = id){
+        editRoomViewModel.getRoom(id)
+    }
 
-    when(create){
+    when(edit){
         is ResourceState.Success -> {
-            ShowMessage((create as ResourceState.Success<ApiResponse<Room>>).value.message)
-            LaunchedEffect(Unit){
-                navController.popBackStack()
-            }
+            ShowMessage((edit as ResourceState.Success<ApiResponse<Boolean>>).value.message)
         }
         is ResourceState.Error -> {
-            (create as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { createRoomViewModel.resetState() } }
+            (edit as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { editRoomViewModel.resetState() } }
         }
         else -> {
 
         }
     }
 
+
     Scaffold(
         topBar = {
             TopBar(
-                "Tạo Phòng Chơi",
+                "Cập Nhật Phòng Chơi",
                 navController
             )
         },
         content = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(id = R.dimen.padding_app))
-                        .background(Color.White)
-                        .verticalScroll(rememberScrollState())
-                        .padding(it)
-                ) {
-                    QuizThumbnail(thumbnail)
-                    QuestionSection(title)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .background(Color.White)
+                    .verticalScroll(rememberScrollState())
+                    .padding(it)
+            ) {
+                when(room){
+                    is ResourceState.Loading -> {
+                        Loading()
+                    }
+                    is ResourceState.Success -> {
+                        val room = (room as ResourceState.Success<ApiResponse<Room>>).value.data
+                        QuizThumbnail(room.quiz.thumbnail)
+                        QuestionSection(room.quiz.title)
 
-                    TextFieldOutlined(
-                        createRoomViewModel.roomName,
-                        onChangeValue = {value ->
-                            createRoomViewModel.onChangeRoomname(value)
-                        },
-                        "Tên Phòng",
-                        painterResource(id = R.drawable.title)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    CalendarComponent(
-                        value = createRoomViewModel.timeStart.toString(),
-                        label = "Ngày Bắt Đầu",
-                        onChangeDate = { it ->
-                            createRoomViewModel.onChangeTimeStart(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    TimeComponent(
-                        value = createRoomViewModel.timeStartClock.toString(),
-                        label = "Giờ Bắt Đầu",
-                        onChangeTime = {it ->
-                           createRoomViewModel.onChangeTimeStartClock(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_normal))
-                    )
-                    CalendarComponent(
-                        value = createRoomViewModel.timeEnd.toString(),
-                        label = "Ngày Kết Thúc",
-                        onChangeDate = { it ->
-                            createRoomViewModel.onChangeTimeEnd(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    TimeComponent(
-                        value = createRoomViewModel.timeEndClock.toString(),
-                        label = "Giờ Kết Thúc",
-                        onChangeTime = {it ->
-                            createRoomViewModel.onChangeTimeEndClock(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_normal))
-                    )
+                        TextFieldOutlined(
+                            editRoomViewModel.roomName,
+                            onChangeValue = {value ->
+                                editRoomViewModel.onChangeRoomname(value)
+                            },
+                            "Tên Phòng",
+                            painterResource(id = R.drawable.title)
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+                        CalendarComponent(
+                            value = editRoomViewModel.timeStart.toString(),
+                            label = "Ngày Bắt Đầu",
+                            onChangeDate = { it ->
+                                editRoomViewModel.onChangeTimeStart(it)
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+                        TimeComponent(
+                            value = editRoomViewModel.timeStartClock.toString(),
+                            label = "Giờ Bắt Đầu",
+                            onChangeTime = { it ->
+                                editRoomViewModel.onChangeTimeStartClock(it)
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_normal))
+                        )
+                        CalendarComponent(
+                            value = editRoomViewModel.timeEnd.toString(),
+                            label = "Ngày Kết Thúc",
+                            onChangeDate = { it ->
+                                editRoomViewModel.onChangeTimeEnd(it)
+                            }
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+                        TimeComponent(
+                            value = editRoomViewModel.timeEndClock.toString(),
+                            label = "Giờ Kết Thúc",
+                            onChangeTime = { it ->
+                                editRoomViewModel.onChangeTimeEndClock(it)
+                            }
+                        )
 
-                    ButtonComponent(
-                        onClick = {
-                            createRoomViewModel.onCreateRoom(quizId)
-                        },
-                        stringResource(id = R.string.register),
-                        MaterialTheme.colorScheme.primary,
-                        create is ResourceState.Loading,
-                        create !is ResourceState.Loading
-                    )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+
+                        SwitchLabel(
+                            "Kết Thúc: ",
+                            editRoomViewModel.isClosed,
+                            onChangeValue = {value ->
+                                editRoomViewModel.onChangeClosed(value)
+                            }
+                        )
+
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_normal))
+                        )
+
+                        ButtonComponent(
+                            onClick = {
+                                editRoomViewModel.onEditRoom(id)
+                            },
+                            stringResource(id = R.string.register),
+                            MaterialTheme.colorScheme.primary,
+                            edit is ResourceState.Loading,
+                            edit !is ResourceState.Loading
+                        )
+                    }
+                    else -> {
+
+                    }
                 }
+            }
         }
     )
 }
@@ -190,7 +214,7 @@ private fun QuizThumbnail(thumbnail:String?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CalendarComponent(value:String,label:String,date: LocalDate? = null, onChangeDate:(LocalDate?) -> Unit){
+private fun CalendarComponent(value:String, label:String, date: LocalDate? = null, onChangeDate:(LocalDate?) -> Unit){
     val calendarState = rememberUseCaseState()
 
     CalendarDialog(
@@ -241,7 +265,7 @@ private fun CalendarComponent(value:String,label:String,date: LocalDate? = null,
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onChangeTime:(LocalTime?) -> Unit){
+private fun TimeComponent(value:String, label:String, date: LocalTime? = null, onChangeTime:(LocalTime?) -> Unit){
     val clockState = rememberUseCaseState()
 
     ClockDialog(
@@ -250,7 +274,7 @@ private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onC
             boundary = LocalTime.of(0, 0, 0)..LocalTime.of(12, 59, 0),
             is24HourFormat = true
         ),
-        selection = ClockSelection.HoursMinutes{hours, minutes ->
+        selection = ClockSelection.HoursMinutes{ hours, minutes ->
             onChangeTime(LocalTime.of(hours,minutes))
         }
     )
@@ -320,6 +344,7 @@ private fun QuestionTitle(questionTitle: String) {
         fontSize = 26.sp
     )
 }
+
 
 @Composable
 private fun ShowMessage(

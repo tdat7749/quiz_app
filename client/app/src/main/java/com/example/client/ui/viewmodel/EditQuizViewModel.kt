@@ -1,6 +1,7 @@
 package com.example.client.ui.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +53,16 @@ class EditQuizViewModel @Inject constructor(
     private val _createQuestion:MutableStateFlow<ResourceState<ApiResponse<QuestionDetail>>> = MutableStateFlow(ResourceState.Nothing)
     val createQuestion = _createQuestion.asStateFlow()
 
+    private val _deleteQuestion:MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
+    val deleteQuestion = _deleteQuestion.asStateFlow()
+
+    private val _editAnswer:MutableStateFlow<ResourceState<ApiResponse<List<Answer>>>> = MutableStateFlow(ResourceState.Nothing)
+    val editAnswer = _editAnswer.asStateFlow()
+
     var bottomSheetThumbnail by mutableStateOf<String>("")
+        private set
+
+    var bottomSheetQuestionThumbnail by mutableStateOf<String>("")
         private set
 
     private val _qImageUri = mutableStateOf<Uri?>(null)
@@ -61,7 +71,10 @@ class EditQuizViewModel @Inject constructor(
     var questionId by mutableStateOf(-1)
         private set
 
-    var questionThumbnailPath by mutableStateOf<String?>("")
+    var questionThumbnailPath by mutableStateOf("")
+        private set
+
+    var questionThumbnail by mutableStateOf<String?>("")
         private set
     var questionTitle by mutableStateOf("")
         private set
@@ -117,6 +130,8 @@ class EditQuizViewModel @Inject constructor(
 
     fun onChangeQuestionThumbnailPath(newValue: String) {questionThumbnailPath = newValue}
 
+    fun onChangeQuestionThumbnail(newValue: String) {questionThumbnail = newValue}
+
     //QUIZ
 
     fun onChangeSummary(newValue: String) { summary = newValue }
@@ -126,6 +141,8 @@ class EditQuizViewModel @Inject constructor(
     fun onChangeTopic(newValue:Topic) {topic = newValue}
 
     fun onChangeBottomSheetThumbnail(newValue: String) {bottomSheetThumbnail = newValue}
+
+    fun onChangeBottomSheetQuestionThumbnail(newValue: String) {bottomSheetQuestionThumbnail = newValue}
 
     fun onChangeImageUrl(newValue: Uri?) {
         _imageUri.value = newValue
@@ -147,6 +164,29 @@ class EditQuizViewModel @Inject constructor(
         CreateAnswer(
             title = answer4,
             isCorrect = answerIndex == 3
+        )
+    )
+
+    private fun setEditAnswers():List<EditAnswer> = arrayListOf(
+        EditAnswer(
+            title = answer1,
+            isCorrect = answerIndex == 0,
+            id = idAnswer1
+        ),
+        EditAnswer(
+            title = answer2,
+            isCorrect = answerIndex == 1,
+            id = idAnswer2
+        ),
+        EditAnswer(
+            title = answer3,
+            isCorrect = answerIndex == 2,
+            id = idAnswer3
+        ),
+        EditAnswer(
+            title = answer4,
+            isCorrect = answerIndex == 3,
+            id = idAnswer4
         )
     )
 
@@ -180,18 +220,18 @@ class EditQuizViewModel @Inject constructor(
 
         value.answers.forEachIndexed { i, answer ->
             updateAnswersFields(answer.title,i)
+            updateAnswersId(answer.id,i)
             if(answer.correct){
                 setTrueAnswer(i)
             }
         }
 
-//        _qImageUri.value = value.uri
         questionTitle = value.title
         score = value.score
         timeLimit = value.timeLimit
         questionType = value.questionType
-        questionThumbnailPath = value.thumbnail
-//        _qImageUri.value = value.uri
+        questionThumbnail = value.thumbnail
+        questionId = value.id
 
         return value
     }
@@ -203,13 +243,43 @@ class EditQuizViewModel @Inject constructor(
     private var answer2 by mutableStateOf("")
     private var answer3 by mutableStateOf("")
     private var answer4 by mutableStateOf("")
+    private var idAnswer1 by mutableStateOf<Int>(-1)
+    private var idAnswer2 by mutableStateOf<Int>(-1)
+    private var idAnswer3 by mutableStateOf<Int>(-1)
+    private var idAnswer4 by mutableStateOf<Int>(-1)
+
 
     fun updateAnswersFields(newValue: String, index: Int) {
         when (index) {
-            0 -> { answer1 = newValue }
-            1 -> { answer2 = newValue }
-            2 -> { answer3 = newValue }
-            else -> { answer4 = newValue }
+            0 -> {
+                answer1 = newValue
+            }
+            1 -> {
+                answer2 = newValue
+            }
+            2 -> {
+                answer3 = newValue
+            }
+            else -> {
+                answer4 = newValue
+            }
+        }
+    }
+
+    fun updateAnswersId(id: Int, index: Int) {
+        when (index) {
+            0 -> {
+                idAnswer1 = id
+            }
+            1 -> {
+                idAnswer2 = id
+            }
+            2 -> {
+                idAnswer3 = id
+            }
+            else -> {
+                idAnswer4 = id
+            }
         }
     }
 
@@ -233,6 +303,10 @@ class EditQuizViewModel @Inject constructor(
         answer2 = ""
         answer3 = ""
         answer4 = ""
+        idAnswer1 = -1
+        idAnswer2 = -1
+        idAnswer3 = -1
+        idAnswer4 = -1
         answerIndex = -1
     }
 
@@ -345,8 +419,60 @@ class EditQuizViewModel @Inject constructor(
                 _listQuestion.value = updatedList
             }
         }
+    }
 
+    fun deleteQuestion(questionId:Int,quizId:Int,index:Int){
+        _deleteQuestion.value =  ResourceState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = quizRepository.deleteQuestion(questionId,quizId)
+            _deleteQuestion.value = response
+            if(response is ResourceState.Success){
+                val updatedList = _listQuestion.value.toMutableList().apply {
+                    removeAt(index)
+                }
+                _listQuestion.value = updatedList
+            }
+        }
+    }
 
+    fun editQuestionThumbnail(questionId:Int,quizId:Int){
+        val data = EditQuestionThumbnail(
+            questionId = questionId,
+            quizId = quizId,
+            thumbnail = bottomSheetQuestionThumbnail
+        )
+        _changeQuestionThumbnail.value =  ResourceState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = quizRepository.editQuestionThumbnail(data)
+            _changeQuestionThumbnail.value = response
+            if(response is ResourceState.Success){
+                questionThumbnail = response.value.data
+            }
+        }
+    }
+
+    fun editAnswer(quizId:Int,index:Int){
+        val data = EditListAnswer(
+            answers = setEditAnswers(),
+            quizId = quizId
+        )
+
+        Log.d("Hello",data.toString())
+
+        _editAnswer.value = ResourceState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = quizRepository.editListAnswer(data)
+            _editAnswer.value = response
+
+            if(response is ResourceState.Success){
+                val updatedList = _listQuestion.value.toMutableList().apply {
+                    var question = this[index].copy()
+                    question = question.copy(answers = response.value.data)
+                    this[index] = question
+                }
+                _listQuestion.value = updatedList
+            }
+        }
     }
 
     fun resetQuestion(){
@@ -356,6 +482,7 @@ class EditQuizViewModel @Inject constructor(
         score = 10
         timeLimit = 20
         questionThumbnailPath = ""
+        questionThumbnail = ""
     }
 
     fun resetChangeThumbnailState(){
@@ -363,7 +490,28 @@ class EditQuizViewModel @Inject constructor(
         bottomSheetThumbnail = thumbnail
     }
 
+    fun resetChangeQuestionThumbnailState(){
+        _changeQuestionThumbnail.value = ResourceState.Nothing
+        bottomSheetQuestionThumbnail = questionThumbnail ?: ""
+    }
+
     fun resetEditQuizState(){
         _editQuiz.value = ResourceState.Nothing
+    }
+
+    fun resetEditQuestionState(){
+        _editQuestion.value = ResourceState.Nothing
+    }
+
+    fun resetEditAnswerState(){
+        _editAnswer.value = ResourceState.Nothing
+    }
+
+    fun resetCreateQuestionState(){
+        _createQuestion.value = ResourceState.Nothing
+    }
+
+    fun resetDeleteeQuestionState(){
+        _deleteQuestion.value = ResourceState.Nothing
     }
 }
