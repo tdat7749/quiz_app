@@ -44,31 +44,6 @@ public class TopicServiceImpl implements TopicService{
 
 
     @Override
-    @Transactional
-    public ResponseSuccess<TopicVm> createTopic(CreateTopicDTO dto) throws IOException {
-
-        var topic = topicRepository.findBySlug(dto.getSlug());
-        if(topic.isPresent()){
-            throw new TopicSlugUsedException(TopicConstants.TOPIC_SLUG_USED);
-        }
-        String thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
-
-        Topic newTopic = Topic.builder()
-                .title(dto.getTitle())
-                .createdAt(new Date())
-                .updatedAt(new Date())
-                .thumbnail(thumbnailUrl)
-                .slug(dto.getSlug())
-                .build();
-
-        var save = topicRepository.save(newTopic);
-
-        var topicVm = Utilities.getTopicVm(save);
-
-        return new ResponseSuccess<>(TopicConstants.CREATE_TOPIC,topicVm);
-    }
-
-    @Override
     public Optional<Topic> findById(int topicId) {
         return topicRepository.findById(topicId);
     }
@@ -108,6 +83,31 @@ public class TopicServiceImpl implements TopicService{
 
         return new ResponseSuccess<>(TopicConstants.EDIT_TOPIC,result);
 
+    }
+
+    @Override
+    @Transactional
+    public ResponseSuccess<TopicVm> createTopic(CreateTopicDTO dto) throws IOException {
+
+        var topic = topicRepository.findBySlug(dto.getSlug());
+        if(topic.isPresent()){
+            throw new TopicSlugUsedException(TopicConstants.TOPIC_SLUG_USED);
+        }
+        String thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
+
+        Topic newTopic = Topic.builder()
+                .title(dto.getTitle())
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .thumbnail(thumbnailUrl)
+                .slug(dto.getSlug())
+                .build();
+
+        var save = topicRepository.save(newTopic);
+
+        var topicVm = Utilities.getTopicVm(save);
+
+        return new ResponseSuccess<>(TopicConstants.CREATE_TOPIC,topicVm);
     }
 
 
