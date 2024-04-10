@@ -7,6 +7,7 @@ object AppConstants {
 
     val PUBLIC_API: ArrayList<String> = arrayListOf(
         "/api/auth/login",
+        "/api/auth/login/google",
         "/api/auth/register",
         "/api/quizzes/public",
         "/api/topics/",

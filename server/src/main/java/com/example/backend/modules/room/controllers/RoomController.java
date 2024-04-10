@@ -29,10 +29,22 @@ public class RoomController {
 
     @GetMapping("/{roomPin}/join")
     @ResponseBody
-    public ResponseEntity<ResponseSuccess<RoomVm>> joinRoom(
-            @PathVariable("roomPin") String roomPin
+    public ResponseEntity<ResponseSuccess<Integer>> joinRoom(
+            @PathVariable("roomPin") String roomPin,
+            @AuthenticationPrincipal User user
     ) {
-        var result = roomService.joinRoom(roomPin);
+        var result = roomService.joinRoom(user,roomPin);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/{roomPin}/participant")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<RoomVm>> getRoomForParticipants(
+            @PathVariable("roomPin") String roomPin,
+            @AuthenticationPrincipal User user
+    ) {
+        var result = roomService.getRoomForParticipants(user,roomPin);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -102,5 +114,28 @@ public class RoomController {
         var result = roomService.getRoomDetail(roomId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/joined")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<RoomVm>>>> getJoinedRoom(
+            @AuthenticationPrincipal User user,
+            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex
+    ){
+        var result = roomService.getJoinedRoom(user,pageIndex);
+
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{roomId}/kick/{userId}")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<Boolean>> kickUser(
+            @PathVariable("roomId") int roomId,
+            @PathVariable("userId") int userId,
+            @AuthenticationPrincipal User user
+    ){
+        var result = roomService.kickUser(user,roomId,userId);
+
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

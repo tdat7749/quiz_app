@@ -53,7 +53,6 @@ import com.example.client.model.Quiz
 import com.example.client.model.Topic
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.screens.UserInfo
-import com.example.client.utils.AppConstants
 
 
 @Composable
@@ -907,7 +906,7 @@ fun LoadingCircle(){
 fun CircleCheckBox(
     onChecked: () -> Unit,
     selected: Boolean = false,
-    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
 ) {
 
     val imageVector = if (selected) R.drawable.check_circle else R.drawable.uncheck_circle

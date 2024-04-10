@@ -60,7 +60,7 @@ fun SendEmailVerifyScreen(
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
                     .verticalScroll(rememberScrollState())
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
             ){
 
                     HeaderApp(

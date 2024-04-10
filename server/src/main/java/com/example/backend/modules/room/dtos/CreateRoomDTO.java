@@ -26,4 +26,11 @@ public class CreateRoomDTO {
 
     private LocalDateTime timeStart;
     private LocalDateTime timeEnd;
+
+    @NotNull(message = "Không được thiếu trường 'maxUser'")
+    @Digits(integer = 10,fraction = 0,message = "Trường 'maxUser' phải là số nguyên")
+    private int maxUser;
+
+    @NotNull(message = "Không được thiếu trường 'playAgain'")
+    private boolean playAgain;
 }

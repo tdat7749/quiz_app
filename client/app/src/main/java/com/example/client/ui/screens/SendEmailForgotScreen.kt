@@ -65,7 +65,7 @@ fun SendEmailForgotScreen (
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
                     .verticalScroll(rememberScrollState())
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
             ){
                     HeaderApp(
                         painterResource(id = R.drawable.send_email),

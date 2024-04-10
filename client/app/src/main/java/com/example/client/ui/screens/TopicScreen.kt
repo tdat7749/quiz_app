@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,7 @@ import com.example.client.ui.components.*
 import com.example.client.ui.viewmodel.SearchViewModel
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun TopicScreen(
     topicId:Int,

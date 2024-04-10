@@ -30,4 +30,11 @@ public class EditRoomDTO {
 
     @NotNull(message = "Không được thiếu trường 'isClosed'")
     private boolean isClosed;
+
+    @NotNull(message = "Không được thiếu trường 'maxUser'")
+    @Digits(integer = 10,fraction = 0,message = "Trường 'maxUser' phải là số nguyên")
+    private int maxUser;
+
+    @NotNull(message = "Không được thiếu trường 'playAgain'")
+    private boolean playAgain;
 }

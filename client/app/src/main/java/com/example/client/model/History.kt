@@ -32,3 +32,10 @@ data class HistoryRank(
     val totalScore: Int,
     val user:User,
 )
+
+data class HistoryAnswer(
+    val id:Int,
+    val correct:Boolean,
+    val question:Question,
+    val answer:Answer?
+)

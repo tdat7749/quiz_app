@@ -288,4 +288,21 @@ class CreateQuizViewModel @Inject constructor(
         timeLimit = 20
         questionThumbnailPath = ""
     }
+
+    fun resetQuiz(){
+        quizThumbnailPath = ""
+        summary = ""
+        title = ""
+        description = ""
+        topic = null
+        isPublic = false
+        _listQuestion.value = emptyList()
+    }
+
+    fun resetCreateQuizState(){
+        _quiz.value = ResourceState.Nothing
+        resetQuestion()
+        resetAnswer()
+        resetQuiz()
+    }
 }

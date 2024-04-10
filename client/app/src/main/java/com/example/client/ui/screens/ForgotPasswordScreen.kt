@@ -64,7 +64,7 @@ fun ForgotPasswordScreen(
             Column (
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(id = R.dimen.padding_app))
                     .padding(it)

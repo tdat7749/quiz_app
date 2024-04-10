@@ -62,7 +62,7 @@ public class History {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "history")
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "history",orphanRemoval = true)
     @JsonManagedReference
     private List<HistoryAnswer> historyAnswers;
 

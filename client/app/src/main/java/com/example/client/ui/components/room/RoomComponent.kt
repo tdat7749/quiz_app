@@ -27,43 +27,63 @@ import com.example.client.ui.navigation.Routes
 import com.example.client.ui.screens.UserInfo
 
 @Composable
-fun RoomCard(room: Room, navController: NavController){
+fun RoomCard(room: Room, navController: NavController,isHost:Boolean = false){
     Box(){
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.category_card_height))
-                .shadow(2.dp,shape = RoundedCornerShape(8.dp)),
+                .height(dimensionResource(id = R.dimen.quiz_card_height))
+                .width(dimensionResource(id = R.dimen.quiz_card_height))
+                .shadow(4.dp,shape = RoundedCornerShape(8.dp)),
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
             onClick = {
-                navController.navigate("${Routes.ROOM_DETAIL_SCREEN}/${room.id}")
+                if(!isHost){
+                    navController.navigate("${Routes.WAITING_ROOM_SCREEN}/${room.roomPin}/${room.id}")
+                }else{
+                    navController.navigate("${Routes.ROOM_DETAIL_SCREEN}/${room.id}")
+                }
             }
         ){
             Column (
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                HeadingBoldText(
-                    room.roomName,
-                    TextAlign.Start,
-                    MaterialTheme.colorScheme.secondary,
+                AsyncImage(
+                    model = room.quiz.thumbnail,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    fontSize = 20.sp
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.image_height))
                 )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                NormalText(
-                    "PIN: ${room.roomPin}",
-                    TextAlign.Start,
-                    MaterialTheme.colorScheme.primary,
+                Spacer(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    fontSize = 18.sp
+                        .height(10.dp)
                 )
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 8.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ){
+                    HeadingBoldText(
+                        room.roomName,
+                        TextAlign.Start,
+                        MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fontSize = 20.sp
+                    )
+
+                    NormalText(
+                        "PIN: ${room.roomPin}",
+                        TextAlign.Start,
+                        MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fontSize = 18.sp
+                    )
+                }
             }
         }
     }
@@ -79,6 +99,75 @@ fun RoomName(name: String) {
         textAlign = TextAlign.Start,
         color = MaterialTheme.colorScheme.primary
     )
+}
+
+@Composable
+fun RoomPin(pin: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.pin),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            text = "Pin: $pin",
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun PlayAgain(isPlayAgain: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.done),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            text = "Luật Chơi: ${if(isPlayAgain) "Cho Chơi Lại" else "Không Cho Chơi Lại"}",
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun UserNumber(totalUser:Int,maxUser:Int){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.group),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp),
+            text = "Người Chơi: ${totalUser.toString()}/${maxUser.toString()}",
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @Composable

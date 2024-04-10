@@ -88,7 +88,7 @@ fun CreateRoomScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
-                        .background(Color.White)
+                        .background(color = MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
                         .padding(it)
                 ) {
@@ -101,6 +101,18 @@ fun CreateRoomScreen(
                             createRoomViewModel.onChangeRoomname(value)
                         },
                         "Tên Phòng",
+                        painterResource(id = R.drawable.title)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    NumberFieldOutlined(
+                        createRoomViewModel.maxUser,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
+                        },
+                        "Số Thành Viên Tối Đa",
                         painterResource(id = R.drawable.title)
                     )
                     Spacer(
@@ -149,6 +161,18 @@ fun CreateRoomScreen(
                     )
                     Spacer(
                         modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    SwitchLabel(
+                        "Cho Phép Chơi Lại: ",
+                        createRoomViewModel.isPlayAgain,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangePlayAgain(value)
+                        }
+                    )
+
+                    Spacer(
+                        modifier = Modifier
                             .height(dimensionResource(id = R.dimen.space_app_normal))
                     )
 
@@ -156,7 +180,7 @@ fun CreateRoomScreen(
                         onClick = {
                             createRoomViewModel.onCreateRoom(quizId)
                         },
-                        stringResource(id = R.string.register),
+                        "Tạo Phòng",
                         MaterialTheme.colorScheme.primary,
                         create is ResourceState.Loading,
                         create !is ResourceState.Loading

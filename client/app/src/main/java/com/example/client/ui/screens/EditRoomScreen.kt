@@ -87,7 +87,7 @@ fun EditRoomScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
             ) {
@@ -106,6 +106,18 @@ fun EditRoomScreen(
                                 editRoomViewModel.onChangeRoomname(value)
                             },
                             "Tên Phòng",
+                            painterResource(id = R.drawable.title)
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+                        NumberFieldOutlined(
+                            editRoomViewModel.maxUser,
+                            onChangeValue = {value ->
+                                editRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
+                            },
+                            "Số Thành Viên Tối Đa",
                             painterResource(id = R.drawable.title)
                         )
                         Spacer(
@@ -168,6 +180,18 @@ fun EditRoomScreen(
 
                         Spacer(
                             modifier = Modifier
+                                .height(dimensionResource(id = R.dimen.space_app_small))
+                        )
+                        SwitchLabel(
+                            "Cho Phép Chơi Lại: ",
+                            editRoomViewModel.isPlayAgain,
+                            onChangeValue = {value ->
+                                editRoomViewModel.onChangePlayAgain(value)
+                            }
+                        )
+
+                        Spacer(
+                            modifier = Modifier
                                 .height(dimensionResource(id = R.dimen.space_app_normal))
                         )
 
@@ -175,7 +199,7 @@ fun EditRoomScreen(
                             onClick = {
                                 editRoomViewModel.onEditRoom(id)
                             },
-                            stringResource(id = R.string.register),
+                            "Cập Nhật Phòng Chơi",
                             MaterialTheme.colorScheme.primary,
                             edit is ResourceState.Loading,
                             edit !is ResourceState.Loading

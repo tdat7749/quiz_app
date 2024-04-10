@@ -5,6 +5,7 @@ import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.history.dtos.CreateHistoryDTO;
 import com.example.backend.modules.history.models.History;
+import com.example.backend.modules.history.viewmodels.HistoryAnswerVm;
 import com.example.backend.modules.history.viewmodels.HistoryRankVm;
 import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
 import com.example.backend.modules.history.viewmodels.HistorySingleVm;
@@ -25,7 +26,7 @@ public interface HistoryService {
 
     ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankRoom(int roomid, int pageIndex);
 
-
+    ResponseSuccess<List<HistoryAnswerVm>> getListHistoryAnswer(User user,int roomId);
 
     // cần thêm 1 hàm get history cho host room xem lại history của các room, trả về list user và kết quả tham gia room.
 

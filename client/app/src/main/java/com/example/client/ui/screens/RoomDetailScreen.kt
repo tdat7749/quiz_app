@@ -26,8 +26,8 @@ import com.example.client.model.Room
 import com.example.client.ui.components.ButtonNavigate
 import com.example.client.ui.components.Loading
 import com.example.client.ui.components.TopBar
-import com.example.client.ui.components.room.RoomName
-import com.example.client.ui.components.room.RoomStatus
+import com.example.client.ui.components.quiz.LandingImage
+import com.example.client.ui.components.room.*
 import com.example.client.ui.components.room.TimeRoom
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.viewmodel.RoomDetailViewModel
@@ -62,7 +62,7 @@ fun RoomDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
             ) {
@@ -77,8 +77,25 @@ fun RoomDetailScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                             ) {
+                                LandingImage(
+                                    room.quiz.thumbnail
+                                )
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(dimensionResource(id = R.dimen.space_app_normal))
+                                )
                                 RoomName(
                                     name = room.roomName
+                                )
+                                RoomPin(
+                                    pin = room.roomPin
+                                )
+                                PlayAgain(
+                                    isPlayAgain = room.playAgain
+                                )
+                                UserNumber(
+                                    totalUser = room.totalUser,
+                                    maxUser = room.maxUser
                                 )
                                 TimeRoom(
                                     timeStart = Utilities.Companion.formatDateInvert(if(room.timeStart == null) null else room.timeStart.toString()),
@@ -103,22 +120,9 @@ fun RoomDetailScreen(
                             ) {
                                 ButtonNavigate(
                                     onClick = {
-                                        navController.navigate("${Routes.PLAY_QUIZ_SCREEN}/${id}/null")
+                                        navController.navigate("${Routes.WAITING_ROOM_SCREEN}/${room.roomPin}/${room.id}")
                                     },
-                                    "Bắt Đầu Chơi",
-                                    MaterialTheme.colorScheme.primary
-                                )
-
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(dimensionResource(id = R.dimen.space_app_normal))
-                                )
-
-                                ButtonNavigate(
-                                    onClick = {
-                                        navController.navigate("${Routes.QUIZ_RANK_SCREEN}/${id}/${room.id}")
-                                    },
-                                    "Bảng Xếp Hạng",
+                                    "Phòng Chờ",
                                     MaterialTheme.colorScheme.primary
                                 )
 

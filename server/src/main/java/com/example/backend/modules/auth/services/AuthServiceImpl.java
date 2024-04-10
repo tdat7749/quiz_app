@@ -4,11 +4,9 @@ package com.example.backend.modules.auth.services;
 import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.auth.constant.AuthConstants;
-import com.example.backend.modules.auth.dtos.LoginDTO;
-import com.example.backend.modules.auth.dtos.RegisterDTO;
-import com.example.backend.modules.auth.dtos.ResendMailDTO;
-import com.example.backend.modules.auth.dtos.VerifyDTO;
+import com.example.backend.modules.auth.dtos.*;
 import com.example.backend.modules.auth.exceptions.EmailUsedException;
+import com.example.backend.modules.auth.exceptions.LoginException;
 import com.example.backend.modules.auth.exceptions.UserNameUsedException;
 import com.example.backend.modules.auth.exceptions.VerifyEmailException;
 import com.example.backend.modules.auth.viewmodels.AuthenVm;
@@ -20,10 +18,14 @@ import com.example.backend.modules.user.exceptions.UserNotFoundException;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.services.UserService;
 import com.example.backend.utils.Utilities;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -59,10 +61,52 @@ public class AuthServiceImpl  implements AuthService{
             throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
         }
 
+        if(user.get().getGoogleId() != null) {
+            throw new LoginException(AuthConstants.LOGIN_FAILED);
+        }
 
         AuthenVm authenVm = AuthenVm.builder()
                 .accessToken(jwtService.generateAccessToken(user.get()))
                 .refreshToken(jwtService.generateRefreshToken(user.get()))
+                .build();
+
+        return new ResponseSuccess<>(AuthConstants.LOGIN_SUCCESS, authenVm);
+
+    }
+    @Override
+    @Transactional
+    public ResponseSuccess<AuthenVm> loginWithGoogle(String token) throws FirebaseAuthException {
+        FirebaseToken decodeToken = FirebaseAuth.getInstance().verifyIdToken(token);
+        var foundedUser = userService.findByEmail(decodeToken.getEmail());
+        User user;
+        if(foundedUser.isEmpty()){
+            User newUser = User.builder()
+                    .avatar(decodeToken.getPicture())
+                    .userName(decodeToken.getEmail())
+                    .displayName(decodeToken.getName())
+                    .password(passwordEncoder.encode(decodeToken.getEmail()))
+                    .email(decodeToken.getEmail())
+                    .role(Role.FREE)
+                    .createdAt(new Date())
+                    .updatedAt(new Date())
+                    .isNotLocked(true)
+                    .isEnable(true)
+                    .token(null)
+                    .googleId(decodeToken.getUid())
+                    .build();
+
+            user = userService.saveUser(newUser);
+        }else{
+            user = foundedUser.get();
+        }
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                user.getUsername(),
+                decodeToken.getEmail()));
+
+        AuthenVm authenVm = AuthenVm.builder()
+                .accessToken(jwtService.generateAccessToken(user))
+                .refreshToken(jwtService.generateRefreshToken(user))
                 .build();
 
         return new ResponseSuccess<>(AuthConstants.LOGIN_SUCCESS, authenVm);
@@ -83,7 +127,7 @@ public class AuthServiceImpl  implements AuthService{
         final String verifyToken = Utilities.generateCode();
 
         User newUser = User.builder()
-                .avatar("")
+                .avatar(AppConstants.DEFAULT_AVATAR)
                 .userName(dto.getUserName())
                 .displayName(dto.getDisplayName())
                 .password(passwordEncoder.encode(dto.getPassword()))

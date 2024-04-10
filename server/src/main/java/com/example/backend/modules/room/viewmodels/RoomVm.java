@@ -31,5 +31,8 @@ public class RoomVm {
     private String roomName;
 
     private boolean isClosed;
-
+    private int maxUser;
+    private boolean isPlayAgain;
+    private long totalUser;
+    private boolean isOnwer;
 }

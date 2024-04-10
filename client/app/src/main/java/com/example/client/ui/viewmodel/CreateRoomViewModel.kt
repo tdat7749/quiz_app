@@ -47,6 +47,12 @@ class CreateRoomViewModel @Inject constructor(
     var roomName by mutableStateOf<String>("")
         private set
 
+    var maxUser by mutableStateOf<Int>(40)
+        private set
+
+    var isPlayAgain by mutableStateOf<Boolean>(false)
+        private set
+
     fun onChangeTimeStart(newValue:LocalDate?){ timeStart = newValue}
 
     fun onChangeTimeStartClock(newValue:LocalTime?) {timeStartClock = newValue}
@@ -57,13 +63,19 @@ class CreateRoomViewModel @Inject constructor(
 
     fun onChangeRoomname(newValue:String) {roomName = newValue}
 
+    fun onChangeMaxUser(newValue:Int) {maxUser = newValue}
+
+    fun onChangePlayAgain(newValue:Boolean) {isPlayAgain = newValue}
+
 
     fun onCreateRoom(quizId:Int){
         val data = CreateRoom(
             quizId = quizId,
             timeStart = combineDateTime(timeStart,timeStartClock),
             timeEnd = combineDateTime(timeEnd,timeEndClock),
-            roomName = roomName
+            roomName = roomName,
+            maxUser = maxUser,
+            isPlayAgain = isPlayAgain
         )
 
         _create.value = ResourceState.Loading

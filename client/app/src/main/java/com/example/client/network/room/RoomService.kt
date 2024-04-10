@@ -23,6 +23,11 @@ interface RoomService {
     @GET("api/rooms/{roomPin}/join")
     suspend fun joinRoom(
         @Path("roomPin") roomPin:String
+    ): ApiResponse<Int>
+
+    @GET("api/rooms/{roomPin}/participant")
+    suspend fun getRoomForParticipants(
+        @Path("roomPin") roomPin:String
     ): ApiResponse<Room>
 
     @GET("api/rooms/{roomId}")
@@ -51,4 +56,15 @@ interface RoomService {
         @Query("pageIndex") pageIndex:Int,
         @Query("sortBy") sortBy:String = "createdAt",
     ): ApiResponse<PagingResponse<List<Room>>>
+
+    @GET("api/rooms/joined")
+    suspend fun getJoinedRoom(
+        @Query("pageIndex") pageIndex:Int,
+    ): ApiResponse<PagingResponse<List<Room>>>
+
+    @DELETE("api/rooms/{roomId}/kick/{userId}")
+    suspend fun kickUser(
+        @Path("roomId") roomId:Int,
+        @Path("userId") userId:Int
+    ): ApiResponse<Boolean>
 }

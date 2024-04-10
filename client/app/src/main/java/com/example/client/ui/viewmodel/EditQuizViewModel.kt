@@ -457,7 +457,6 @@ class EditQuizViewModel @Inject constructor(
             quizId = quizId
         )
 
-        Log.d("Hello",data.toString())
 
         _editAnswer.value = ResourceState.Loading
         viewModelScope.launch(Dispatchers.IO) {

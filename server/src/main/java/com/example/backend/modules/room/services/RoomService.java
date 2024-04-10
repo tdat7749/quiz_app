@@ -19,7 +19,11 @@ public interface RoomService {
 
     boolean isRoomOwner(User user, int roomId);
 
-    ResponseSuccess<RoomVm> joinRoom(String roomPin);
+    long countUserInRoom(Room room);
+
+    ResponseSuccess<Integer> joinRoom(User user,String roomPin);
+
+    ResponseSuccess<RoomVm> getRoomForParticipants(User user,String roomPin);
 
     ResponseSuccess<RoomVm> createRoom(User user, CreateRoomDTO dto);
     ResponseSuccess<Boolean> endRoom(User user,int roomId);
@@ -31,4 +35,6 @@ public interface RoomService {
 
     ResponseSuccess<RoomVm> getRoomDetail(int roomId);
 
+    ResponseSuccess<ResponsePaging<List<RoomVm>>> getJoinedRoom(User user,int pageIndex);
+    ResponseSuccess<Boolean> kickUser(User user, int roomId, int userId);
 }

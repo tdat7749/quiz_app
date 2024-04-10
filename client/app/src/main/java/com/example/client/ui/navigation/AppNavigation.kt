@@ -86,6 +86,18 @@ fun AppNavigationGraph(){
             }
 
             composable(
+                route = "${Routes.WAITING_ROOM_SCREEN}/{roomPin}/{roomId}",
+                arguments = listOf(
+                    navArgument("roomPin") {type = NavType.StringType},
+                    navArgument("roomId") {type = NavType.IntType},
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("roomId")
+                val pin = navStackEntry.arguments?.getString("roomPin")
+                WaitingRoomScreen(pin!!, id!!, navController)
+            }
+
+            composable(
                 route = "${Routes.ROOM_DETAIL_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") {type = NavType.IntType},

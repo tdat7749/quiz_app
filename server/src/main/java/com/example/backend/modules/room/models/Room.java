@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -47,6 +48,14 @@ public class Room {
     @Column(name = "is_closed",nullable = false)
     private boolean isClosed;
 
+    @Column(name = "max_user",nullable = false)
+    @ColumnDefault("40")
+    private int maxUser;
+
+    @Column(name = "play_again",nullable = false)
+    @ColumnDefault("true")
+    private boolean playAgain;
+
     @ManyToOne
     @JoinColumn(name = "host_id",nullable = false)
     @JsonBackReference
@@ -61,5 +70,24 @@ public class Room {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "room")
     @JsonManagedReference
     private List<History> histories;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_participants",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonBackReference
+    private List<User> users;
+
+    public void addUser(User user){
+        users.add(user);
+        user.getUserRooms().add(this);
+    }
+
+    public void removeUser(User user){
+        users.remove(user);
+        user.getUserRooms().remove(this);
+    }
 
 }

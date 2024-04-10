@@ -2,6 +2,7 @@ package com.example.client.ui.screens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -71,6 +72,7 @@ fun ChangePasswordScreen (
                    modifier = Modifier
                        .fillMaxSize()
                        .padding(dimensionResource(id = R.dimen.padding_app))
+                       .background(color = MaterialTheme.colorScheme.background)
                        .padding(it)
                        .verticalScroll(rememberScrollState()),
                ) {

@@ -54,6 +54,12 @@ class EditRoomViewModel @Inject constructor(
     var isClosed by mutableStateOf<Boolean>(false)
         private set
 
+    var maxUser by mutableStateOf<Int>(40)
+        private set
+
+    var isPlayAgain by mutableStateOf<Boolean>(false)
+        private set
+
     fun onChangeTimeStart(newValue:LocalDate?){ timeStart = newValue}
 
     fun onChangeTimeStartClock(newValue:LocalTime?) {timeStartClock = newValue}
@@ -65,6 +71,10 @@ class EditRoomViewModel @Inject constructor(
     fun onChangeRoomname(newValue:String) {roomName = newValue}
     fun onChangeClosed(newValue:Boolean) {isClosed = newValue}
 
+    fun onChangeMaxUser(newValue:Int) {maxUser = newValue}
+
+    fun onChangePlayAgain(newValue:Boolean) {isPlayAgain = newValue}
+
 
     fun onEditRoom(roomId:Int){
         val data = EditRoom(
@@ -72,7 +82,9 @@ class EditRoomViewModel @Inject constructor(
             timeStart = combineDateTime(timeStart,timeStartClock),
             timeEnd = combineDateTime(timeEnd,timeEndClock),
             roomName = roomName,
-            isClosed = isClosed
+            isClosed = isClosed,
+            maxUser = maxUser,
+            isPlayAgain = isPlayAgain
         )
 
         _edit.value = ResourceState.Loading
@@ -97,6 +109,8 @@ class EditRoomViewModel @Inject constructor(
 
                 roomName = room.roomName
                 isClosed = room.closed
+                maxUser = room.maxUser
+                isPlayAgain = room.playAgain
             }
         }
     }

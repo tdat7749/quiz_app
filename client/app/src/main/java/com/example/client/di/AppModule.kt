@@ -17,6 +17,7 @@ import com.example.client.network.topic.TopicService
 import com.example.client.network.user.UserService
 import com.example.client.repositories.*
 import com.example.client.utils.SharedPreferencesManager
+import com.google.firebase.auth.FirebaseAuth
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -27,6 +28,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -63,10 +65,20 @@ class AppModule {
 
         return Retrofit.Builder()
             .baseUrl(AppConstants.APP_BASE_URL)
-            .client(httpClient.build())
+            .client(httpClient
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60,TimeUnit.SECONDS)
+                .writeTimeout(60,TimeUnit.SECONDS)
+                .build()
+            )
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth()  = FirebaseAuth.getInstance()
+
 
     @Provides
     @Singleton
@@ -82,8 +94,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesAuthRepository(authService: AuthService) : AuthRepository {
-        return AuthRepository(authService)
+    fun providesAuthRepository(authService: AuthService,firebaseAuth: FirebaseAuth) : AuthRepository {
+        return AuthRepository(authService,firebaseAuth)
     }
 
     @Provides

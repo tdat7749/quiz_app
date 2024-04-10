@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,12 +33,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
 import com.example.client.model.Quiz
+import com.example.client.model.Room
 import com.example.client.model.Topic
 import com.example.client.model.User
 import com.example.client.ui.components.*
+import com.example.client.ui.components.room.RoomCard
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.theme.Shapes
 import com.example.client.ui.viewmodel.HomeViewModel
@@ -56,6 +62,7 @@ fun HomeScreen(
     val quizTop10 by homeViewModel.quizTop10.collectAsState()
     val user by homeViewModel.user.collectAsState()
     val quizLatest by homeViewModel.quizLatest.collectAsState()
+    val joinRoom:LazyPagingItems<Room> = homeViewModel.getJoinedRooms().collectAsLazyPagingItems()
 
     Scaffold(
         bottomBar =  {
@@ -85,12 +92,9 @@ fun HomeScreen(
                             topics is ResourceState.Success &&
                                     user is ResourceState.Success &&
                                     quizLatest is ResourceState.Success &&
-                                    quizTop10 is ResourceState.Success-> {
-//                        UserHeader((user as ResourceState.Success<ApiResponse<User>>).value.data)
-//                        Spacer(
-//                            modifier = Modifier
-//                                .height(dimensionResource(id = R.dimen.space_app_extraLarge))
-//                        )
+                                    quizTop10 is ResourceState.Success &&
+                                    joinRoom.loadState.refresh is LoadState.NotLoading
+                                    ->{
                                 SectionTopic(
                                     "Chủ Đề",
                                     (topics as ResourceState.Success<ApiResponse<List<Topic>>>).value.data,
@@ -99,6 +103,17 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .height(dimensionResource(id = R.dimen.space_app_extraLarge))
                                 )
+                                if(joinRoom.itemCount > 0){
+                                    SectionRoom(
+                                        "Phòng Đã Tham Gia",
+                                        joinRoom,
+                                        navController
+                                    )
+                                    Spacer(
+                                        modifier = Modifier
+                                            .height(dimensionResource(id = R.dimen.space_app_extraLarge))
+                                    )
+                                }
                                 SectionQuiz(
                                     "Mới Nhất",
                                     (quizLatest as ResourceState.Success<ApiResponse<List<Quiz>>>).value.data,
@@ -317,6 +332,40 @@ fun SectionQuiz(title:String,items: List<Quiz>,navController: NavController){
         }
     }
 }
+
+@Composable
+fun SectionRoom(title:String,items: LazyPagingItems<Room>, navController: NavController){
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+        Text(
+            text = title,
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.space_app_normal))
+        )
+        LazyRow (
+            horizontalArrangement  = Arrangement.spacedBy(8.dp)
+        ) {
+            items(items.itemCount){index ->
+                RoomCard(items[index]!!, navController)
+            }
+            item {
+                if(items.loadState.append is LoadState.Loading){
+                    LoadingCircle()
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun UserHeader(user:User){

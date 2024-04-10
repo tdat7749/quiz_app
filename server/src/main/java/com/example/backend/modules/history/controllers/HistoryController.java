@@ -64,13 +64,13 @@ public class HistoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{historyId}/answer")
+    @GetMapping("/{roomId}/answer")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<List<HistoryAnswerVm>>> getListHistoryAnswer(
-            @PathVariable("historyId") int historyId,
+            @PathVariable("roomId") int roomId,
             @AuthenticationPrincipal User user
     ) {
-        var result = historyAnswerService.getListHistoryAnswer(user,historyId);
+        var result = historyService.getListHistoryAnswer(user,roomId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
