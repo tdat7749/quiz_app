@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -36,5 +37,5 @@ public class CreateQuestionDTO {
     private int timeLimit;
 
     @NotNull(message = "Không được thiếu trường 'answers'")
-    private List<CreateAnswerDTO> answers;
+    private List<CreateAnswerDTO> answers = new ArrayList<>();
 }

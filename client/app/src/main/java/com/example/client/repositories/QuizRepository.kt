@@ -1,7 +1,7 @@
 package com.example.client.repositories
 
-import android.util.Log
-import com.example.client.model.CreateQuiz
+import com.example.client.model.*
+import com.example.client.network.quiz.AnswerService
 import com.example.client.network.quiz.QuestionService
 import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
@@ -12,10 +12,19 @@ import javax.inject.Inject
 class QuizRepository @Inject constructor(
     private val quizService: QuizService,
     private val questionTypeService: QuestionTypeService,
-    private val questionService:QuestionService
+    private val questionService:QuestionService,
+    private val answerService: AnswerService
 ){
     suspend fun getPublicQuiz(keyword:String,pageIndex:Int,sortBy:String,topicId:Int) = ApiHelper.safeCallApi {
         quizService.getPublicQuizzes(topicId,keyword, pageIndex, sortBy)
+    }
+
+    suspend fun getMyListCollection(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
+        quizService.getMyListCollection(keyword, pageIndex, sortBy)
+    }
+
+    suspend fun getMyQuizzes(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
+        quizService.getMyQuizzes(keyword, pageIndex, sortBy)
     }
 
     suspend fun get10QuizLatest() = ApiHelper.safeCallApi {
@@ -68,5 +77,59 @@ class QuizRepository @Inject constructor(
 
     suspend fun getListQuestionByQuizId(quizId:Int) = ApiHelper.safeCallApi {
         questionService.getListQuestionByQuizId(quizId)
+    }
+
+    suspend fun changeThumbnail(data: ChangeQuizThumbnail) = ApiHelper.safeCallApi {
+        val thumbnail = mutableListOf<MultipartBody.Part>()
+        thumbnail.add(Utilities.Companion.createFilePart("thumbnail", data.thumbnail))
+        thumbnail.add(MultipartBody.Part.createFormData("quizId", data.quizId.toString()))
+
+        quizService.changeThumbnail(thumbnail)
+    }
+
+    suspend fun editQuiz(data:EditQuiz) = ApiHelper.safeCallApi {
+        quizService.editQuiz(data)
+    }
+
+    suspend fun editQuestion(data:EditQuestion) = ApiHelper.safeCallApi {
+        questionService.editQuestion(data)
+    }
+
+    suspend fun createQuestion(data:CreateQuestion,quizId:Int) = ApiHelper.safeCallApi {
+        val parts = mutableListOf<MultipartBody.Part>()
+
+        parts.add(MultipartBody.Part.createFormData("title", data.title))
+        parts.add(MultipartBody.Part.createFormData("score", data.score.toString()))
+        parts.add(MultipartBody.Part.createFormData("order", data.order.toString()))
+        parts.add(MultipartBody.Part.createFormData("timeLimit", data.timeLimit.toString()))
+        parts.add(MultipartBody.Part.createFormData("questionTypeId", data.questionType.id.toString()))
+
+        if(data.thumbnail != null && data.thumbnail.trim() != ""){
+            parts.add(Utilities.Companion.createFilePart("thumbnail", data.thumbnail))
+        }
+
+        data.answers.forEachIndexed { ansIndex, answerDTO ->
+            parts.add(MultipartBody.Part.createFormData("answers[$ansIndex].title", answerDTO.title))
+            parts.add(MultipartBody.Part.createFormData("answers[$ansIndex].isCorrect", answerDTO.isCorrect.toString()))
+        }
+
+        questionService.createQuestion(parts,quizId)
+    }
+
+    suspend fun editQuestionThumbnail(data:EditQuestionThumbnail) = ApiHelper.safeCallApi {
+        val thumbnail = mutableListOf<MultipartBody.Part>()
+        thumbnail.add(Utilities.Companion.createFilePart("thumbnail", data.thumbnail))
+        thumbnail.add(MultipartBody.Part.createFormData("quizId", data.quizId.toString()))
+        thumbnail.add(MultipartBody.Part.createFormData("questionId", data.questionId.toString()))
+
+        questionService.editQuestionThumbnail(thumbnail)
+    }
+
+    suspend fun deleteQuestion(questionId:Int,quizId:Int) = ApiHelper.safeCallApi {
+        questionService.deleteQuestion(questionId,quizId)
+    }
+
+    suspend fun editListAnswer(data:EditListAnswer) = ApiHelper.safeCallApi {
+        answerService.editAnswers(data)
     }
 }

@@ -17,4 +17,8 @@ public class RoomConstants {
 
     public static final String ROOM_CLOSED = "Phòng chơi này đã kết thúc";
     public static final String ROOM_HAS_NOT_STARTED = "Phòng chơi này chưa tới lúc bắt đầu";
+
+    public static final String ROOM_FULL = "Phòng đã đầy, không thể tham gia";
+
+    public static final String USER_IS_NOT_IN_ROOM = "Bạn chưa tham gia phòng";
 }

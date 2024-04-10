@@ -3,10 +3,20 @@ package com.example.client.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
+import com.example.client.datasource.MyQuizzesDataSource
+import com.example.client.datasource.MyRoomsDataSource
+import com.example.client.datasource.RoomJoinedDataSource
 import com.example.client.model.Quiz
+import com.example.client.model.Room
 import com.example.client.model.Topic
 import com.example.client.model.User
 import com.example.client.repositories.QuizRepository
+import com.example.client.repositories.RoomRepository
 import com.example.client.repositories.TopicRepository
 import com.example.client.repositories.UserRepository
 import com.example.client.utils.ApiResponse
@@ -14,8 +24,9 @@ import com.example.client.utils.ResourceState
 import com.example.client.utils.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +34,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val topicRepository: TopicRepository,
     private val userRepository: UserRepository,
-    private val quizRepository: QuizRepository
+    private val quizRepository: QuizRepository,
+    private val roomRepository: RoomRepository
 ) : ViewModel() {
 
    
@@ -40,6 +52,7 @@ class HomeViewModel @Inject constructor(
     private val _user : MutableStateFlow<ResourceState<ApiResponse<User>>> = MutableStateFlow(ResourceState.Nothing)
     val user = _user.asStateFlow()
 
+    private val _keywordStateFlow = MutableStateFlow("")
 
     init {
         getAllTopic()
@@ -47,6 +60,18 @@ class HomeViewModel @Inject constructor(
         get10QuizLatest()
         getTop10QuizCollection()
     }
+
+
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    fun getJoinedRooms(): Flow<PagingData<Room>> = _keywordStateFlow
+        .debounce(700)
+        .distinctUntilChanged()
+        .flatMapLatest {keyword ->
+            Pager(PagingConfig(pageSize = 10,prefetchDistance = 1)){
+                RoomJoinedDataSource(roomRepository)
+            }.flow
+        }.cachedIn(viewModelScope)
 
     fun getAllTopic(){
         viewModelScope.launch(Dispatchers.IO){

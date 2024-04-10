@@ -3,6 +3,7 @@ package com.example.client.ui.screens
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -59,17 +60,13 @@ fun RegisterScreen(
             )
         },
         content = {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(dimensionResource(id = R.dimen.padding_app))
-                    .verticalScroll(rememberScrollState()),
-                color = Color.White
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
+            Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(id = R.dimen.padding_app))
+                .background(color = MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+        ) {
 //                    TopBar(
 //                        title = stringResource(id = R.string.register),
 //                        navController = navController
@@ -162,10 +159,8 @@ fun RegisterScreen(
                         navController,
                         Routes.LOGIN_SCREEN)
                 }
-            }
         }
     )
-
 }
 
 @Composable

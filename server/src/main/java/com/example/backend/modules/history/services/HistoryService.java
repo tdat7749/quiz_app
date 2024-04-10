@@ -5,6 +5,7 @@ import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.history.dtos.CreateHistoryDTO;
 import com.example.backend.modules.history.models.History;
+import com.example.backend.modules.history.viewmodels.HistoryAnswerVm;
 import com.example.backend.modules.history.viewmodels.HistoryRankVm;
 import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
 import com.example.backend.modules.history.viewmodels.HistorySingleVm;
@@ -21,15 +22,11 @@ public interface HistoryService {
 
     ResponseSuccess<Boolean> createHistory(CreateHistoryDTO dto,User user);
 
-
-    // hàm này cho xem lại history chơi ở room của chủ tài khoản.
-    ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>> getHistoryRoom(int pageIndex, User user);
-
-    ResponseSuccess<ResponsePaging<List<HistorySingleVm>>> getHistorySingle(int pageIndex, User user);
-
     ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankSingle(int quizId, int pageIndex);
 
     ResponseSuccess<ResponsePaging<List<HistoryRankVm>>> getHistoryRankRoom(int roomid, int pageIndex);
+
+    ResponseSuccess<List<HistoryAnswerVm>> getListHistoryAnswer(User user,int roomId);
 
     // cần thêm 1 hàm get history cho host room xem lại history của các room, trả về list user và kết quả tham gia room.
 

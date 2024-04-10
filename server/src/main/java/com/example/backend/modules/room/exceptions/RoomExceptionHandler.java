@@ -32,4 +32,16 @@ public class RoomExceptionHandler {
     public ResponseError roomHasNotStartedExceptionHandler(RoomHasNotStarted ex){
         return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
+
+    @ExceptionHandler(RoomFullException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError roomFullExceptionHandler(RoomFullException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
+
+    @ExceptionHandler(UserIsNotInRoomException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError userIsNotInRoomExceptionHandler(UserIsNotInRoomException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
 }

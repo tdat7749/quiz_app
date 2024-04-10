@@ -23,4 +23,6 @@ public class AppConstants {
     public static final int PAGE_SIZE = 10;
 
     public static final String SORT_BY_CREATED_AT = "createdAt";
+
+    public static final String DEFAULT_AVATAR = "https://res.cloudinary.com/dafpvnxnf/image/upload/v1712598708/hesnio7pfipfh8ezsqr7.png";
 }

@@ -14,6 +14,7 @@ import com.example.backend.modules.user.exceptions.UserNotFoundException;
 import com.example.backend.modules.user.repositories.UserRepository;
 import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.models.User;
+import com.example.backend.modules.user.viewmodels.UserDetailVm;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import com.example.backend.utils.Utilities;
 import org.springframework.context.annotation.Lazy;
@@ -62,8 +63,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public Optional<User> findById(int id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
 
@@ -86,6 +92,11 @@ public class UserServiceImpl implements UserService{
         emailService.sendMail(dto.getEmail(), AppConstants.SUBJECT_EMAIL_FORGOT_PASSWORD,AppConstants.TEXT_FORGOT_PASSWORD + token);
 
         return new ResponseSuccess<>(UserConstants.SEND_MAIL_FORGOT_PASSWORD_SUCCESS, true);
+    }
+
+    @Override
+    public ResponseSuccess<UserDetailVm> getMeDetail(User user) {
+        return new ResponseSuccess<>("Thành Công",Utilities.getUserDetailVm(user));
     }
 
 

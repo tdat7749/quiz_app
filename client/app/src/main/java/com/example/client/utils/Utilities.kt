@@ -2,9 +2,10 @@ package com.example.client.utils
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
+import androidx.annotation.RequiresApi
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -14,7 +15,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 class Utilities {
     companion object {
@@ -57,6 +61,18 @@ class Utilities {
         fun formatDate(date: Date): String {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
             return dateFormat.format(date)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun formatDateInvert(date:String?): String {
+            if(date == null){
+                return ""
+            }
+            val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+            val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+
+            val dateTime: LocalDateTime = LocalDateTime.parse(date,inputFormatter)
+            return dateTime.format(outputFormatter)
         }
 
         fun getRealPathFromURI(uri: Uri, context: Context): String? {

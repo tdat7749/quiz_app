@@ -1,14 +1,15 @@
 package com.example.client.ui.screens
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,11 +39,15 @@ import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
-import java.text.SimpleDateFormat
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockConfig
+import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun CreateRoomScreen(
@@ -55,9 +60,13 @@ fun CreateRoomScreen(
 
     val create by createRoomViewModel.create.collectAsState()
 
+
     when(create){
         is ResourceState.Success -> {
             ShowMessage((create as ResourceState.Success<ApiResponse<Room>>).value.message)
+            LaunchedEffect(Unit){
+                navController.popBackStack()
+            }
         }
         is ResourceState.Error -> {
             (create as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { createRoomViewModel.resetState() } }
@@ -75,18 +84,13 @@ fun CreateRoomScreen(
             )
         },
         content = {
-            Surface (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-                    .padding(it)
-            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
-
+                        .background(color = MaterialTheme.colorScheme.background)
+                        .verticalScroll(rememberScrollState())
+                        .padding(it)
                 ) {
                     QuizThumbnail(thumbnail)
                     QuestionSection(title)
@@ -97,6 +101,18 @@ fun CreateRoomScreen(
                             createRoomViewModel.onChangeRoomname(value)
                         },
                         "Tên Phòng",
+                        painterResource(id = R.drawable.title)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    NumberFieldOutlined(
+                        createRoomViewModel.maxUser,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
+                        },
+                        "Số Thành Viên Tối Đa",
                         painterResource(id = R.drawable.title)
                     )
                     Spacer(
@@ -114,6 +130,17 @@ fun CreateRoomScreen(
                         modifier = Modifier
                             .height(dimensionResource(id = R.dimen.space_app_small))
                     )
+                    TimeComponent(
+                        value = createRoomViewModel.timeStartClock.toString(),
+                        label = "Giờ Bắt Đầu",
+                        onChangeTime = {it ->
+                           createRoomViewModel.onChangeTimeStartClock(it)
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_normal))
+                    )
                     CalendarComponent(
                         value = createRoomViewModel.timeEnd.toString(),
                         label = "Ngày Kết Thúc",
@@ -123,6 +150,29 @@ fun CreateRoomScreen(
                     )
                     Spacer(
                         modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    TimeComponent(
+                        value = createRoomViewModel.timeEndClock.toString(),
+                        label = "Giờ Kết Thúc",
+                        onChangeTime = {it ->
+                            createRoomViewModel.onChangeTimeEndClock(it)
+                        }
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    SwitchLabel(
+                        "Cho Phép Chơi Lại: ",
+                        createRoomViewModel.isPlayAgain,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangePlayAgain(value)
+                        }
+                    )
+
+                    Spacer(
+                        modifier = Modifier
                             .height(dimensionResource(id = R.dimen.space_app_normal))
                     )
 
@@ -130,13 +180,12 @@ fun CreateRoomScreen(
                         onClick = {
                             createRoomViewModel.onCreateRoom(quizId)
                         },
-                        stringResource(id = R.string.register),
+                        "Tạo Phòng",
                         MaterialTheme.colorScheme.primary,
                         create is ResourceState.Loading,
                         create !is ResourceState.Loading
                     )
                 }
-            }
         }
     )
 }
@@ -161,9 +210,11 @@ private fun QuizThumbnail(thumbnail:String?) {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CalendarComponent(value:String,label:String,date: LocalDate? = null, onChangeDate:(LocalDate) -> Unit){
+private fun CalendarComponent(value:String,label:String,date: LocalDate? = null, onChangeDate:(LocalDate?) -> Unit){
     val calendarState = rememberUseCaseState()
 
     CalendarDialog(
@@ -190,10 +241,69 @@ private fun CalendarComponent(value:String,label:String,date: LocalDate? = null,
                     Text(label)
                 },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                suffix = {
+                    IconButton(onClick = { onChangeDate(null) }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                        )
+                    }
+                }
             )
         }
         IconButton(modifier = Modifier.weight(1f), onClick = { calendarState.show() }) {
+            Icon(
+                Icons.Default.EditCalendar,
+                modifier = Modifier.size(32.dp),
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onChangeTime:(LocalTime?) -> Unit){
+    val clockState = rememberUseCaseState()
+
+    ClockDialog(
+        state = clockState,
+        config = ClockConfig(
+            boundary = LocalTime.of(0, 0, 0)..LocalTime.of(12, 59, 0),
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes{hours, minutes ->
+            onChangeTime(LocalTime.of(hours,minutes))
+        }
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier.weight(5f)) {
+            OutlinedTextField(
+                value = if(value == "null") "" else value,
+                onValueChange = {  },
+                label = {
+                    Text(label)
+                },
+                readOnly = true,
+                modifier = Modifier.fillMaxWidth(),
+                suffix = {
+                    IconButton(onClick = { onChangeTime(null) }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            )
+        }
+        IconButton(modifier = Modifier.weight(1f), onClick = { clockState.show() }) {
             Icon(
                 Icons.Default.EditCalendar,
                 modifier = Modifier.size(32.dp),

@@ -8,16 +8,13 @@ import javax.inject.Inject
 class RoomRepository @Inject constructor(
     private val roomService:RoomService
 ) {
-    suspend fun createRoom(data:CreateRoom) = ApiHelper.safeCallApi {
-        roomService.createRoom(data)
+    
+    suspend fun getMyListRoom(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
+        roomService.getMyListRoom(keyword,pageIndex,sortBy)
     }
 
-    suspend fun joinRoom(roomPin:String) = ApiHelper.safeCallApi {
-        roomService.joinRoom(roomPin)
-    }
-
-    suspend fun endRoom(roomId:Int) = ApiHelper.safeCallApi {
-        roomService.endRoom(roomId)
+    suspend fun getRoomDetail(roomId:Int) = ApiHelper.safeCallApi {
+        roomService.getRoomDetail(roomId)
     }
 
     suspend fun editRoom(data:EditRoom) = ApiHelper.safeCallApi {
@@ -28,7 +25,25 @@ class RoomRepository @Inject constructor(
         roomService.deleteRoom(roomId)
     }
 
-    suspend fun getMyListRoom(keyword:String,pageIndex:Int,sortBy:String) = ApiHelper.safeCallApi {
-        roomService.getMyListRoom(keyword,pageIndex,sortBy)
+
+    suspend fun createRoom(data:CreateRoom) = ApiHelper.safeCallApi {
+        roomService.createRoom(data)
     }
+
+    suspend fun joinRoom(roomPin:String) = ApiHelper.safeCallApi {
+        roomService.joinRoom(roomPin)
+    }
+
+    suspend fun getRoomForParticipants(roomPin: String) = ApiHelper.safeCallApi {
+        roomService.getRoomForParticipants(roomPin)
+    }
+
+    suspend fun endRoom(roomId:Int) = ApiHelper.safeCallApi {
+        roomService.endRoom(roomId)
+    }
+
+    suspend fun getJoinedRoom(pageIndex:Int) = ApiHelper.safeCallApi {
+        roomService.getJoinedRoom(pageIndex)
+    }
+
 }

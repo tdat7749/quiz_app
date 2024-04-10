@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import com.example.client.ui.components.Loading
 import com.example.client.ui.components.LoadingCircle
 import com.example.client.ui.components.TopBar
 import com.example.client.ui.viewmodel.RankScreenViewModel
+import com.example.client.R
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -71,21 +73,14 @@ fun RankScreen(
             TopBar("Xếp Hạng",navController)
         },
         content = {
-            Surface (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-                    .padding(it)
-            ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(
-                            top = 32.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        ),
+                            dimensionResource(id = R.dimen.padding_app)
+                        )
+                        .background(color = MaterialTheme.colorScheme.background)
+                        .padding(it),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -94,8 +89,7 @@ fun RankScreen(
                     }else if (historyRank.loadState.refresh is LoadState.NotLoading){
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
+                                .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -106,12 +100,11 @@ fun RankScreen(
                             )
                         }
                         QueueSection(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier, //weight(1f)
                             history = historyRank //.slice(3 until historyRank.itemCount)
                         )
                     }
                 }
-            }
         }
     )
 }
@@ -167,16 +160,9 @@ private fun First(userImage: String, userScore: Int, userName: String) {
 
     Column(
         modifier = Modifier
-            .padding(bottom = 24.dp)
             .zIndex(2f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.padding(bottom = 2.dp),
-            text = "1",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
         LottieAnimation(
             composition = composition,
             progress = { progress },
@@ -258,7 +244,8 @@ private fun Third(userImage: String, userName: String, userScore: Int) {
         )
         Text(
             text = "$userScore",
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
 //            color = MaterialTheme.colors.primaryVariant
         )
     }
@@ -281,11 +268,11 @@ private fun ProfileImage(userImage: String, imageSize: Dp = 112.dp) {
             brush = Brush.horizontalGradient(
                 colors = listOf(
                     MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.secondary,
-                    MaterialTheme.colorScheme.tertiary,
+//                    MaterialTheme.colorScheme.secondary,
+//                    MaterialTheme.colorScheme.tertiary,
                     MaterialTheme.colorScheme.onPrimary,
-                    MaterialTheme.colorScheme.onSecondary,
-                    MaterialTheme.colorScheme.onTertiary
+//                    MaterialTheme.colorScheme.onSecondary,
+//                    MaterialTheme.colorScheme.onTertiary
                 )
             )
         ),
@@ -351,7 +338,7 @@ private fun Queue(
                 .height(80.dp)
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(50)
                 ),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -384,13 +371,13 @@ private fun QueueContent(userImage: String, userName: String, userScore: Int) {
         Text(
             modifier = Modifier.padding(start = 16.dp),
             text = userName,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
     Text(
         modifier = Modifier.padding(end = 32.dp),
         text = "$userScore",
-        color = MaterialTheme.colorScheme.onPrimary,
+        color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Bold
     )
 }

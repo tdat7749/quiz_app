@@ -36,7 +36,7 @@ fun FindRoomScreen(
     findRoomViewModel: FindRoomViewModel = hiltViewModel()
 ){
 
-    val join by findRoomViewModel.join.collectAsState()
+    
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.join_room))
     val progress by animateLottieCompositionAsState(
@@ -44,11 +44,20 @@ fun FindRoomScreen(
         iterations = LottieConstants.IterateForever
     )
 
+    val join by findRoomViewModel.join.collectAsState()
+
+    DisposableEffect(Unit){
+            onDispose {
+                findRoomViewModel.resetState()
+            }
+        }
+
+
     when(join){
         is ResourceState.Success -> {
-            val room = (join as ResourceState.Success<ApiResponse<Room>>).value.data
+            val roomId = (join as ResourceState.Success<ApiResponse<Int>>).value.data
             LaunchedEffect(Unit){
-                navController.navigate("${Routes.PLAY_QUIZ_SCREEN}/${room.quiz.id}/${room.id}")
+                navController.navigate("${Routes.WAITING_ROOM_SCREEN}/${findRoomViewModel.roomPin}/${roomId}")
             }
         }
         is ResourceState.Error -> {
@@ -59,12 +68,7 @@ fun FindRoomScreen(
         }
     }
 
-    DisposableEffect(Unit){
-        onDispose {
-            findRoomViewModel.resetState()
-        }
-    }
-
+   
     Scaffold(
         topBar = {
             TopBar(
@@ -73,17 +77,13 @@ fun FindRoomScreen(
             )
         },
         content = {
-            Surface (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-                    .padding(it)
-            ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
+                        .background(color = MaterialTheme.colorScheme.background)
+                        .verticalScroll(rememberScrollState())
+                        .padding(it)
                 ) {
                     LottieAnimation(
                         composition = composition,
@@ -116,7 +116,6 @@ fun FindRoomScreen(
                         enable = join !is ResourceState.Loading
                     )
                 }
-            }
         }
     )
 }

@@ -23,18 +23,18 @@ public interface QuizRepository extends JpaRepository<Quiz,Integer> {
 
     boolean existsByUserAndId(User user,int id);
 
-    @Query("select q from Quiz as q where q.isPublic = true and q.topic = :topic and q.title LIKE %:keyword%")
+    @Query("select q from Quiz as q left join q.questions as qq where size(qq) > 0 and q.isPublic = true and q.topic = :topic and q.title LIKE %:keyword%")
     Page<Quiz> getListPublicQuizzes(Topic topic,String keyword, Pageable paging);
 
     @Query("select q from Quiz as q where q.user = :user and q.title LIKE %:keyword%")
     Page<Quiz> getMyListQuizzes(User user,String keyword, Pageable paging);
 
-    @Query("select q from Quiz as q left join q.collections as c where c.user = :user and q.title LIKE %:keyword% and q.isPublic = true")
+    @Query("select q from Quiz as q left join q.collections as c left join q.questions as qq  where size(qq) > 0 and c.user = :user and q.title LIKE %:keyword% and q.isPublic = true")
     Page<Quiz> getMyListCollection(User user,String keyword, Pageable paging);
 
-    @Query("select q, count(c) as count from Quiz as q left join q.collections as c where q.isPublic = true group by q order by count desc")
+    @Query("select q, count(c) as count from Quiz as q left join q.collections as c left join q.questions as qq where size(qq) > 0 and q.isPublic = true group by q order by count desc")
     List<Quiz> getTop10QuizCollection(Pageable pageable);
 
-    @Query("select q from Quiz as q where q.isPublic = true order by q.createdAt desc ")
+    @Query("select q from Quiz as q left join q.questions as qq where size(qq) > 0 and q.isPublic = true order by q.createdAt desc ")
     List<Quiz> get10QuizLatest(Pageable pageable);
 }

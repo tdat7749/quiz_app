@@ -42,28 +42,6 @@ public class HistoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/room")
-    @ResponseBody
-    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>>> getHistoryRoom(
-            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
-            @AuthenticationPrincipal User user
-    ) {
-        var result = historyService.getHistoryRoom(pageIndex,user);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/single")
-    @ResponseBody
-    public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistorySingleVm>>>> getHistorySingle(
-            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
-            @AuthenticationPrincipal User user
-    ) {
-        var result = historyService.getHistorySingle(pageIndex,user);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @GetMapping("/single/{quizId}/rank")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<ResponsePaging<List<HistoryRankVm>>>> getHistoryRankSingle(
@@ -86,13 +64,13 @@ public class HistoryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{historyId}/answer")
+    @GetMapping("/{roomId}/answer")
     @ResponseBody
     public ResponseEntity<ResponseSuccess<List<HistoryAnswerVm>>> getListHistoryAnswer(
-            @PathVariable("historyId") int historyId,
+            @PathVariable("roomId") int roomId,
             @AuthenticationPrincipal User user
     ) {
-        var result = historyAnswerService.getListHistoryAnswer(user,historyId);
+        var result = historyService.getListHistoryAnswer(user,roomId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

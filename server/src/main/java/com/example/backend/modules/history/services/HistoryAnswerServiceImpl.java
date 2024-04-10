@@ -94,17 +94,8 @@ public class HistoryAnswerServiceImpl implements HistoryAnswerService{
     }
 
     @Override
-    public ResponseSuccess<List<HistoryAnswerVm>> getListHistoryAnswer(User user, int historyId) {
-        var history = historyService.findByIdAndUser(historyId,user);
-
-        if(history.isEmpty()){
-            throw new HistoryNotFoundException(HistoryConstants.HISTORY_NOT_FOUND);
-        }
-
-        var listHistoryAnswers = historyAnswerRepository.getListHistoryAnswer(history.get());
-
-        var listHistoryAnswersVm = listHistoryAnswers.stream().map(Utilities::getHistoryAnswer).toList();
-
-        return new ResponseSuccess<>("Thành công",listHistoryAnswersVm);
+    public void deleteByHistoryId(int historyId) {
+        historyAnswerRepository.deleteByHistoryId(historyId);
     }
+
 }

@@ -10,6 +10,13 @@ data class Login(
     val password:String
 )
 
+data class LoginWithGoogle(
+    val displayName: String,
+    val email:String,
+    val uid:String,
+    var avatar:String
+)
+
 data class Register(
     val userName:String,
     val password:String,
@@ -27,6 +34,15 @@ data class User(
     val id:Int,
     val displayName:String,
     val avatar :String
+)
+
+data class UserDetail(
+    val id:Int,
+    val displayName:String,
+    val avatar :String,
+    val role:String,
+    val userName:String,
+    val email:String
 )
 
 data class ResendEmail(

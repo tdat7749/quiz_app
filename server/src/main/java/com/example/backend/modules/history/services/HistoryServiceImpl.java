@@ -5,12 +5,10 @@ import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.history.constant.HistoryConstants;
 import com.example.backend.modules.history.dtos.CreateHistoryDTO;
+import com.example.backend.modules.history.exceptions.CannotPlayAgainException;
 import com.example.backend.modules.history.models.History;
 import com.example.backend.modules.history.repositories.HistoryRepository;
-import com.example.backend.modules.history.viewmodels.HistoryRank;
-import com.example.backend.modules.history.viewmodels.HistoryRankVm;
-import com.example.backend.modules.history.viewmodels.HistoryRoomVm;
-import com.example.backend.modules.history.viewmodels.HistorySingleVm;
+import com.example.backend.modules.history.viewmodels.*;
 import com.example.backend.modules.quiz.constant.QuizConstants;
 import com.example.backend.modules.quiz.exceptions.QuizNotFoundException;
 import com.example.backend.modules.quiz.models.Quiz;
@@ -28,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +68,33 @@ public class HistoryServiceImpl implements HistoryService{
             if(room.isEmpty()){
                 throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
             }
+
+            var foundHistory = historyRepository.findByUserAndRoom(user,room.get());
+            if(!room.get().isPlayAgain()){
+                if(foundHistory.isPresent()){
+                    throw new CannotPlayAgainException(HistoryConstants.CANNOT_PLAY_AGAIN);
+                }
+            }
+            if(foundHistory.isPresent()){
+                historyAnswerService.deleteByHistoryId(foundHistory.get().getId());
+                historyRepository.delete(foundHistory.get());
+            }
+
+            History history = History.builder()
+                    .room(room.get())
+                    .quiz(null)
+                    .score(dto.getTotalScore())
+                    .user(user)
+                    .createdAt(new Date())
+                    .finishedAt(dto.getFinishedAt())
+                    .startedAt(dto.getStartedAt())
+                    .totalCorrect(dto.getTotalCorrect())
+                    .updatedAt(new Date())
+                    .build();
+
+            var saveHistory = historyRepository.save(history);
+
+            historyAnswerService.createBulkHistoryAnswer(dto.getHistoryAnswers(),saveHistory);
         }
 
         if(dto.getQuizId() != null){
@@ -76,59 +102,31 @@ public class HistoryServiceImpl implements HistoryService{
             if(quiz.isEmpty()){
                 throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
             }
+
+            var foundHistory = historyRepository.findByUserAndQuiz(user,quiz.get());
+            if(foundHistory.isPresent()){
+                historyAnswerService.deleteByHistoryId(foundHistory.get().getId());
+                historyRepository.delete(foundHistory.get());
+            }
+
+            History history = History.builder()
+                    .room(null)
+                    .quiz(quiz.orElse(null))
+                    .score(dto.getTotalScore())
+                    .user(user)
+                    .createdAt(new Date())
+                    .finishedAt(dto.getFinishedAt())
+                    .startedAt(dto.getStartedAt())
+                    .totalCorrect(dto.getTotalCorrect())
+                    .updatedAt(new Date())
+                    .build();
+
+            var saveHistory = historyRepository.save(history);
+
+            historyAnswerService.createBulkHistoryAnswer(dto.getHistoryAnswers(),saveHistory);
         }
 
-        History history = History.builder()
-                .room(room.orElse(null))
-                .quiz(quiz.orElse(null))
-                .score(dto.getTotalScore())
-                .user(user)
-                .createdAt(new Date())
-                .finishedAt(dto.getFinishedAt())
-                .startedAt(dto.getStartedAt())
-                .totalCorrect(dto.getTotalCorrect())
-                .updatedAt(new Date())
-                .build();
-
-        var saveHistory = historyRepository.save(history);
-
-        historyAnswerService.createBulkHistoryAnswer(dto.getHistoryAnswers(),saveHistory);
-
         return new ResponseSuccess<>(HistoryConstants.CREATE_HISTORY,true);
-    }
-
-    @Override
-    public ResponseSuccess<ResponsePaging<List<HistoryRoomVm>>> getHistoryRoom(int pageIndex, User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
-
-        Page<History> pagingResult = historyRepository.getHistoryRoom(user,paging);
-
-        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistoryRoomVm).toList();
-
-        ResponsePaging responsePaging = ResponsePaging.builder()
-                .data(listHistoryRoomVm)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",responsePaging);
-    }
-
-    @Override
-    public ResponseSuccess<ResponsePaging<List<HistorySingleVm>>> getHistorySingle(int pageIndex, User user) {
-        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
-
-        Page<History> pagingResult = historyRepository.getHistorySingle(user,paging);
-
-        var listHistoryRoomVm = pagingResult.stream().map(Utilities::getHistorySingleVm).toList();
-
-        ResponsePaging responsePaging = ResponsePaging.builder()
-                .data(listHistoryRoomVm)
-                .totalPage(pagingResult.getTotalPages())
-                .totalRecord((int) pagingResult.getTotalElements())
-                .build();
-
-        return new ResponseSuccess<>("Thành công",responsePaging);
     }
 
     @Override
@@ -163,5 +161,23 @@ public class HistoryServiceImpl implements HistoryService{
                 .build();
 
         return new ResponseSuccess<>("Thành công",responsePaging);
+    }
+
+    @Override
+    public ResponseSuccess<List<HistoryAnswerVm>> getListHistoryAnswer(User user, int roomId) {
+        var foundedRoom = roomService.findById(roomId);
+        if(foundedRoom.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        var foundedHistory = historyRepository.findByUserAndRoom(user,foundedRoom.get());
+        if (foundedHistory.isEmpty()){
+            return new ResponseSuccess<>("Thành công", new ArrayList<>());
+        }
+
+        var listHistoryAnswer = foundedHistory.get().getHistoryAnswers();
+
+        var vm = listHistoryAnswer.stream().map(Utilities::getHistoryAnswer).toList();
+        return new ResponseSuccess<>("Thành công", vm);
     }
 }

@@ -60,18 +60,13 @@ fun SendEmailForgotScreen (
             )
         },
         content = {
-            Surface(
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
                     .verticalScroll(rememberScrollState())
-                    .background(Color.White)
-
-            ) {
-                Column (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(id = R.dimen.padding_app))
-                ){
+                    .background(color = MaterialTheme.colorScheme.background)
+            ){
                     HeaderApp(
                         painterResource(id = R.drawable.send_email),
                         stringResource(id = R.string.app_name),
@@ -103,7 +98,6 @@ fun SendEmailForgotScreen (
                         send !is ResourceState.Loading
                     )
                 }
-            }
         }
     )
 }

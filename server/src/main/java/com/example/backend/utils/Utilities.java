@@ -13,6 +13,7 @@ import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
+import com.example.backend.modules.user.viewmodels.UserDetailVm;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,17 @@ public class Utilities {
                 .build();
     }
 
+    public static UserDetailVm getUserDetailVm(User user){
+        return UserDetailVm.builder()
+                .id(user.getId())
+                .displayName(user.getDisplayName())
+                .avatar(user.getAvatar())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .userName(user.getUsername())
+                .build();
+    }
+
     public static QuizVm getQuizVm(Quiz quiz){
 
         return QuizVm.builder()
@@ -48,7 +60,7 @@ public class Utilities {
                 .build();
     }
 
-    public static QuizDetailVm getQuizDetailVm(Quiz quiz,boolean isCollect){
+    public static QuizDetailVm getQuizDetailVm(Quiz quiz,boolean isCollect,boolean isOwner){
 
         // còn thiếu get cái totalScore của quiz
         return QuizDetailVm.builder()
@@ -63,19 +75,41 @@ public class Utilities {
                 .user(getUserVm(quiz.getUser()))
                 .topic(getTopicVm(quiz.getTopic()))
                 .isCollect(isCollect)
+                .isOwner(isOwner)
+                .isPublic(quiz.getIsPublic())
+                .build();
+    }
+
+    public static RoomVm getRoomVm(Room room,Long totalUser){
+        return RoomVm.builder()
+                .roomPin(room.getRoomPin())
+                .id(room.getId())
+                .timeStart(room.getTimeStart() != null ? room.getTimeStart().toString() : null)
+                .timeEnd(room.getTimeEnd() != null ? room.getTimeEnd().toString() : null)
+                .createdAt(room.getCreatedAt().toString())
+                .host(getUserVm(room.getUser()))
+                .quiz(getQuizVm(room.getQuiz()))
+                .roomName(room.getRoomName())
+                .isClosed(room.isClosed())
+                .isPlayAgain(room.isPlayAgain())
+                .maxUser(room.getMaxUser())
+                .totalUser(totalUser)
                 .build();
     }
 
     public static RoomVm getRoomVm(Room room){
-
         return RoomVm.builder()
                 .roomPin(room.getRoomPin())
                 .id(room.getId())
-                .timeStart(room.getTimeStart().toString())
-                .timeEnd(room.getTimeEnd().toString())
+                .timeStart(room.getTimeStart() != null ? room.getTimeStart().toString() : null)
+                .timeEnd(room.getTimeEnd() != null ? room.getTimeEnd().toString() : null)
                 .createdAt(room.getCreatedAt().toString())
                 .host(getUserVm(room.getUser()))
                 .quiz(getQuizVm(room.getQuiz()))
+                .roomName(room.getRoomName())
+                .isClosed(room.isClosed())
+                .isPlayAgain(room.isPlayAgain())
+                .maxUser(room.getMaxUser())
                 .build();
     }
 
@@ -148,6 +182,7 @@ public class Utilities {
                 .score(question.getScore())
                 .id(question.getId())
                 .title(question.getTitle())
+                .thumbnail(question.getThumbnail())
                 .answers(getListAnswerVm(question.getAnswers()))
                 .build();
     }
@@ -180,6 +215,7 @@ public class Utilities {
                 .id(historyAnswer.getId())
                 .isCorrect(historyAnswer.getIsCorrect())
                 .question(getQuestionVm(historyAnswer.getQuestion()))
+                .answer(historyAnswer.getAnswer() != null ? getAnswerVm(historyAnswer.getAnswer()) :null)
                 .build();
     }
 

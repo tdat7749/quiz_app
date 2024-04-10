@@ -2,6 +2,7 @@ package com.example.backend.exceptions;
 
 import com.example.backend.commons.ResponseError;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.firebase.auth.FirebaseAuthException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -104,5 +105,12 @@ public class GlobalExceptionHandler {
     public ResponseError numberFormatExceptionHandler(NumberFormatException ex) {
         return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, 500,
                 "Lỗi xảy ra, vui lòng thử lại sau");
+    }
+
+    @ExceptionHandler(FirebaseAuthException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError firebaseAuthExceptionHandler(FirebaseAuthException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST, 400,
+                "Xác thực thất bại");
     }
 }

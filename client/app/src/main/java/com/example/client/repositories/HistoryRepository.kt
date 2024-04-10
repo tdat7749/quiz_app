@@ -18,4 +18,8 @@ class HistoryRepository @Inject constructor(
     suspend fun getHistoryRankSingle(quizId:Int,pageIndex: Int) = ApiHelper.safeCallApi {
         historyService.getHistoryRankSingle(quizId,pageIndex)
     }
+
+    suspend fun getHistoryAnswer(roomId:Int) = ApiHelper.safeCallApi {
+        historyService.getHistoryAnswer(roomId)
+    }
 }

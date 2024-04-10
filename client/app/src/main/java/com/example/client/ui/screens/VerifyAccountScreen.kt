@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -31,6 +33,7 @@ import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 import kotlinx.coroutines.flow.asStateFlow
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun VerifyAccountScreen (
     email:String = "ABCASDASD@gmail.com",
@@ -55,53 +58,52 @@ fun VerifyAccountScreen (
     }
 
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(Color.White)
-
-    ) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(id = R.dimen.padding_app))
-        ){
-            HeaderApp(
-                painterResource(id = R.drawable.verify),
-                stringResource(id = R.string.app_name),
-                stringResource(id = R.string.verify)
-            )
-            EmailDisplay(
-                email
-            )
-            Spacer(
+    Scaffold(
+        content = {
+            Column (
                 modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_small))
-            )
-            PasswordFieldOutlined(
-                verifyViewModel.code,
-                onChangeValue = {
-                    verifyViewModel.onChangeToken(it)
-                },
-                stringResource(id = R.string.token),
-                painterResource(id = R.drawable.token)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.space_app_normal))
-            )
-            ButtonComponent(
-                onClick = {
-                    verifyViewModel.verify()
-                },
-                stringResource(id = R.string.send),
-                MaterialTheme.colorScheme.primary,
-                verify is ResourceState.Loading,
-                verify !is ResourceState.Loading
-            )
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .verticalScroll(rememberScrollState())
+                    .background(color = MaterialTheme.colorScheme.background)
+            ){
+                HeaderApp(
+                    painterResource(id = R.drawable.verify),
+                    stringResource(id = R.string.app_name),
+                    stringResource(id = R.string.verify)
+                )
+                EmailDisplay(
+                    email
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_small))
+                )
+                PasswordFieldOutlined(
+                    verifyViewModel.code,
+                    onChangeValue = {
+                        verifyViewModel.onChangeToken(it)
+                    },
+                    stringResource(id = R.string.token),
+                    painterResource(id = R.drawable.token)
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.space_app_normal))
+                )
+                ButtonComponent(
+                    onClick = {
+                        verifyViewModel.verify()
+                    },
+                    stringResource(id = R.string.send),
+                    MaterialTheme.colorScheme.primary,
+                    verify is ResourceState.Loading,
+                    verify !is ResourceState.Loading
+                )
+            }
         }
-    }
+    )
+
 }
 
 @Composable

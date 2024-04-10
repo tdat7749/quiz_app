@@ -53,7 +53,6 @@ import com.example.client.model.Quiz
 import com.example.client.model.Topic
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.screens.UserInfo
-import com.example.client.utils.AppConstants
 
 
 @Composable
@@ -79,12 +78,12 @@ fun SmallText(value: String,textAlign: TextAlign,color: Color,navController: Nav
 }
 
 @Composable
-fun NormalText(value: String,textAlign: TextAlign,color: Color,modifier: Modifier = Modifier){
+fun NormalText(value: String,textAlign: TextAlign,color: Color,modifier: Modifier = Modifier,fontSize: TextUnit = 24.sp){
     Text(
         text = value,
         modifier = modifier,
         style = TextStyle(
-            fontSize = 24.sp,
+            fontSize = fontSize,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal
         ),
@@ -304,7 +303,8 @@ fun ButtonComponent(
     color:Color,
     loading: Boolean,
     enable:Boolean,
-    loadingColor : Color = MaterialTheme.colorScheme.onPrimary
+    loadingColor : Color = MaterialTheme.colorScheme.onPrimary,
+    modifier: Modifier = Modifier
 ){
     Button(
         onClick = onClick,
@@ -434,7 +434,6 @@ fun HeaderApp(painterResource: Painter,headingText:String,normalText:String){
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizCard(quiz:Quiz,navController:NavController){
     Box(){
@@ -447,6 +446,58 @@ fun QuizCard(quiz:Quiz,navController:NavController){
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
             onClick = {
                 navController.navigate("${Routes.QUIZ_LADING_SCREEN}/${quiz.id}")
+            }
+        ){
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                AsyncImage(
+                    model = quiz.thumbnail,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.image_height))
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                )
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 8.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ){
+                    HeadingBoldText(
+                        quiz.title,
+                        TextAlign.Start,
+                        MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        fontSize = 20.sp
+                    )
+
+                    UserInfo(quiz.user)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuizCardUser(quiz:Quiz,navController:NavController){
+    Box(){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.quiz_card_height))
+                .width(dimensionResource(id = R.dimen.quiz_card_height))
+                .shadow(4.dp,shape = RoundedCornerShape(8.dp)),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+            onClick = {
+                navController.navigate("${Routes.QUIZ_DETAIL_SCREEN}/${quiz.id}")
             }
         ){
             Column(
@@ -553,7 +604,17 @@ fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter?
 @Composable
 fun TopBar (title:String,navController: NavController){
     TopAppBar(
-        title = { Text(text = title) },
+        title = {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .padding(end = 32.dp)) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
@@ -561,7 +622,14 @@ fun TopBar (title:String,navController: NavController){
                     contentDescription = "Back",
                 )
             }
-        }
+        },
+        colors = TopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
     )
 }
 
@@ -645,7 +713,7 @@ fun BottomBar(navController:NavController){
         IconButton(
             onClick = {
                 selected.value = Icons.Default.Person
-                //navController.navigate(Routes.CREATE_QUIZ_SCREEN) to UserScreen
+                navController.navigate(Routes.PROFILE_SCREEN)
             },
             modifier = Modifier.weight(1f)
         ) {
@@ -816,6 +884,8 @@ fun ImageCard(imageUri:Uri?){
     }
 }
 
+
+
 @Composable
 fun LoadingCircle(){
     Box(
@@ -836,7 +906,7 @@ fun LoadingCircle(){
 fun CircleCheckBox(
     onChecked: () -> Unit,
     selected: Boolean = false,
-    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
 ) {
 
     val imageVector = if (selected) R.drawable.check_circle else R.drawable.uncheck_circle
