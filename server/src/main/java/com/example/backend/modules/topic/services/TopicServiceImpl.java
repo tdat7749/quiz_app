@@ -33,6 +33,10 @@ public class TopicServiceImpl implements TopicService{
         return new ResponseSuccess<>("Thành công",result);
     }
 
+    @Override
+    public Optional<Topic> findById(int topicId) {
+        return topicRepository.findById(topicId);
+    }
 
     public TopicServiceImpl(
             TopicRepository topicRepository,
@@ -42,11 +46,6 @@ public class TopicServiceImpl implements TopicService{
         this.fileStorageService = fileStorageService;
     }
 
-
-    @Override
-    public Optional<Topic> findById(int topicId) {
-        return topicRepository.findById(topicId);
-    }
 
     @Override
     public ResponseSuccess<TopicVm> editTopic(EditTopicDTO dto) throws IOException {
