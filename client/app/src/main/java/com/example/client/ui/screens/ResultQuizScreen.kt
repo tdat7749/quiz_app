@@ -2,6 +2,7 @@ package com.example.client.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -43,6 +44,7 @@ fun ResultQuizScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
             ){
                 HeaderApp(

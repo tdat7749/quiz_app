@@ -16,7 +16,7 @@ public interface AnswerService {
 
     Optional<Answer> findById(int id);
 
-    ResponseSuccess<AnswerVm> editAnswer(User user, EditAnswerDTO dto);
+    ResponseSuccess<List<AnswerVm>> editAnswer(User user, EditAnswerDTO dto);
 
     ResponseSuccess<Boolean> deleteAnswer(User user, int answerId,int quizId);
 }

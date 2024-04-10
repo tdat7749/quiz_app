@@ -1,8 +1,6 @@
 package com.example.backend.modules.quiz.exceptions;
 
 import com.example.backend.commons.ResponseError;
-import com.example.backend.modules.collection.exceptions.CollectedException;
-import com.example.backend.modules.quiz.models.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,5 +55,17 @@ public class QuizExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseError answerNotFoundExceptionHandler(AnswerNotFoundException ex){
         return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
+    }
+
+    @ExceptionHandler(QuizHasNotQuestions.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError quizHasNotQuestionsExceptionHandler(QuizHasNotQuestions ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
+
+    @ExceptionHandler(AtLeastOneAnswerIsCorrectException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError atLeastOneQuestionIsCorrectExceptionHandler(AtLeastOneAnswerIsCorrectException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
 }

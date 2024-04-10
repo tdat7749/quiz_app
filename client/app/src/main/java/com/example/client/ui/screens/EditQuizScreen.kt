@@ -28,10 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.client.R
-import com.example.client.model.CreateQuestion
-import com.example.client.model.QuestionDetail
-import com.example.client.model.QuizDetail
-import com.example.client.model.Topic
+import com.example.client.model.*
 import com.example.client.ui.components.*
 import com.example.client.ui.components.quiz.LandingImage
 import com.example.client.ui.navigation.Routes
@@ -58,6 +55,8 @@ fun EditQuizScreen(
     val topics by editQuizViewModel.topics.collectAsState()
     val changeThumbnail by editQuizViewModel.changeThumbnail.collectAsState()
     val editQuiz by editQuizViewModel.editQuiz.collectAsState()
+    val listQuestions by editQuizViewModel.listQuestion.collectAsState()
+    val deleteQuestion by editQuizViewModel.deleteQuestion.collectAsState()
 
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
@@ -88,7 +87,7 @@ fun EditQuizScreen(
 
     when(editQuiz){
         is ResourceState.Success -> {
-            ShowMessage((editQuiz as ResourceState.Success<ApiResponse<Boolean>>).value.message)
+            ShowMessage((editQuiz as ResourceState.Success<ApiResponse<Quiz>>).value.message)
         }
         is ResourceState.Error -> {
             (editQuiz as ResourceState.Error).errorBody?.message?.let {
@@ -96,6 +95,24 @@ fun EditQuizScreen(
                     message = it,
                     onReset = {
                         editQuizViewModel.resetEditQuizState()
+                    })
+            }
+        }
+        else -> {
+
+        }
+    }
+
+    when(deleteQuestion){
+        is ResourceState.Success -> {
+            ShowMessage((deleteQuestion as ResourceState.Success<ApiResponse<Boolean>>).value.message)
+        }
+        is ResourceState.Error -> {
+            (deleteQuestion as ResourceState.Error).errorBody?.message?.let {
+                ShowMessage(
+                    message = it,
+                    onReset = {
+                        editQuizViewModel.resetDeleteeQuestionState()
                     })
             }
         }
@@ -148,15 +165,13 @@ fun EditQuizScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
             ) {
                 if(quiz is ResourceState.Loading || questions is ResourceState.Loading || topics is ResourceState.Loading){
                     Loading()
                 }else if (quiz is ResourceState.Success && questions is ResourceState.Success && topics is ResourceState.Success){
-                    val listQuestion = (questions as ResourceState.Success<ApiResponse<List<QuestionDetail>>>).value.data
-
                     LandingImage(editQuizViewModel.thumbnail)
 
                     Row(
@@ -247,9 +262,10 @@ fun EditQuizScreen(
                     )
 
                     ListEditQuestionCard(
-                        listQuestion,
+                        listQuestions,
                         navController,
-                        editQuizViewModel
+                        editQuizViewModel,
+                        id
                     )
 
                     Spacer(
@@ -259,7 +275,7 @@ fun EditQuizScreen(
 
                     ButtonNavigate(
                         onClick = {
-//                            navController.navigate("${Routes.QUESTION_SCREEN}/${-1}")
+                            navController.navigate("${Routes.EDIT_QUESTION_SCREEN}/${id}/${-1}")
                         },
                         "Thêm Câu Hỏi",
                         MaterialTheme.colorScheme.secondary,
@@ -296,13 +312,15 @@ fun EditQuizScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditQuestionCard(question: QuestionDetail, navController: NavController, editQuizViewModel: EditQuizViewModel, index:Int){
+fun EditQuestionCard(question: QuestionDetail, navController: NavController, editQuizViewModel: EditQuizViewModel, index:Int,id:Int){
+    val deleteQuestion by editQuizViewModel.deleteQuestion.collectAsState()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
         onClick = {
-            navController.navigate("${Routes.QUESTION_SCREEN}/$index")
+            navController.navigate("${Routes.EDIT_QUESTION_SCREEN}/$id/$index")
         }
     ) {
         Row(
@@ -312,10 +330,11 @@ fun EditQuestionCard(question: QuestionDetail, navController: NavController, edi
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
             Text(text = question.title)
             Button(
                 onClick = {
-//                    createQuizViewModel.deleteQuestion(index)
+                    editQuizViewModel.deleteQuestion(question.id,id,index)
                 }
             ) {
                 Text(text = "Xóa")
@@ -325,7 +344,7 @@ fun EditQuestionCard(question: QuestionDetail, navController: NavController, edi
 }
 
 @Composable
-fun ListEditQuestionCard(list:List<QuestionDetail>?, navController: NavController, editQuizViewModel: EditQuizViewModel){
+fun ListEditQuestionCard(list:List<QuestionDetail>?, navController: NavController, editQuizViewModel: EditQuizViewModel,id:Int){
     Text(
         text = "Danh sách câu hỏi (${list?.size ?: 0})"
     )
@@ -336,7 +355,7 @@ fun ListEditQuestionCard(list:List<QuestionDetail>?, navController: NavControlle
     ) {
         list?.let {question ->
             question.forEachIndexed { index, item ->
-                EditQuestionCard(item, navController, editQuizViewModel, index)
+                EditQuestionCard(item, navController, editQuizViewModel, index,id)
             }
         }
     }

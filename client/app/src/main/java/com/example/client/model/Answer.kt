@@ -10,3 +10,14 @@ data class Answer(
     val title:String,
     val correct:Boolean
 )
+
+data class EditAnswer(
+    val id: Int,
+    val title:String,
+    val isCorrect: Boolean
+)
+
+data class EditListAnswer(
+    val answers: List<EditAnswer>,
+    val quizId: Int
+)

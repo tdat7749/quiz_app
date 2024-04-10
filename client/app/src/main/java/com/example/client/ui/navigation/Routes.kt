@@ -27,4 +27,6 @@ object Routes {
     const val ROOM_DETAIL_SCREEN = "ROOM_DETAIL"
     const val EDIT_QUIZ_SCREEN = "EDIT_QUIZ"
     const val EDIT_QUESTION_SCREEN = "EDIT_QUESTION"
+    const val EDIT_ROOM_SCREEN = "EDIT_ROOM"
+    const val WAITING_ROOM_SCREEN = "WAITING_ROOM"
 }

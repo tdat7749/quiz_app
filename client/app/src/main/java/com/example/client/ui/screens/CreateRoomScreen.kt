@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -87,7 +88,7 @@ fun CreateRoomScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
-                        .background(Color.White)
+                        .background(color = MaterialTheme.colorScheme.background)
                         .verticalScroll(rememberScrollState())
                         .padding(it)
                 ) {
@@ -100,6 +101,18 @@ fun CreateRoomScreen(
                             createRoomViewModel.onChangeRoomname(value)
                         },
                         "Tên Phòng",
+                        painterResource(id = R.drawable.title)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    NumberFieldOutlined(
+                        createRoomViewModel.maxUser,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
+                        },
+                        "Số Thành Viên Tối Đa",
                         painterResource(id = R.drawable.title)
                     )
                     Spacer(
@@ -148,6 +161,18 @@ fun CreateRoomScreen(
                     )
                     Spacer(
                         modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.space_app_small))
+                    )
+                    SwitchLabel(
+                        "Cho Phép Chơi Lại: ",
+                        createRoomViewModel.isPlayAgain,
+                        onChangeValue = {value ->
+                            createRoomViewModel.onChangePlayAgain(value)
+                        }
+                    )
+
+                    Spacer(
+                        modifier = Modifier
                             .height(dimensionResource(id = R.dimen.space_app_normal))
                     )
 
@@ -155,7 +180,7 @@ fun CreateRoomScreen(
                         onClick = {
                             createRoomViewModel.onCreateRoom(quizId)
                         },
-                        stringResource(id = R.string.register),
+                        "Tạo Phòng",
                         MaterialTheme.colorScheme.primary,
                         create is ResourceState.Loading,
                         create !is ResourceState.Loading
@@ -189,7 +214,7 @@ private fun QuizThumbnail(thumbnail:String?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CalendarComponent(value:String,label:String,date: LocalDate? = null, onChangeDate:(LocalDate) -> Unit){
+private fun CalendarComponent(value:String,label:String,date: LocalDate? = null, onChangeDate:(LocalDate?) -> Unit){
     val calendarState = rememberUseCaseState()
 
     CalendarDialog(
@@ -216,7 +241,15 @@ private fun CalendarComponent(value:String,label:String,date: LocalDate? = null,
                     Text(label)
                 },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                suffix = {
+                    IconButton(onClick = { onChangeDate(null) }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                        )
+                    }
+                }
             )
         }
         IconButton(modifier = Modifier.weight(1f), onClick = { calendarState.show() }) {
@@ -232,7 +265,7 @@ private fun CalendarComponent(value:String,label:String,date: LocalDate? = null,
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onChangeTime:(LocalTime) -> Unit){
+private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onChangeTime:(LocalTime?) -> Unit){
     val clockState = rememberUseCaseState()
 
     ClockDialog(
@@ -259,7 +292,15 @@ private fun TimeComponent(value:String,label:String,date: LocalTime? = null, onC
                     Text(label)
                 },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                suffix = {
+                    IconButton(onClick = { onChangeTime(null) }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                        )
+                    }
+                }
             )
         }
         IconButton(modifier = Modifier.weight(1f), onClick = { clockState.show() }) {

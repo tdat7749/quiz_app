@@ -5,6 +5,7 @@ import com.example.backend.modules.history.models.History;
 import com.example.backend.modules.quiz.models.Quiz;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.user.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -70,6 +71,9 @@ public class User implements UserDetails {
     @Column(name = "is_enable",nullable = false)
     private Boolean isEnable;
 
+    @Column(name = "google_id",nullable = true)
+    private String googleId;
+
     @Override
     public java.util.Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -125,5 +129,19 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
     @JsonManagedReference
     private List<History> histories;
+
+    @ManyToMany(mappedBy = "users")
+    @JsonBackReference
+    private List<Room> userRooms;
+
+    public void addRoom(Room room){
+        userRooms.add(room);
+        room.getUsers().add(this);
+    }
+
+    public void removeRoom(Room room){
+        userRooms.remove(room);
+        room.getUsers().remove(this);
+    }
 
 }

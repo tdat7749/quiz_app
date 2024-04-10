@@ -1,5 +1,6 @@
 package com.example.client.ui.navigation
 
+import EditRoomScreen
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,7 @@ import androidx.navigation.navArgument
 import com.example.client.ui.screens.*
 import com.example.client.ui.viewmodel.CreateQuizViewModel
 import com.example.client.ui.viewmodel.EditQuizViewModel
+import com.example.client.ui.viewmodel.EditRoomViewModel
 import com.example.client.ui.viewmodel.PlayQuizViewModel
 import java.lang.Integer.parseInt
 
@@ -84,6 +86,18 @@ fun AppNavigationGraph(){
             }
 
             composable(
+                route = "${Routes.WAITING_ROOM_SCREEN}/{roomPin}/{roomId}",
+                arguments = listOf(
+                    navArgument("roomPin") {type = NavType.StringType},
+                    navArgument("roomId") {type = NavType.IntType},
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("roomId")
+                val pin = navStackEntry.arguments?.getString("roomPin")
+                WaitingRoomScreen(pin!!, id!!, navController)
+            }
+
+            composable(
                 route = "${Routes.ROOM_DETAIL_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") {type = NavType.IntType},
@@ -106,7 +120,8 @@ fun AppNavigationGraph(){
             composable(
                 route = "${Routes.EDIT_QUESTION_SCREEN}/{quizId}/{index}",
                 arguments = listOf(
-                    navArgument("id") {type = NavType.IntType},
+                    navArgument("quizId") {type = NavType.IntType},
+                    navArgument("index") {type = NavType.IntType}
                 )
             ){navStackEntry ->
                 val quizId = navStackEntry.arguments?.getInt("quizId")
@@ -122,6 +137,16 @@ fun AppNavigationGraph(){
             ){navStackEntry ->
                 val id = navStackEntry.arguments?.getInt("id")
                 QuizDetailScreen(id!!,navController)
+            }
+
+            composable(
+                route = "${Routes.EDIT_ROOM_SCREEN}/{id}",
+                arguments = listOf(
+                    navArgument("id") {type = NavType.IntType},
+                )
+            ){navStackEntry ->
+                val id = navStackEntry.arguments?.getInt("id")
+                EditRoomScreen(id!!,navController)
             }
 
             composable(

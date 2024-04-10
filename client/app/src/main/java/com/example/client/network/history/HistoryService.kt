@@ -1,6 +1,7 @@
 package com.example.client.network.history
 
 import com.example.client.model.CreateHistory
+import com.example.client.model.HistoryAnswer
 import com.example.client.model.HistoryRank
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.PagingResponse
@@ -27,4 +28,9 @@ interface HistoryService {
         @Path("quizId") quizId:Int,
         @Query("pageIndex") page:Int
     ): ApiResponse<PagingResponse<List<HistoryRank>>>
+
+    @GET("api/histories/{roomId}/answer")
+    suspend fun getHistoryAnswer(
+        @Path("roomId") roomId:Int
+    ): ApiResponse<List<HistoryAnswer>>
 }

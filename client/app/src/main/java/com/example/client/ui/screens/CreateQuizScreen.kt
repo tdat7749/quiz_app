@@ -57,7 +57,12 @@ fun CreateQuizScreen (
 
     when(quiz){
         is ResourceState.Success -> {
-            ShowMessage((quiz as ResourceState.Success<ApiResponse<Quiz>>).value.message)
+            ShowMessage(
+                message = (quiz as ResourceState.Success<ApiResponse<Quiz>>).value.message,
+                onReset = {
+                    createQuizViewModel.resetCreateQuizState()
+                }
+            )
         }
         is ResourceState.Error -> {
             (quiz as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { createQuizViewModel.resetQuizState() } }
@@ -78,7 +83,7 @@ fun CreateQuizScreen (
             Surface (
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
             ) {

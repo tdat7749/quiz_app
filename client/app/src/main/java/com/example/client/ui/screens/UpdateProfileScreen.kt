@@ -100,7 +100,8 @@ fun UpdateProfileScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
                     .padding(it)
-                    .padding(dimensionResource(id = R.dimen.padding_app)),
+                    .padding(dimensionResource(id = R.dimen.padding_app))
+                    .background(color = MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {

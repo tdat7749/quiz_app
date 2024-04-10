@@ -34,8 +34,16 @@ class RoomRepository @Inject constructor(
         roomService.joinRoom(roomPin)
     }
 
+    suspend fun getRoomForParticipants(roomPin: String) = ApiHelper.safeCallApi {
+        roomService.getRoomForParticipants(roomPin)
+    }
+
     suspend fun endRoom(roomId:Int) = ApiHelper.safeCallApi {
         roomService.endRoom(roomId)
+    }
+
+    suspend fun getJoinedRoom(pageIndex:Int) = ApiHelper.safeCallApi {
+        roomService.getJoinedRoom(pageIndex)
     }
 
 }

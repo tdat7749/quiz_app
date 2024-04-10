@@ -6,6 +6,9 @@ import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 
 @Data
 @Builder
@@ -28,5 +31,8 @@ public class RoomVm {
     private String roomName;
 
     private boolean isClosed;
-
+    private int maxUser;
+    private boolean isPlayAgain;
+    private long totalUser;
+    private boolean isOnwer;
 }

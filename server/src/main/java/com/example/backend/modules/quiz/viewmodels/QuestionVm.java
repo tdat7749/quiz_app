@@ -10,7 +10,7 @@ import java.util.List;
 public class QuestionVm {
     private int id;
     private String title;
-
+    private String thumbnail;
     private int score;
 
     private List<AnswerVm> answers;

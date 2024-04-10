@@ -6,17 +6,21 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +42,12 @@ import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 import kotlinx.coroutines.delay
 
+val listBg = arrayListOf(
+    Color(0xFFe21b3d),
+    Color(0xFF1268cf),
+    Color(0xFFd89e01),
+    Color(0xFF25880c)
+)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +88,7 @@ fun PlayQuizScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
 
@@ -100,10 +110,10 @@ fun PlayQuizScreen(
                                 timer.value--
                                 if (timer.value == 0) {
                                     if (playQuizViewModel.isLastQuestion()) {
-                                        playQuizViewModel.goNextQuestion()
+                                        playQuizViewModel.goNextQuestion(true,questions[playQuizViewModel.questionIndex].id)
                                         playQuizViewModel.finishQuiz(quizId, roomId)
                                     } else {
-                                        playQuizViewModel.goNextQuestion()
+                                        playQuizViewModel.goNextQuestion(true,questions[playQuizViewModel.questionIndex].id)
                                         timer.value = questions[playQuizViewModel.questionIndex].timeLimit
                                     }
                                 }
@@ -135,7 +145,7 @@ fun PlayQuizScreen(
                                         )
                                     )
                                     selectedAnswerId = -1
-                                    playQuizViewModel.goNextQuestion()
+                                    playQuizViewModel.goNextQuestion(false,questions[playQuizViewModel.questionIndex].id)
                                 },
                                 saveResult = saveResult,
                                 quizId = quizId,
@@ -188,11 +198,11 @@ private fun QuizSection(
         quizData[questionIndex].score
     )
 
-    AnswersSection(
+    FactsGrid(
         answers = quizData[questionIndex].answers,
         onChecked = onChecked,
         checked = {
-            return@AnswersSection selectedAnswerId == it
+            return@FactsGrid selectedAnswerId == it
         }
     )
     Row(
@@ -220,66 +230,11 @@ private fun QuizSection(
 }
 
 @Composable
-private fun AnswersSection(
-    answers: List<Answer>,
-    onChecked: (Int) -> Unit,
-    checked: (Int) -> Boolean
-) {
-    Column(
-        modifier = Modifier.padding(top = 64.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        answers.forEach {
-            Answer(
-                modifier = Modifier.padding(vertical = 8.dp),
-                answerText = it.title,
-                onChecked = { onChecked(it.id) },
-                checked = checked(it.id)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun Answer(
-    modifier: Modifier,
-    answerText: String,
-    onChecked: () -> Unit,
-    checked: Boolean
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TextFieldDefaults.MinHeight + 8.dp)
-            .border(
-                border = BorderStroke(width = 1.dp, color = Color.Black),
-                shape = RoundedCornerShape(25)
-            )
-            .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(25))
-            .clickable(enabled = true, onClick = {}),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = modifier.padding(start = 16.dp),
-            text = answerText,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 20.sp
-        )
-        CircleCheckBox(
-            onChecked = onChecked,
-            selected = checked
-        )
-    }
-}
-
-@Composable
 private fun ThumbnailQuestion(thumbnail:String?) {
     Card (
         modifier = Modifier
             .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.quiz_card_height))
+            .height(200.dp)
     ) {
         AsyncImage(
             model = thumbnail,
@@ -287,8 +242,7 @@ private fun ThumbnailQuestion(thumbnail:String?) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.quiz_card_height))
-                .shadow(4.dp,shape = RoundedCornerShape(8.dp))
+                .height(200.dp)
         )
     }
 }
@@ -299,26 +253,22 @@ private fun QuestionSection(
     time:Int,
     score:Int
 ) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Timer(time)
         Spacer(
             modifier = Modifier
-                .height(dimensionResource(id = R.dimen.space_app_normal))
+                .height(dimensionResource(id = R.dimen.space_app_small))
         )
         Score(score)
         Spacer(
             modifier = Modifier
-                .height(dimensionResource(id = R.dimen.space_app_normal))
+                .height(dimensionResource(id = R.dimen.space_app_small))
         )
         QuestionTitle(questionTitle = title)
-
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            thickness = 2.dp,
-            color = Color.Gray
-        )
     }
 }
 
@@ -327,39 +277,130 @@ private fun QuestionTitle(questionTitle: String) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp),
+            .padding(top = 26.dp, bottom = 20.dp),
         text = questionTitle,
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.Start,
         color = MaterialTheme.colorScheme.primary,
-        fontSize = 26.sp
+        fontSize = 20.sp
     )
 }
 
 @Composable
 private fun Timer(time: Int) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-        text = "Thòi Gian: ${time.toString()}",
-        fontWeight = FontWeight.SemiBold,
-        textAlign = TextAlign.Start,
-        color = MaterialTheme.colorScheme.primary,
-        fontSize = 26.sp
-    )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier =  Modifier.size(20.dp),
+            painter = painterResource(id = R.drawable.time),
+            contentDescription = "timer",
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(
+            modifier = Modifier.width(6.dp)
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = time.toString(),
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 20.sp
+        )
+    }
 }
 
 @Composable
 private fun Score(score: Int) {
-    Text(
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.score),
+            contentDescription = "score",
+            modifier =  Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(
+            modifier = Modifier.width(6.dp)
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = score.toString(),
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 20.sp
+        )
+    }
+}
+
+@Composable
+fun FactsGrid(
+    answers: List<Answer>,
+    onChecked: (Int) -> Unit,
+    checked: (Int) -> Boolean
+) {
+
+    Column(
+        modifier = Modifier.padding(top = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        answers.forEachIndexed() {index,it ->
+            FactBox(
+                answerText = it.title,
+                onChecked = { onChecked(it.id) },
+                checked = checked(it.id),
+                index = index
+            )
+            Spacer(
+                modifier = Modifier.height(6.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun FactBox(
+    answerText: String,
+    onChecked: () -> Unit,
+    checked: Boolean,
+    index:Int
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp),
-        text = "Điểm Câu Hỏi: ${score.toString()}",
-        fontWeight = FontWeight.SemiBold,
-        textAlign = TextAlign.Start,
-        color = MaterialTheme.colorScheme.primary,
-        fontSize = 26.sp
-    )
+            .height(150.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = (listBg[index])
+        )
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+
+            ) {
+            Text(
+                text = answerText,
+                color = Color.White,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            CircleCheckBox(
+                onChecked = onChecked,
+                selected = checked
+            )
+        }
+    }
 }

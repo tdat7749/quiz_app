@@ -19,5 +19,7 @@ public class AuthConstants {
     public static final String RESEND_EMAIL = "Gửi thành công, vui lòng kiểm tra email của bạn";
     public static final String ACCOUNT_VERIFIED = "Tài khoản này đã được xác thực";
 
+    public static final String LOGIN_FAILED = "Sai tài khoản hoặc mật khẩu";
+
 
 }

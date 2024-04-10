@@ -53,7 +53,6 @@ import com.example.client.model.Quiz
 import com.example.client.model.Topic
 import com.example.client.ui.navigation.Routes
 import com.example.client.ui.screens.UserInfo
-import com.example.client.utils.AppConstants
 
 
 @Composable
@@ -79,12 +78,12 @@ fun SmallText(value: String,textAlign: TextAlign,color: Color,navController: Nav
 }
 
 @Composable
-fun NormalText(value: String,textAlign: TextAlign,color: Color,modifier: Modifier = Modifier){
+fun NormalText(value: String,textAlign: TextAlign,color: Color,modifier: Modifier = Modifier,fontSize: TextUnit = 24.sp){
     Text(
         text = value,
         modifier = modifier,
         style = TextStyle(
-            fontSize = 24.sp,
+            fontSize = fontSize,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal
         ),
@@ -304,7 +303,8 @@ fun ButtonComponent(
     color:Color,
     loading: Boolean,
     enable:Boolean,
-    loadingColor : Color = MaterialTheme.colorScheme.onPrimary
+    loadingColor : Color = MaterialTheme.colorScheme.onPrimary,
+    modifier: Modifier = Modifier
 ){
     Button(
         onClick = onClick,
@@ -476,7 +476,7 @@ fun QuizCard(quiz:Quiz,navController:NavController){
                         MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        fontSize = 24.sp
+                        fontSize = 20.sp
                     )
 
                     UserInfo(quiz.user)
@@ -604,7 +604,17 @@ fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter?
 @Composable
 fun TopBar (title:String,navController: NavController){
     TopAppBar(
-        title = { Text(text = title) },
+        title = {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .padding(end = 32.dp)) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
@@ -612,7 +622,14 @@ fun TopBar (title:String,navController: NavController){
                     contentDescription = "Back",
                 )
             }
-        }
+        },
+        colors = TopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
     )
 }
 
@@ -889,7 +906,7 @@ fun LoadingCircle(){
 fun CircleCheckBox(
     onChecked: () -> Unit,
     selected: Boolean = false,
-    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+    tint: Color = if (selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
 ) {
 
     val imageVector = if (selected) R.drawable.check_circle else R.drawable.uncheck_circle

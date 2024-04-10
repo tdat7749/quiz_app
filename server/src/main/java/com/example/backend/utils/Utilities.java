@@ -80,8 +80,7 @@ public class Utilities {
                 .build();
     }
 
-    public static RoomVm getRoomVm(Room room){
-
+    public static RoomVm getRoomVm(Room room,Long totalUser){
         return RoomVm.builder()
                 .roomPin(room.getRoomPin())
                 .id(room.getId())
@@ -92,6 +91,25 @@ public class Utilities {
                 .quiz(getQuizVm(room.getQuiz()))
                 .roomName(room.getRoomName())
                 .isClosed(room.isClosed())
+                .isPlayAgain(room.isPlayAgain())
+                .maxUser(room.getMaxUser())
+                .totalUser(totalUser)
+                .build();
+    }
+
+    public static RoomVm getRoomVm(Room room){
+        return RoomVm.builder()
+                .roomPin(room.getRoomPin())
+                .id(room.getId())
+                .timeStart(room.getTimeStart() != null ? room.getTimeStart().toString() : null)
+                .timeEnd(room.getTimeEnd() != null ? room.getTimeEnd().toString() : null)
+                .createdAt(room.getCreatedAt().toString())
+                .host(getUserVm(room.getUser()))
+                .quiz(getQuizVm(room.getQuiz()))
+                .roomName(room.getRoomName())
+                .isClosed(room.isClosed())
+                .isPlayAgain(room.isPlayAgain())
+                .maxUser(room.getMaxUser())
                 .build();
     }
 
@@ -164,6 +182,7 @@ public class Utilities {
                 .score(question.getScore())
                 .id(question.getId())
                 .title(question.getTitle())
+                .thumbnail(question.getThumbnail())
                 .answers(getListAnswerVm(question.getAnswers()))
                 .build();
     }
@@ -196,6 +215,7 @@ public class Utilities {
                 .id(historyAnswer.getId())
                 .isCorrect(historyAnswer.getIsCorrect())
                 .question(getQuestionVm(historyAnswer.getQuestion()))
+                .answer(historyAnswer.getAnswer() != null ? getAnswerVm(historyAnswer.getAnswer()) :null)
                 .build();
     }
 

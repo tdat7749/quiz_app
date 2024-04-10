@@ -3,14 +3,14 @@ package com.example.client.ui.screens
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +34,10 @@ import com.example.client.ui.navigation.Routes
 import com.example.client.ui.navigation.Routes.HOME_SCREEN
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -46,6 +50,22 @@ fun LoginScreen(
 ){
     val auth by loginViewModel.auth.collectAsState()
     val checkLogin by loginViewModel.checkLogin.collectAsState()
+    val googleState by loginViewModel.googleState.collectAsState()
+    val authGoogle by loginViewModel.authGoogle.collectAsState()
+
+    val context = LocalContext.current
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val result = account.getResult(ApiException::class.java)
+                val credentials = GoogleAuthProvider.getCredential(result.idToken, null)
+                loginViewModel.googleSignIn(credentials)
+            } catch (it: ApiException) {
+                print(it)
+            }
+        }
 
     LaunchedEffect(Unit){
         loginViewModel.checkLogin(navController)
@@ -53,6 +73,21 @@ fun LoginScreen(
 
     BackHandler(enabled = true){
 
+    }
+
+    when(authGoogle){
+        is ResourceState.Success -> {
+            ShowMessage((authGoogle as ResourceState.Success<ApiResponse<AuthToken>>).value.message)
+            LaunchedEffect(Unit){
+                navController.navigate(Routes.HOME_SCREEN)
+            }
+        }
+        is ResourceState.Error -> {
+            (authGoogle as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetAuthGoogleState() } }
+        }
+        else -> {
+
+        }
     }
 
     when{
@@ -70,6 +105,16 @@ fun LoginScreen(
         }
     }
 
+    when(googleState){
+        is ResourceState.Error -> {
+            (googleState as ResourceState.Error).errorBody?.let { ShowMessage(it.message) { loginViewModel.resetGoogleState() } }
+        }
+        else -> {
+
+        }
+    }
+
+
     Scaffold(
         content = {
                 Column(
@@ -77,7 +122,7 @@ fun LoginScreen(
                         .fillMaxSize()
                         .padding(dimensionResource(id = R.dimen.padding_app))
                         .verticalScroll(rememberScrollState())
-                        .background(color = Color.White)
+                        .background(color = MaterialTheme.colorScheme.background)
 
                 ) {
                     when(checkLogin){
@@ -137,6 +182,25 @@ fun LoginScreen(
                                 modifier = Modifier
                                     .height(dimensionResource(id = R.dimen.space_app_normal))
                             )
+
+                            ButtonComponent(
+                                onClick = {
+                                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                        .requestEmail()
+                                        .requestIdToken("394048496036-grmhp72aso4vobp78l4cvo950ot9b44a.apps.googleusercontent.com")
+                                        .build()
+
+                                    val googleSingInClient = GoogleSignIn.getClient(context, gso)
+
+                                    launcher.launch(googleSingInClient.signInIntent)
+                                },
+                                "Đăng Nhập Bằng Google",
+                                MaterialTheme.colorScheme.primary,
+                                authGoogle is ResourceState.Loading,
+                                authGoogle !is ResourceState.Loading
+                            )
+
+
                             SmallText(
                                 stringResource(id = R.string.havent_account),
                                 TextAlign.Start,

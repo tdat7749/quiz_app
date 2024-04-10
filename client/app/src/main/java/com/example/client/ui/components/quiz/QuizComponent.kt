@@ -74,24 +74,24 @@ fun QuizAuthorNameAndCreatedDate(
             textAlign = TextAlign.Start,
             color = MaterialTheme.colorScheme.primary
         )
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = "-",
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.calendar),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = createdDate,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Start,
-            color = MaterialTheme.colorScheme.primary
-        )
+//        Text(
+//            modifier = Modifier.padding(horizontal = 16.dp),
+//            text = "-",
+//            fontWeight = FontWeight.SemiBold,
+//            color = MaterialTheme.colorScheme.primary
+//        )
+//        Icon(
+//            painter = painterResource(id = R.drawable.calendar),
+//            contentDescription = null,
+//            tint = MaterialTheme.colorScheme.primary
+//        )
+//        Text(
+//            modifier = Modifier.padding(start = 8.dp),
+//            text = createdDate,
+//            fontWeight = FontWeight.Normal,
+//            textAlign = TextAlign.Start,
+//            color = MaterialTheme.colorScheme.primary
+//        )
     }
 }
 

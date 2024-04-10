@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +35,7 @@ fun MyRoomsScreen(
     myRoomsViewModel: MyRoomsViewModel = hiltViewModel()
 ){
     val rooms: LazyPagingItems<Room> = myRoomsViewModel.getMyRooms().collectAsLazyPagingItems()
+    val keyword by myRoomsViewModel.keywordStateFlow.collectAsState()
 
     Scaffold(
         topBar = {
@@ -45,7 +49,7 @@ fun MyRoomsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .padding(it),
             ) {
                 if(rooms.loadState.refresh is LoadState.Loading){
@@ -53,7 +57,7 @@ fun MyRoomsScreen(
                 }else if (rooms.loadState.refresh is LoadState.NotLoading){
 
                         TextFieldOutlined(
-                            value = myRoomsViewModel.keyword,
+                            value = keyword,
                             onChangeValue = {value ->
                                 myRoomsViewModel.searchOnChange(value)
                             },
@@ -85,7 +89,7 @@ private fun RoomList(rooms: LazyPagingItems<Room>, navController: NavController)
             .fillMaxWidth()
     ){
         items(rooms.itemCount){index ->
-            RoomCard(rooms[index]!!,navController)
+            RoomCard(rooms[index]!!,navController,true)
         }
         item {
             if(rooms.loadState.append is LoadState.Loading){

@@ -15,4 +15,10 @@ public class HistoryExceptionHandler {
     public ResponseError historyNotFoundException(HistoryNotFoundException ex){
         return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
     }
+
+    @ExceptionHandler(CannotPlayAgainException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError cannotPlayAgainException(CannotPlayAgainException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
 }

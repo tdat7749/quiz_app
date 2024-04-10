@@ -7,13 +7,16 @@ import java.util.Date
 data class Room(
     val id:Int,
     val host:User,
-    val timeStart:String?,
-    val timeEnd:String?,
+    val timeStart:LocalDateTime?,
+    val timeEnd:LocalDateTime?,
     val quiz:Quiz,
     val roomPin:String,
     val createdAt:String,
     val roomName: String,
-    val closed:Boolean
+    val closed:Boolean,
+    val maxUser:Int,
+    val playAgain:Boolean,
+    val totalUser:Int,
 )
 
 
@@ -21,12 +24,17 @@ data class CreateRoom(
     val quizId:Int,
     val timeStart: LocalDateTime?,
     val timeEnd: LocalDateTime?,
-    val roomName:String
+    val roomName:String,
+    val maxUser:Int,
+    val isPlayAgain:Boolean
 )
 
 data class EditRoom(
     val roomId:Int,
-    val timeStart:LocalDate?,
-    val timeEnd:LocalDate?,
-    val roomName:String
+    val timeStart:LocalDateTime?,
+    val timeEnd:LocalDateTime?,
+    val roomName:String,
+    val isClosed:Boolean,
+    val maxUser:Int,
+    val isPlayAgain:Boolean
 )

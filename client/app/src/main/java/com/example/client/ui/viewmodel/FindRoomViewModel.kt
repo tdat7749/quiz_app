@@ -20,7 +20,7 @@ import javax.inject.Inject
 class FindRoomViewModel @Inject constructor(
     private val roomRepository: RoomRepository
 ): ViewModel() {
-    private val _join: MutableStateFlow<ResourceState<ApiResponse<Room>>> = MutableStateFlow(ResourceState.Nothing)
+    private val _join: MutableStateFlow<ResourceState<ApiResponse<Int>>> = MutableStateFlow(ResourceState.Nothing)
     val join = _join.asStateFlow()
 
     var roomPin by mutableStateOf<String>("")

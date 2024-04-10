@@ -6,6 +6,8 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AuthService {
     @POST("api/auth/login")
@@ -19,4 +21,7 @@ interface AuthService {
 
     @POST("api/auth/resend")
     suspend fun resendEmail(@Body resend:ResendEmail):ApiResponse<Boolean>
+
+    @POST("api/auth/login/google")
+    suspend fun loginWithGoogle(@Query("token") token:String) : ApiResponse<AuthToken>
 }

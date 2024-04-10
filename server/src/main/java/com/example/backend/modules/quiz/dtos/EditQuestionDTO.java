@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class
 EditQuestionDTO {
     @Digits(integer = 10,fraction = 0,message = "Trường 'questionId' phải là số nguyên")
+    @NotNull(message = "Không được thiếu trường 'questionId'")
     private int questionId;
 
     @NotBlank(message = "Không được bỏ trống trường 'title'")

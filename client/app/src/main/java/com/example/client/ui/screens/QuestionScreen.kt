@@ -84,7 +84,7 @@ fun QuestionScreen (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(it)
             ) {

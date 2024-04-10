@@ -1,6 +1,7 @@
 package com.example.client.repositories
 
 import com.example.client.model.*
+import com.example.client.network.quiz.AnswerService
 import com.example.client.network.quiz.QuestionService
 import com.example.client.network.quiz.QuestionTypeService
 import com.example.client.network.quiz.QuizService
@@ -11,7 +12,8 @@ import javax.inject.Inject
 class QuizRepository @Inject constructor(
     private val quizService: QuizService,
     private val questionTypeService: QuestionTypeService,
-    private val questionService:QuestionService
+    private val questionService:QuestionService,
+    private val answerService: AnswerService
 ){
     suspend fun getPublicQuiz(keyword:String,pageIndex:Int,sortBy:String,topicId:Int) = ApiHelper.safeCallApi {
         quizService.getPublicQuizzes(topicId,keyword, pageIndex, sortBy)
@@ -121,5 +123,13 @@ class QuizRepository @Inject constructor(
         thumbnail.add(MultipartBody.Part.createFormData("questionId", data.questionId.toString()))
 
         questionService.editQuestionThumbnail(thumbnail)
+    }
+
+    suspend fun deleteQuestion(questionId:Int,quizId:Int) = ApiHelper.safeCallApi {
+        questionService.deleteQuestion(questionId,quizId)
+    }
+
+    suspend fun editListAnswer(data:EditListAnswer) = ApiHelper.safeCallApi {
+        answerService.editAnswers(data)
     }
 }

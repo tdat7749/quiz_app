@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +37,7 @@ fun MyQuizzesScreen (
     myQuizzesViewModel: MyQuizzesViewModel = hiltViewModel()
 ){
     val quizzes: LazyPagingItems<Quiz> = myQuizzesViewModel.getMyQuizzes().collectAsLazyPagingItems()
+    val keyword by myQuizzesViewModel.keywordStateFlow.collectAsState()
 
     Scaffold(
         topBar = {
@@ -47,16 +51,18 @@ fun MyQuizzesScreen (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_app))
-                    .background(Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .padding(it),
             ) {
-                if(quizzes.loadState.refresh is LoadState.Loading){
-                    Loading()
-                }else if (quizzes.loadState.refresh is LoadState.NotLoading){
+                when {
+                    quizzes.loadState.refresh is LoadState.Loading -> {
+                        Loading()
+                    }
 
+                    quizzes.loadState.refresh is LoadState.NotLoading -> {
                         TextFieldOutlined(
-                            value = myQuizzesViewModel.keyword,
-                            onChangeValue = {value ->
+                            value = keyword,
+                            onChangeValue = { value ->
                                 myQuizzesViewModel.searchOnChange(value)
                             },
                             label = stringResource(id = R.string.search),
@@ -70,6 +76,7 @@ fun MyQuizzesScreen (
                         QuizList(quizzes, navController)
                     }
                 }
+            }
         }
     )
 }

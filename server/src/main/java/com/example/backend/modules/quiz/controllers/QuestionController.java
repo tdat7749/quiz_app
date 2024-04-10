@@ -31,8 +31,8 @@ public class QuestionController {
     @ResponseBody
     public ResponseEntity<ResponseSuccess<QuestionDetailVm>> editQuestion(
             @AuthenticationPrincipal User user,
-            @ModelAttribute @Valid EditQuestionDTO dto
-    ) throws IOException {
+            @RequestBody @Valid EditQuestionDTO dto
+    ){
         var result = questionService.editQuestion(user,dto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

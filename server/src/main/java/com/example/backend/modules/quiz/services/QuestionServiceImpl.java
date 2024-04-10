@@ -19,7 +19,6 @@ import com.example.backend.utils.Utilities;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +35,7 @@ public class QuestionServiceImpl implements QuestionService{
     private final QuizService quizService;
 
     private final AnswerRepository answerRepository;
+
 
     public QuestionServiceImpl(
             QuestionRepository questionRepository,
@@ -162,12 +162,12 @@ public class QuestionServiceImpl implements QuestionService{
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
         }
 
-        var isOwner = this.quizService.existsByUserAndId(user,quizId);
-        if(!isOwner){
-            if(!quiz.get().getIsPublic()){
-                throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
-            }
-        }
+//        var isOwner = this.quizService.existsByUserAndId(user,quizId);
+//        if(!isOwner){
+//            if(!quiz.get().getIsPublic()){
+//                throw new QuizNotPublicException(QuizConstants.QUIZ_NOT_PUBLIC);
+//            }
+//        }
 
         var listQuestion = quiz.get().getQuestions()
                 .stream()
@@ -200,7 +200,6 @@ public class QuestionServiceImpl implements QuestionService{
         if(dto.getThumbnail() != null){
             thumbnailUrl = fileStorageService.uploadFile(dto.getThumbnail());
         }
-
         var questionBuilder = Question.builder()
                 .createdAt(new Date())
                 .order(dto.getOrder())
@@ -216,8 +215,8 @@ public class QuestionServiceImpl implements QuestionService{
         var newQuestion = questionRepository.save(questionBuilder);
 
         List<Answer> answerList = new ArrayList<>();
-
-        for(CreateAnswerDTO i : dto.getAnswers()){
+        var answers = dto.getAnswers();
+        for(CreateAnswerDTO i : answers){
             var isCorrect = i.getIsCorrect().equals("true");
             var newAnswer = Answer.builder()
                     .createdAt(new Date())
@@ -229,7 +228,9 @@ public class QuestionServiceImpl implements QuestionService{
             answerList.add(newAnswer);
         }
 
-        answerRepository.saveAll(answerList);
+        var saveAnswers = answerRepository.saveAll(answerList);
+
+        newQuestion.setAnswers(saveAnswers);
 
         return new ResponseSuccess<>("Thêm câu hỏi mới thành công",Utilities.getQuestionDetailVm(newQuestion));
     }

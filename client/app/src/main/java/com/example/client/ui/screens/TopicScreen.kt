@@ -1,5 +1,6 @@
 package com.example.client.ui.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -25,13 +28,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.client.R
+import com.example.client.model.Quiz
 import com.example.client.ui.components.*
 import com.example.client.ui.viewmodel.SearchViewModel
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun TopicScreen(
     topicId:Int,
@@ -40,6 +46,10 @@ fun TopicScreen(
     navController: NavController,
     searchViewModel:SearchViewModel = hiltViewModel()
 ) {
+
+    val quizzes = searchViewModel.getQuizzes(topicId).collectAsLazyPagingItems()
+    val keyword by searchViewModel.keywordStateFlow.collectAsState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -61,7 +71,7 @@ fun TopicScreen(
                     .padding(dimensionResource(id = R.dimen.padding_app)),
             ) {
                 TextFieldOutlined(
-                    value = searchViewModel.keyword,
+                    value = keyword,
                     onChangeValue = {
                         searchViewModel.searchOnChange(it)
                     },
@@ -73,14 +83,13 @@ fun TopicScreen(
                         .height(dimensionResource(id = R.dimen.space_app_normal))
                 )
 
-                QuizList(topicId,searchViewModel,navController)
+                QuizList(quizzes,navController)
             }
         }
     }
 
 @Composable
-fun QuizList(topicId:Int,searchViewModel:SearchViewModel,navController: NavController){
-        val quizzes = searchViewModel.getQuizzes(topicId).collectAsLazyPagingItems()
+private fun QuizList(quizzes: LazyPagingItems<Quiz>, navController: NavController){
         LazyColumn (
             contentPadding =  PaddingValues(
                 top = dimensionResource(id = R.dimen.space_app_normal),

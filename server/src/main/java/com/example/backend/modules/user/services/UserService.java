@@ -19,7 +19,9 @@ public interface UserService {
 
     Optional<User> findByEmailAndToken(String email,String token);
 
-    void saveUser(User user);
+    Optional<User> findById(int id);
+
+    User saveUser(User user);
 
     ResponseSuccess<String> changeAvatar(ChangeAvatarDTO dto, User user) throws IOException;
 
