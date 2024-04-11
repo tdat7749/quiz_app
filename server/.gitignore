@@ -1,3 +1,4 @@
+src/main/resources/admin_account_service.json
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -31,4 +32,3 @@ build/
 
 ### VS Code ###
 .vscode/
-src/main/resources/admin_account_service.json
