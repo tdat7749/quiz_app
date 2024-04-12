@@ -32,18 +32,6 @@ public class HistoryAnswerServiceImpl implements HistoryAnswerService{
     private final QuestionService questionService;
     private final AnswerService answerService;
 
-    public HistoryAnswerServiceImpl(
-            HistoryAnswerRepository historyAnswerRepository,
-            QuestionService questionService,
-            @Lazy HistoryService historyService,
-            AnswerService answerService
-    ){
-        this.historyAnswerRepository = historyAnswerRepository;
-        this.questionService = questionService;
-        this.historyService = historyService;
-        this.answerService = answerService;
-    }
-
     @Override
     @Transactional
     public boolean createBulkHistoryAnswer(List<CreateHistoryAnswerDTO> listDto, History history) {
@@ -91,6 +79,18 @@ public class HistoryAnswerServiceImpl implements HistoryAnswerService{
         historyAnswerRepository.saveAll(historyAnswerList);
 
         return true;
+    }
+
+    public HistoryAnswerServiceImpl(
+            HistoryAnswerRepository historyAnswerRepository,
+            QuestionService questionService,
+            @Lazy HistoryService historyService,
+            AnswerService answerService
+    ){
+        this.historyAnswerRepository = historyAnswerRepository;
+        this.questionService = questionService;
+        this.historyService = historyService;
+        this.answerService = answerService;
     }
 
     @Override
