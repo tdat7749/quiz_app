@@ -109,7 +109,7 @@ fun checkLogin(navController: NavController){
                 val response =  userRepository.getMe()
                 if(response is ResourceState.Success){
                     navController.navigate(Routes.HOME_SCREEN)
-                    val user = SharedPreferencesManager.getUser(User::class.java)
+                    val user = SharedPreferencesManager.getUser()
                     if(user == null){
                         with(SharedPreferencesManager){
                             saveUser(response.value.data)

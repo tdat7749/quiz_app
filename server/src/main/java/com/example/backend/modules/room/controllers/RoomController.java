@@ -5,7 +5,10 @@ import com.example.backend.commons.ResponsePaging;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.room.dtos.CreateRoomDTO;
 import com.example.backend.modules.room.dtos.EditRoomDTO;
+import com.example.backend.modules.room.services.GameModeService;
 import com.example.backend.modules.room.services.RoomService;
+import com.example.backend.modules.room.viewmodels.GameModeVm;
+import com.example.backend.modules.room.viewmodels.JoinRoomVm;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.models.User;
 import jakarta.validation.Valid;
@@ -20,20 +23,32 @@ import java.util.List;
 @RequestMapping(value = "/api/rooms") //http://localhost:8080/api/rooms
 public class RoomController {
     private final RoomService roomService;
+    private final GameModeService gameModeService;
 
     public RoomController(
-            RoomService roomService
+            RoomService roomService,
+            GameModeService gameModeService
     ){
         this.roomService = roomService;
+        this.gameModeService = gameModeService;
     }
 
     @GetMapping("/{roomPin}/join")
     @ResponseBody
-    public ResponseEntity<ResponseSuccess<Integer>> joinRoom(
+    public ResponseEntity<ResponseSuccess<JoinRoomVm>> joinRoom(
             @PathVariable("roomPin") String roomPin,
             @AuthenticationPrincipal User user
     ) {
         var result = roomService.joinRoom(user,roomPin);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/mode")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<List<GameModeVm>>> getListGameMode(
+    ) {
+        var result = gameModeService.getListGameMode();
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -84,7 +99,7 @@ public class RoomController {
 
     @DeleteMapping("/{roomId}")
     @ResponseBody
-    public ResponseEntity<ResponseSuccess<Boolean>> editRoom(
+    public ResponseEntity<ResponseSuccess<Boolean>> deleleRoom(
             @PathVariable("roomId") int roomId,
             @AuthenticationPrincipal User user
     ) {
@@ -135,6 +150,17 @@ public class RoomController {
             @AuthenticationPrincipal User user
     ){
         var result = roomService.kickUser(user,roomId,userId);
+
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PostMapping("/{roomId}/leave")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<Boolean>> leaveRoom(
+            @PathVariable("roomId") int roomId,
+            @AuthenticationPrincipal User user
+    ){
+        var result = roomService.leaveRoom(user,roomId);
 
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

@@ -1,18 +1,18 @@
 package com.example.backend.modules.room.viewmodels;
 
+import com.example.backend.modules.quiz.viewmodels.QuestionDetailVm;
+import com.example.backend.modules.quiz.viewmodels.QuestionVm;
 import com.example.backend.modules.quiz.viewmodels.QuizVm;
 import com.example.backend.modules.user.viewmodels.UserVm;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
+import java.util.List;
 
 @Data
 @Builder
-public class RoomVm {
+public class RoomRealTime {
     private int id;
     private UserVm host;
 
@@ -34,7 +34,10 @@ public class RoomVm {
 
     private boolean isClosed;
     private int maxUser;
-    private boolean isPlayAgain;
+
+    private List<QuestionDetailVm> questions;
+    private List<UserVm> users;
+
     private long totalUser;
     private boolean isOnwer;
 }

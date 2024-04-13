@@ -22,7 +22,18 @@ data class QuestionDetail(
     val thumbnail: String?,
     val order:Int,
     val questionType:QuestionType,
-)
+){
+    constructor(): this(
+        -1,
+        "",
+        0,
+        0,
+        listOf(),
+        "",
+        0,
+        QuestionType()
+    )
+}
 
 data class Question(
     val id:Int,
@@ -50,4 +61,9 @@ data class EditQuestionThumbnail(
 data class QuestionType(
     val id:Int,
     val title:String
-)
+){
+    constructor(): this(
+        -1,
+        ""
+    )
+}

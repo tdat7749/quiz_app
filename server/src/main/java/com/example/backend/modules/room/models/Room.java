@@ -67,6 +67,11 @@ public class Room {
     @JsonBackReference
     private Quiz quiz;
 
+    @ManyToOne
+    @JoinColumn(name = "game_mode_id",nullable = false)
+    @JsonBackReference
+    private GameMode gameMode;
+
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "room")
     @JsonManagedReference
     private List<History> histories;

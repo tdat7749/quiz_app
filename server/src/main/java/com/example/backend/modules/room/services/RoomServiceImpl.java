@@ -8,18 +8,24 @@ import com.example.backend.modules.quiz.exceptions.NotOwnerQuizException;
 import com.example.backend.modules.quiz.exceptions.QuizHasNotQuestions;
 import com.example.backend.modules.quiz.exceptions.QuizNotFoundException;
 import com.example.backend.modules.quiz.services.QuizService;
+import com.example.backend.modules.quiz.viewmodels.QuestionDetailVm;
+import com.example.backend.modules.quiz.viewmodels.QuestionVm;
 import com.example.backend.modules.room.constant.RoomConstants;
 import com.example.backend.modules.room.dtos.CreateRoomDTO;
 import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.exceptions.*;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.repositories.RoomRepository;
+import com.example.backend.modules.room.viewmodels.JoinRoomVm;
+import com.example.backend.modules.room.viewmodels.RoomRealTime;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.exceptions.UserNotFoundException;
 import com.example.backend.modules.user.models.User;
+import com.example.backend.modules.user.repositories.UserRepository;
 import com.example.backend.modules.user.services.UserService;
 import com.example.backend.utils.Utilities;
+import com.google.firebase.database.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -40,15 +47,21 @@ public class RoomServiceImpl implements RoomService{
     private final QuizService quizService;
     private final RoomRepository roomRepository;
     private final UserService userService;
+    private final GameModeService gameModeService;
+    private final UserRepository userRepository;
 
     public RoomServiceImpl(
             QuizService quizService,
             RoomRepository roomRepository,
-            UserService userService
+            UserService userService,
+            GameModeService gameModeService,
+            UserRepository userRepository
     ){
         this.quizService = quizService;
         this.roomRepository = roomRepository;
         this.userService = userService;
+        this.gameModeService = gameModeService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -64,9 +77,15 @@ public class RoomServiceImpl implements RoomService{
         if(quiz.isEmpty()){
             throw new QuizNotFoundException(QuizConstants.QUIZ_NOT_FOUND);
         }
+        var listQuestion = quiz.get().getQuestions();
 
-        if(quiz.get().getQuestions().isEmpty()){
+        if(listQuestion.isEmpty()){
             throw new QuizHasNotQuestions(QuizConstants.QUIZ_HAS_NOT_QUESTION);
+        }
+
+        var gameMode = gameModeService.findById(dto.getModeId());
+        if(gameMode.isEmpty()){
+            throw new GameModeNotFoundException(RoomConstants.GAME_MODE_NOT_FOUND);
         }
 
         var newRoom = Room.builder()
@@ -80,10 +99,23 @@ public class RoomServiceImpl implements RoomService{
                 .roomName(dto.getRoomName())
                 .playAgain(dto.isPlayAgain())
                 .maxUser(dto.getMaxUser())
+                .gameMode(gameMode.get())
                 .build();
 
         var save = roomRepository.save(newRoom);
         RoomVm roomVm = Utilities.getRoomVm(save);
+
+        if(gameMode.get().getModeCode().equals("realtime")){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+            DatabaseReference ref = database.getReference("rooms").child(roomVm.getRoomPin() + roomVm.getId());
+            List<QuestionDetailVm> questions = listQuestion.stream().map(Utilities::getQuestionDetailVm).toList();
+            RoomRealTime rrt = Utilities.getRoomRealTimeVm(save,questions);
+            rrt.setTotalUser(this.countUserInRoom(save));
+            rrt.setUsers(new ArrayList<>());
+
+            ref.setValueAsync(rrt);
+        }
 
         return new ResponseSuccess<>(RoomConstants.CREATE_ROOM_SUCCESS,roomVm);
     }
@@ -159,6 +191,64 @@ public class RoomServiceImpl implements RoomService{
     }
 
     @Override
+    @Transactional
+    public ResponseSuccess<Boolean> leaveRoom(User user, int roomId) {
+        var foundedRoom = roomRepository.findById(roomId);
+        if(foundedRoom.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+        var foundedUser = userService.findById(user.getId());
+        if(foundedUser.isEmpty()){
+            throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
+        }
+
+        foundedRoom.get().getUsers().remove(foundedUser.get());
+        foundedUser.get().getUserRooms().remove(foundedRoom.get());
+
+        roomRepository.save(foundedRoom.get());
+        userRepository.save(foundedUser.get());
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference roomRef = database.getReference("rooms").child(foundedRoom.get().getRoomPin() + foundedRoom.get().getId()).child("users");
+
+        roomRef.orderByChild("id").equalTo(String.valueOf(user.getId())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    userSnapshot.getRef().removeValueAsync();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+//                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        DatabaseReference ref = database.getReference("rooms").child(foundedRoom.get().getRoomPin() + foundedRoom.get().getId());
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Lấy giá trị từ dataSnapshot
+                    Long currentTotaluser = dataSnapshot.child("totalUser").getValue(Long.class);
+
+                    // Cập nhật giá trị mới vào node con
+                    ref.child("totalUser").setValueAsync(currentTotaluser - 1);
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return new ResponseSuccess<>("Rời phòng thành công",true);
+    }
+
+    @Override
     public boolean isRoomOwner(User user, int roomId) {
         boolean isOwner = roomRepository.existsByUserAndId(user,roomId);
         return isOwner;
@@ -171,46 +261,70 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     @Transactional
-    public ResponseSuccess<Integer> joinRoom(User user,String roomPin) {
+    public ResponseSuccess<JoinRoomVm> joinRoom(User user,String roomPin) {
         var room = roomRepository.findByRoomPin(roomPin);
         if(room.isEmpty()){
             throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
         }
-
-        if(room.get().getTimeStart() != null && room.get().getTimeStart().isAfter(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
+        Room roomm = room.get();
+        if(roomm.getTimeStart() != null && roomm.getTimeStart().isAfter(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
             throw new RoomHasNotStarted(RoomConstants.ROOM_HAS_NOT_STARTED);
         }
 
-        if(room.get().getTimeEnd() != null && room.get().getTimeEnd().isBefore(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
+        if(roomm.getTimeEnd() != null && roomm.getTimeEnd().isBefore(LocalDateTime.of(LocalDate.now(), LocalTime.now()))){
             throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
         }
 
-        if (room.get().isClosed()){
+        if (roomm.isClosed()){
             throw new RoomClosedException(RoomConstants.ROOM_CLOSED);
         }
 
-//        var isOnwer = this.isRoomOwner(user,room.get().getId());
-        // Chủ phòng join thì không cần add
-//        if(isOnwer){
-//            return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,room.get().getId());
-//        }
+        long totalUserInRoom = this.countUserInRoom(roomm);
 
-        long totalUserInRoom = this.countUserInRoom(room.get());
-
-        if(totalUserInRoom + 1 > room.get().getMaxUser()){
+        if(totalUserInRoom + 1 > roomm.getMaxUser()){
             throw new RoomFullException(RoomConstants.ROOM_FULL);
         }
 
+        JoinRoomVm vm = Utilities.getJoinRoomVm(room.get().getId(),room.get().getGameMode());
 
         // kiểm tra user đã tham gia phòng chưa, tham gia rồi thì return về phòng luôn
         if(roomRepository.existsByIdAndUser(room.get().getId(),user.getId())){
-            return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,room.get().getId());
+            return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,vm);
         }
 
         room.get().getUsers().add(user);
         roomRepository.save(room.get());
 
-        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,room.get().getId());
+        if (roomm.getGameMode().getModeCode().equals("realtime")){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+            DatabaseReference ref = database.getReference("rooms").child(roomm.getRoomPin() + roomm.getId());
+
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Lấy giá trị từ dataSnapshot
+                        Long currentTotaluser = dataSnapshot.child("totalUser").getValue(Long.class);
+
+
+                        // Cập nhật giá trị mới vào node con
+                        ref.child("totalUser").setValueAsync(currentTotaluser + 1);
+
+
+                        DatabaseReference usersRef = ref.child("users");
+
+                        usersRef.child(String.valueOf(user.getId())).setValueAsync(Utilities.getUserVm(user));
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        return new ResponseSuccess<>(RoomConstants.JOIN_ROOM,vm);
     }
 
     @Override

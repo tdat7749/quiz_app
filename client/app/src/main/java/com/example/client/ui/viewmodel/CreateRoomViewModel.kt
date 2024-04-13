@@ -8,7 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.client.model.CreateRoom
+import com.example.client.model.GameMode
 import com.example.client.model.Room
+import com.example.client.model.Topic
 import com.example.client.repositories.RoomRepository
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
@@ -32,6 +34,9 @@ class CreateRoomViewModel @Inject constructor(
     private val _create:MutableStateFlow<ResourceState<ApiResponse<Room>>> = MutableStateFlow(ResourceState.Nothing)
     val create = _create.asStateFlow()
 
+    private val _mode:MutableStateFlow<ResourceState<ApiResponse<List<GameMode>>>> = MutableStateFlow(ResourceState.Nothing)
+    val mode = _mode.asStateFlow()
+
     var timeStart by mutableStateOf<LocalDate?>(null)
         private set
 
@@ -52,6 +57,13 @@ class CreateRoomViewModel @Inject constructor(
 
     var isPlayAgain by mutableStateOf<Boolean>(false)
         private set
+
+    var gameMode by mutableStateOf<GameMode?>(null)
+        private set
+
+    fun onChangeGameMode(newValue: GameMode){
+        gameMode = newValue
+    }
 
     fun onChangeTimeStart(newValue:LocalDate?){ timeStart = newValue}
 
@@ -75,13 +87,22 @@ class CreateRoomViewModel @Inject constructor(
             timeEnd = combineDateTime(timeEnd,timeEndClock),
             roomName = roomName,
             maxUser = maxUser,
-            isPlayAgain = isPlayAgain
+            isPlayAgain = isPlayAgain,
+            modeId = gameMode?.id!!
         )
 
         _create.value = ResourceState.Loading
         viewModelScope.launch (Dispatchers.IO) {
             val response = roomRepository.createRoom(data)
             _create.value = response
+        }
+    }
+
+    fun getListGameMode(){
+        _mode.value = ResourceState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = roomRepository.getListGameMode()
+            _mode.value = response
         }
     }
 

@@ -1,8 +1,6 @@
 package com.example.client.network.room
 
-import com.example.client.model.CreateRoom
-import com.example.client.model.EditRoom
-import com.example.client.model.Room
+import com.example.client.model.*
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.PagingResponse
 import retrofit2.http.Body
@@ -20,10 +18,15 @@ interface RoomService {
         @Body createRoom:CreateRoom
     ): ApiResponse<Room>
 
+    @GET("api/rooms/mode")
+    suspend fun getListGameMode(
+
+    ): ApiResponse<List<GameMode>>
+
     @GET("api/rooms/{roomPin}/join")
     suspend fun joinRoom(
         @Path("roomPin") roomPin:String
-    ): ApiResponse<Int>
+    ): ApiResponse<JoinRoom>
 
     @GET("api/rooms/{roomPin}/participant")
     suspend fun getRoomForParticipants(
@@ -66,5 +69,11 @@ interface RoomService {
     suspend fun kickUser(
         @Path("roomId") roomId:Int,
         @Path("userId") userId:Int
+    ): ApiResponse<Boolean>
+
+
+    @POST("api/rooms/{roomId}/leave")
+    suspend fun leaveRoom(
+        @Path("roomId") roomId:Int
     ): ApiResponse<Boolean>
 }

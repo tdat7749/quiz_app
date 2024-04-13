@@ -9,7 +9,13 @@ data class Answer(
     val id:Int,
     val title:String,
     val correct:Boolean
-)
+){
+    constructor(): this(
+        -1,
+        "",
+        false
+    )
+}
 
 data class EditAnswer(
     val id: Int,

@@ -8,13 +8,18 @@ import com.example.backend.modules.quiz.models.Question;
 import com.example.backend.modules.quiz.models.QuestionType;
 import com.example.backend.modules.quiz.models.Quiz;
 import com.example.backend.modules.quiz.viewmodels.*;
+import com.example.backend.modules.room.models.GameMode;
 import com.example.backend.modules.room.models.Room;
+import com.example.backend.modules.room.viewmodels.GameModeVm;
+import com.example.backend.modules.room.viewmodels.JoinRoomVm;
+import com.example.backend.modules.room.viewmodels.RoomRealTime;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.topic.models.Topic;
 import com.example.backend.modules.topic.viewmodels.TopicVm;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.viewmodels.UserDetailVm;
 import com.example.backend.modules.user.viewmodels.UserVm;
+import org.hibernate.mapping.Join;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -80,6 +85,14 @@ public class Utilities {
                 .build();
     }
 
+    public static GameModeVm getGameModeVm(GameMode gameMode){
+        return GameModeVm.builder()
+                .id(gameMode.getId())
+                .modeName(gameMode.getModeName())
+                .modeCode(gameMode.getModeCode())
+                .build();
+    }
+
     public static RoomVm getRoomVm(Room room,Long totalUser){
         return RoomVm.builder()
                 .roomPin(room.getRoomPin())
@@ -94,6 +107,7 @@ public class Utilities {
                 .isPlayAgain(room.isPlayAgain())
                 .maxUser(room.getMaxUser())
                 .totalUser(totalUser)
+                .mode(getGameModeVm(room.getGameMode()))
                 .build();
     }
 
@@ -110,6 +124,31 @@ public class Utilities {
                 .isClosed(room.isClosed())
                 .isPlayAgain(room.isPlayAgain())
                 .maxUser(room.getMaxUser())
+                .mode(getGameModeVm(room.getGameMode()))
+                .build();
+    }
+
+    public static JoinRoomVm getJoinRoomVm(int id, GameMode gameMode){
+        return JoinRoomVm.builder()
+                .id(id)
+                .mode(getGameModeVm(gameMode))
+                .build();
+    }
+
+    public static RoomRealTime getRoomRealTimeVm(Room room,List<QuestionDetailVm> questions){
+        return RoomRealTime.builder()
+                .roomPin(room.getRoomPin())
+                .id(room.getId())
+                .timeStart(room.getTimeStart() != null ? room.getTimeStart().toString() : null)
+                .timeEnd(room.getTimeEnd() != null ? room.getTimeEnd().toString() : null)
+                .createdAt(room.getCreatedAt().toString())
+                .host(getUserVm(room.getUser()))
+                .quiz(getQuizVm(room.getQuiz()))
+                .roomName(room.getRoomName())
+                .isClosed(room.isClosed())
+                .maxUser(room.getMaxUser())
+                .mode(getGameModeVm(room.getGameMode()))
+                .questions(questions)
                 .build();
     }
 

@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.client.R
+import com.example.client.model.GameMode
 import com.example.client.model.Room
 import com.example.client.ui.components.*
 import com.example.client.ui.viewmodel.CreateRoomViewModel
@@ -59,7 +60,11 @@ fun CreateRoomScreen(
 ){
 
     val create by createRoomViewModel.create.collectAsState()
+    val mode by createRoomViewModel.mode.collectAsState()
 
+    LaunchedEffect(Unit){
+        createRoomViewModel.getListGameMode()
+    }
 
     when(create){
         is ResourceState.Success -> {
@@ -92,99 +97,117 @@ fun CreateRoomScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(it)
                 ) {
-                    QuizThumbnail(thumbnail)
-                    QuestionSection(title)
+                    when(mode){
+                        is ResourceState.Loading -> {
+                            Loading()
+                        }
+                        is ResourceState.Success -> {
+                            QuizThumbnail(thumbnail)
+                            QuestionSection(title)
 
-                    TextFieldOutlined(
-                        createRoomViewModel.roomName,
-                        onChangeValue = {value ->
-                            createRoomViewModel.onChangeRoomname(value)
-                        },
-                        "Tên Phòng",
-                        painterResource(id = R.drawable.title)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    NumberFieldOutlined(
-                        createRoomViewModel.maxUser,
-                        onChangeValue = {value ->
-                            createRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
-                        },
-                        "Số Thành Viên Tối Đa",
-                        painterResource(id = R.drawable.title)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    CalendarComponent(
-                        value = createRoomViewModel.timeStart.toString(),
-                        label = "Ngày Bắt Đầu",
-                        onChangeDate = { it ->
-                            createRoomViewModel.onChangeTimeStart(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    TimeComponent(
-                        value = createRoomViewModel.timeStartClock.toString(),
-                        label = "Giờ Bắt Đầu",
-                        onChangeTime = {it ->
-                           createRoomViewModel.onChangeTimeStartClock(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_normal))
-                    )
-                    CalendarComponent(
-                        value = createRoomViewModel.timeEnd.toString(),
-                        label = "Ngày Kết Thúc",
-                        onChangeDate = { it ->
-                            createRoomViewModel.onChangeTimeEnd(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    TimeComponent(
-                        value = createRoomViewModel.timeEndClock.toString(),
-                        label = "Giờ Kết Thúc",
-                        onChangeTime = {it ->
-                            createRoomViewModel.onChangeTimeEndClock(it)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_small))
-                    )
-                    SwitchLabel(
-                        "Cho Phép Chơi Lại: ",
-                        createRoomViewModel.isPlayAgain,
-                        onChangeValue = {value ->
-                            createRoomViewModel.onChangePlayAgain(value)
-                        }
-                    )
+                            DropdownGameModeMenu(
+                                options = (mode as ResourceState.Success<ApiResponse<List<GameMode>>>).value.data,
+                                createRoomViewModel.gameMode,
+                                onChangeValue = {mode ->
+                                    createRoomViewModel.onChangeGameMode(mode)
+                                }
+                            )
 
-                    Spacer(
-                        modifier = Modifier
-                            .height(dimensionResource(id = R.dimen.space_app_normal))
-                    )
+                            TextFieldOutlined(
+                                createRoomViewModel.roomName,
+                                onChangeValue = {value ->
+                                    createRoomViewModel.onChangeRoomname(value)
+                                },
+                                "Tên Phòng",
+                                painterResource(id = R.drawable.title)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            NumberFieldOutlined(
+                                createRoomViewModel.maxUser,
+                                onChangeValue = {value ->
+                                    createRoomViewModel.onChangeMaxUser(Integer.parseInt(value))
+                                },
+                                "Số Thành Viên Tối Đa",
+                                painterResource(id = R.drawable.title)
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            CalendarComponent(
+                                value = createRoomViewModel.timeStart.toString(),
+                                label = "Ngày Bắt Đầu",
+                                onChangeDate = { it ->
+                                    createRoomViewModel.onChangeTimeStart(it)
+                                }
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            TimeComponent(
+                                value = createRoomViewModel.timeStartClock.toString(),
+                                label = "Giờ Bắt Đầu",
+                                onChangeTime = {it ->
+                                    createRoomViewModel.onChangeTimeStartClock(it)
+                                }
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
+                            CalendarComponent(
+                                value = createRoomViewModel.timeEnd.toString(),
+                                label = "Ngày Kết Thúc",
+                                onChangeDate = { it ->
+                                    createRoomViewModel.onChangeTimeEnd(it)
+                                }
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            TimeComponent(
+                                value = createRoomViewModel.timeEndClock.toString(),
+                                label = "Giờ Kết Thúc",
+                                onChangeTime = {it ->
+                                    createRoomViewModel.onChangeTimeEndClock(it)
+                                }
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_small))
+                            )
+                            SwitchLabel(
+                                "Cho Phép Chơi Lại: ",
+                                createRoomViewModel.isPlayAgain,
+                                onChangeValue = {value ->
+                                    createRoomViewModel.onChangePlayAgain(value)
+                                }
+                            )
 
-                    ButtonComponent(
-                        onClick = {
-                            createRoomViewModel.onCreateRoom(quizId)
-                        },
-                        "Tạo Phòng",
-                        MaterialTheme.colorScheme.primary,
-                        create is ResourceState.Loading,
-                        create !is ResourceState.Loading
-                    )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
+
+                            ButtonComponent(
+                                onClick = {
+                                    createRoomViewModel.onCreateRoom(quizId)
+                                },
+                                "Tạo Phòng",
+                                MaterialTheme.colorScheme.primary,
+                                create is ResourceState.Loading,
+                                create !is ResourceState.Loading
+                            )
+                        }
+                        else -> {
+
+                        }
+                    }
                 }
         }
     )

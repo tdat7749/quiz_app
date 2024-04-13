@@ -21,11 +21,13 @@ import com.airbnb.lottie.compose.*
 import com.example.client.ui.components.TopBar
 import com.example.client.ui.viewmodel.FindRoomViewModel
 import com.example.client.R
+import com.example.client.model.JoinRoom
 import com.example.client.model.Room
 import com.example.client.ui.components.ButtonComponent
 import com.example.client.ui.components.TextFieldOutlined
 import com.example.client.ui.navigation.Routes
 import com.example.client.utils.ApiResponse
+import com.example.client.utils.AppConstants
 import com.example.client.utils.ResourceState
 
 
@@ -55,9 +57,15 @@ fun FindRoomScreen(
 
     when(join){
         is ResourceState.Success -> {
-            val roomId = (join as ResourceState.Success<ApiResponse<Int>>).value.data
-            LaunchedEffect(Unit){
-                navController.navigate("${Routes.WAITING_ROOM_SCREEN}/${findRoomViewModel.roomPin}/${roomId}")
+            val vm = (join as ResourceState.Success<ApiResponse<JoinRoom>>).value.data
+            if(!vm.mode.modeCode.equals(AppConstants.GAME_MODE_REAL_TIME)){
+                LaunchedEffect(Unit){
+                    navController.navigate("${Routes.WAITING_ROOM_SCREEN}/${findRoomViewModel.roomPin}/${vm.id}")
+                }
+            }else{
+                LaunchedEffect(Unit){
+                    navController.navigate("${Routes.WAITING_ROOM_REAL_TIME_SCREEN}/${findRoomViewModel.roomPin}/${vm.id}")
+                }
             }
         }
         is ResourceState.Error -> {

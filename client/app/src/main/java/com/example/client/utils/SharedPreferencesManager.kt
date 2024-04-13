@@ -41,13 +41,9 @@ object SharedPreferencesManager {
         userPreferences.edit().putString(USER,json).apply()
     }
 
-    fun <User> getUser(classOfT: Class<User>): User? {
+    fun getUser(): User? {
         val json = userPreferences.getString(USER, null)
-        return if (json != null) {
-            gson.fromJson(json, classOfT)
-        } else {
-            null
-        }
+        return json?.let { gson.fromJson(it, User::class.java) }
     }
 
     fun getAccessToken():String?{

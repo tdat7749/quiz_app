@@ -5,6 +5,9 @@ object AppConstants {
     const val ACCESS_TOKEN = "access_token"
     const val REFRESH_TOKEN = "refresh_token"
 
+
+    const val GAME_MODE_REAL_TIME = "realtime"
+
     val PUBLIC_API: ArrayList<String> = arrayListOf(
         "/api/auth/login",
         "/api/auth/login/google",
@@ -18,6 +21,7 @@ object AppConstants {
         "/api/quizzes/latest",
         "/api/users/forgot-mail",
         "/api/users/forgot",
-        "/api/types/"
+        "/api/types/",
+        "/api/rooms/mode"
     )
 }

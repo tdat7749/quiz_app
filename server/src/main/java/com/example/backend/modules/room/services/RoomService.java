@@ -5,6 +5,7 @@ import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.room.dtos.CreateRoomDTO;
 import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.models.Room;
+import com.example.backend.modules.room.viewmodels.JoinRoomVm;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.models.User;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public interface RoomService {
 
     long countUserInRoom(Room room);
 
-    ResponseSuccess<Integer> joinRoom(User user,String roomPin);
+    ResponseSuccess<JoinRoomVm> joinRoom(User user, String roomPin);
 
     ResponseSuccess<RoomVm> getRoomForParticipants(User user,String roomPin);
 
@@ -37,4 +38,6 @@ public interface RoomService {
 
     ResponseSuccess<ResponsePaging<List<RoomVm>>> getJoinedRoom(User user,int pageIndex);
     ResponseSuccess<Boolean> kickUser(User user, int roomId, int userId);
+
+    ResponseSuccess<Boolean> leaveRoom(User user, int roomId);
 }

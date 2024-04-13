@@ -46,4 +46,11 @@ class RoomRepository @Inject constructor(
         roomService.getJoinedRoom(pageIndex)
     }
 
+    suspend fun getListGameMode() = ApiHelper.safeCallApi {
+        roomService.getListGameMode()
+    }
+
+    suspend fun leaveRoom(roomId:Int) = ApiHelper.safeCallApi {
+        roomService.leaveRoom(roomId)
+    }
 }

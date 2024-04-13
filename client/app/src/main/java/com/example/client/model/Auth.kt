@@ -34,7 +34,13 @@ data class User(
     val id:Int,
     val displayName:String,
     val avatar :String
-)
+){
+    constructor(): this(
+        -1,
+        "",
+        ""
+    )
+}
 
 data class UserDetail(
     val id:Int,

@@ -8,7 +8,15 @@ data class Quiz(
     val slug:String,
     val thumbnail:String,
     val user: User
-)
+){
+    constructor(): this(
+        -1,
+        "",
+        "",
+        "",
+        User()
+    )
+}
 
 data class QuizDetail(
     val id:Int,

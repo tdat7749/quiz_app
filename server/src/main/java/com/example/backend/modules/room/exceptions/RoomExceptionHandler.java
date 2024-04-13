@@ -44,4 +44,10 @@ public class RoomExceptionHandler {
     public ResponseError userIsNotInRoomExceptionHandler(UserIsNotInRoomException ex){
         return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
+
+    @ExceptionHandler(GameModeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError gameModeNotFoundExceptionHandler(GameModeNotFoundException ex){
+        return new ResponseError(HttpStatus.NOT_FOUND,404,ex.getMessage());
+    }
 }

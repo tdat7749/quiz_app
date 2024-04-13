@@ -48,6 +48,7 @@ import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.*
 import com.example.client.ui.theme.Shapes
 import com.example.client.R
+import com.example.client.model.GameMode
 import com.example.client.model.QuestionType
 import com.example.client.model.Quiz
 import com.example.client.model.Topic
@@ -602,7 +603,7 @@ fun ScreenHeader(title:String,thumbnail:String? = null,painterResource: Painter?
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar (title:String,navController: NavController){
+fun TopBar (title:String,navController: NavController? = null){
     TopAppBar(
         title = {
             Box(modifier = Modifier
@@ -616,11 +617,13 @@ fun TopBar (title:String,navController: NavController){
             }
         },
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                )
+            if(navController != null){
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                    )
+                }
             }
         },
         colors = TopAppBarColors(
@@ -781,6 +784,60 @@ fun DropdownTopicMenu(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownGameModeMenu(
+    options:List<GameMode>,
+    selectedOption:GameMode?,
+    onChangeValue: (GameMode) -> Unit
+){
+
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedOption?.modeName ?: "",
+            onValueChange = { },
+            label = { Text("Chủ Đề") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            readOnly = true,
+            modifier = Modifier.menuAnchor().fillMaxWidth().clip(Shapes.medium),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            options.forEach {option ->
+                DropdownMenuItem(
+                    text = { Text(option.modeName) },
+                    onClick = {
+                        onChangeValue(option)
+                        expanded = false
+                    })
+            }
+        }
+    }
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
