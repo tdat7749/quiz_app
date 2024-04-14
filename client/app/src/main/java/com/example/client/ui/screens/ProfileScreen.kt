@@ -27,7 +27,9 @@ import com.example.client.ui.viewmodel.ProfileViewModel
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
 import com.example.client.R
+import com.example.client.ui.components.ButtonNavigate
 import com.example.client.ui.navigation.Routes
+import com.example.client.utils.SharedPreferencesManager
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -77,6 +79,17 @@ fun ProfileScreen(
                             onPreferenceClick = {
                                 navController.navigate(it)
                             }
+                        )
+                        Spacer(
+                            modifier = Modifier.height(dimensionResource(id = R.dimen.space_app_large))
+                        )
+                        ButtonNavigate(
+                            onClick = {
+                                SharedPreferencesManager.clear()
+                                navController.navigate(Routes.LOGIN_SCREEN)
+                            },
+                            value = "Đăng Xuất",
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     else -> {

@@ -28,4 +28,7 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 
     @Query("select r from Room as r left join r.users as u where u = :user")
     Page<Room> getJoinedRoom(User user,Pageable paging);
+
+    @Query("select r.users from Room as r where r = :room")
+    Page<User> getUsersInRoom(Room room,Pageable paging);
 }

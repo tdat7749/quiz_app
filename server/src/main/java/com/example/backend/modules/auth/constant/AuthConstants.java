@@ -21,5 +21,10 @@ public class AuthConstants {
 
     public static final String LOGIN_FAILED = "Sai tài khoản hoặc mật khẩu";
 
+    public static final String VERIFIED = "Tài khoản đã được xác thực";
+
+    public static final String PASSWORD_DO_NOT_MATCH = "Mật khẩu không trùng khớp";
+
+    public static final String LOGIN_GOOGLE_FAILED_BY_EMAIL_USED = "Email bạn sử dụng để đăng nhập đã tồn tại trong hệ thống";
 
 }

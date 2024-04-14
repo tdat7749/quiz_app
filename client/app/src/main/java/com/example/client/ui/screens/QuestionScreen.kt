@@ -3,6 +3,7 @@ package com.example.client.ui.screens
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -54,6 +55,10 @@ fun QuestionScreen (
 
     val types by createQuizViewModel.types.collectAsState()
 
+    if(createQuizViewModel.questionValidate != null){
+        ShowMessage(createQuizViewModel.questionValidate!!)
+    }
+
     var isTrueAnswer by remember { mutableStateOf(-1) }
 
     if(index != -1){
@@ -69,6 +74,7 @@ fun QuestionScreen (
         onDispose {
             createQuizViewModel.resetQuestion()
             createQuizViewModel.resetAnswer()
+            createQuizViewModel.resetAddQuestionValidate()
         }
     }
 
@@ -278,4 +284,17 @@ private fun Answer(
             )
         }
     }
+}
+
+@Composable
+private fun ShowMessage(
+    message: String,
+    onReset: () -> Unit = {}
+) {
+    Toast.makeText(
+        LocalContext.current,
+        message,
+        Toast.LENGTH_LONG
+    ).show()
+    onReset()
 }

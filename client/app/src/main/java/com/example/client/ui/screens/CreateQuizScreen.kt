@@ -72,6 +72,16 @@ fun CreateQuizScreen (
         }
     }
 
+    if(createQuizViewModel.quizValidate != null){
+        ShowMessage(createQuizViewModel.quizValidate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            createQuizViewModel.resetCreateQuizValidate()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBar(

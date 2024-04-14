@@ -22,6 +22,11 @@ import java.util.*
 
 class Utilities {
     companion object {
+        private const val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"
+        fun isValidEmail(email:String):Boolean {
+            return email.matches(emailRegex.toRegex())
+        }
+
         fun createPartFromString(value: String): RequestBody {
             return value.toRequestBody("text/plain".toMediaTypeOrNull())
         }

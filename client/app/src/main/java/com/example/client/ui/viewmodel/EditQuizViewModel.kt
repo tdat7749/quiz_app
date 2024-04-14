@@ -113,6 +113,17 @@ class EditQuizViewModel @Inject constructor(
     private var _listQuestion = MutableStateFlow<List<QuestionDetail>>(emptyList())
     val listQuestion = _listQuestion.asStateFlow()
 
+    var editQuizValidate by mutableStateOf<String?>(null)
+        private set
+
+    var editQuestionValidate by mutableStateOf<String?>(null)
+        private set
+
+    var editAnswerValidate by mutableStateOf<String?>(null)
+        private set
+
+    var createQuestionValidate by mutableStateOf<String?>(null)
+        private set
 
     init {
         getAllTopic()
@@ -191,6 +202,12 @@ class EditQuizViewModel @Inject constructor(
     )
 
     fun editQuestion(quizId:Int,index:Int){
+        val value = editQuestionValidated()
+        if(value != null){
+            editQuestionValidate = value
+            return
+        }
+
         val data = EditQuestion(
             title = questionTitle,
             questionTypeId = questionType!!.id,
@@ -380,6 +397,12 @@ class EditQuizViewModel @Inject constructor(
     }
     
     fun editQuiz(quizId: Int){
+        val value = editQuizValidated()
+        if(value != null){
+            editQuizValidate = value
+            return
+        }
+
         val data = EditQuiz(
             title = title,
             slug = Utilities.Companion.slugify(title),
@@ -397,7 +420,85 @@ class EditQuizViewModel @Inject constructor(
         }
     }
 
+    fun editQuizValidated():String?{
+        if(topic == null){
+            return "Vui lòng chọn 1 chủ đề cho quiz"
+        }
+        if(summary.equals("") || summary == null){
+            return "Không được để trống giới thiệu ngắn"
+        }
+        if(description.equals("") || description == null){
+            return "Không được để trống giới thiệu chi tiết"
+        }
+        if(title.equals("") || title == null){
+            return "Không được để trống tên quiz"
+        }
+
+        return null
+    }
+
+    fun editQuestionValidated():String?{
+        if(questionTitle.equals("") || questionTitle == null){
+            return "Không được để trống tên câu hỏi"
+        }
+        if(questionType == null){
+            return "Vui lòng chọn thể loại câu hỏi"
+        }
+        return null
+    }
+
+    fun editAnswerValidated():String?{
+        val listAnswer = setEditAnswers()
+        var flag = false
+        for (item in listAnswer){
+            if(item.title.equals("") || item.title == null){
+                return "Không được để trống câu trả lời"
+            }
+            if(item.isCorrect){
+                flag = true
+            }
+        }
+
+        if(flag == false){
+            return "Vui lòng chọn đáp án đúng"
+        }
+
+        return null
+    }
+
+    fun createQuestionValidated():String?{
+        if(questionTitle.equals("") || questionTitle == null){
+            return "Không được để trống tên câu hỏi"
+        }
+        if(questionType == null){
+            return "Vui lòng chọn thể loại câu hỏi"
+        }
+
+        val listAnswer = setAnswers()
+        var flag = false
+        for (item in listAnswer){
+            if(item.title.equals("") || item.title == null){
+                return "Không được để trống câu trả lời"
+            }
+            if(item.isCorrect){
+                flag = true
+            }
+        }
+
+        if(flag == false){
+            return "Vui lòng chọn đáp án đúng"
+        }
+
+        return null
+    }
+
     fun addQuestion(quizId: Int){
+        val value = createQuestionValidated()
+        if(value != null){
+            createQuestionValidate = value
+            return
+        }
+
         val data = CreateQuestion(
             title = questionTitle,
             questionType = questionType!!,
@@ -452,6 +553,12 @@ class EditQuizViewModel @Inject constructor(
     }
 
     fun editAnswer(quizId:Int,index:Int){
+        val value = editAnswerValidated()
+        if(value != null){
+            editAnswerValidate = value
+            return
+        }
+
         val data = EditListAnswer(
             answers = setEditAnswers(),
             quizId = quizId
@@ -472,6 +579,22 @@ class EditQuizViewModel @Inject constructor(
                 _listQuestion.value = updatedList
             }
         }
+    }
+
+    fun resetEditQuizValidate(){
+        editQuizValidate = null
+    }
+
+    fun resetCreateQuestionValidate(){
+        createQuestionValidate = null
+    }
+
+    fun resetEditQuestionValidate(){
+        editQuestionValidate = null
+    }
+
+    fun resetEditAnswerValidate(){
+        editAnswerValidate = null
     }
 
     fun resetQuestion(){

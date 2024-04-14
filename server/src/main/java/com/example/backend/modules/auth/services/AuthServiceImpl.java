@@ -5,10 +5,7 @@ import com.example.backend.commons.AppConstants;
 import com.example.backend.commons.ResponseSuccess;
 import com.example.backend.modules.auth.constant.AuthConstants;
 import com.example.backend.modules.auth.dtos.*;
-import com.example.backend.modules.auth.exceptions.EmailUsedException;
-import com.example.backend.modules.auth.exceptions.LoginException;
-import com.example.backend.modules.auth.exceptions.UserNameUsedException;
-import com.example.backend.modules.auth.exceptions.VerifyEmailException;
+import com.example.backend.modules.auth.exceptions.*;
 import com.example.backend.modules.auth.viewmodels.AuthenVm;
 import com.example.backend.modules.email.services.EmailService;
 import com.example.backend.modules.jwt.services.JwtService;
@@ -78,6 +75,7 @@ public class AuthServiceImpl  implements AuthService{
     public ResponseSuccess<AuthenVm> loginWithGoogle(String token) throws FirebaseAuthException {
         FirebaseToken decodeToken = FirebaseAuth.getInstance().verifyIdToken(token);
         var foundedUser = userService.findByEmail(decodeToken.getEmail());
+
         User user;
         if(foundedUser.isEmpty()){
             User newUser = User.builder()
@@ -98,6 +96,9 @@ public class AuthServiceImpl  implements AuthService{
             user = userService.saveUser(newUser);
         }else{
             user = foundedUser.get();
+            if(user.getGoogleId() == null){
+                throw new EmailUsedException(AuthConstants.LOGIN_GOOGLE_FAILED_BY_EMAIL_USED);
+            }
         }
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -114,6 +115,9 @@ public class AuthServiceImpl  implements AuthService{
 
     @Override
     public ResponseSuccess<Boolean> register(RegisterDTO dto) {
+        if(!dto.getPassword().equalsIgnoreCase(dto.getConfirmPassword())){
+            throw new PasswordDoNotMatchException(AuthConstants.PASSWORD_DO_NOT_MATCH);
+        }
         var isFoundUserByUserName = userService.findByUserName(dto.getUserName().toLowerCase());
         if(isFoundUserByUserName.isPresent()){
             throw new UserNameUsedException(AuthConstants.USERNAME_USED);
@@ -175,7 +179,7 @@ public class AuthServiceImpl  implements AuthService{
         }
 
         if (foundUser.get().isEnabled()) {
-            return new ResponseSuccess<>(AuthConstants.ACCOUNT_VERIFIED, true);
+            throw new VerifiedException(AuthConstants.VERIFIED);
         }
 
         final String token = Utilities.generateCode();

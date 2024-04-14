@@ -3,6 +3,7 @@ package com.example.client.network.room
 import com.example.client.model.CreateRoom
 import com.example.client.model.EditRoom
 import com.example.client.model.Room
+import com.example.client.model.User
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.PagingResponse
 import retrofit2.http.Body
@@ -67,4 +68,10 @@ interface RoomService {
         @Path("roomId") roomId:Int,
         @Path("userId") userId:Int
     ): ApiResponse<Boolean>
+
+    @GET("api/rooms/{roomId}/users")
+    suspend fun getUsersInRoom(
+        @Path("roomId") roomId:Int,
+        @Query("pageIndex") pageIndex:Int
+    ): ApiResponse<PagingResponse<List<User>>>
 }

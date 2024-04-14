@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.asStateFlow
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun VerifyAccountScreen (
-    email:String = "ABCASDASD@gmail.com",
+    email:String,
     navController: NavController,
     verifyViewModel: VerifyViewModel = hiltViewModel()
 ){
@@ -45,6 +45,15 @@ fun VerifyAccountScreen (
 
     verifyViewModel.onChangeEmail(email)
 
+    DisposableEffect(Unit){
+        onDispose {
+            verifyViewModel.resetValidate()
+        }
+    }
+
+    if(verifyViewModel.validate != null){
+        ShowMessage(verifyViewModel.validate!!)
+    }
 
     if(verify is ResourceState.Error){
         (verify as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }

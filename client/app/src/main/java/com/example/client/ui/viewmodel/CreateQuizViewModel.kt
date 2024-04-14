@@ -140,6 +140,11 @@ class CreateQuizViewModel @Inject constructor(
     )
 
     fun addQuestion(){
+        val value = createQuestionValidated()
+        if(value != null){
+            questionValidate = value
+            return
+        }
         val data = CreateQuestion(
             title = questionTitle,
             questionType = questionType!!,
@@ -240,6 +245,12 @@ class CreateQuizViewModel @Inject constructor(
         answerIndex = -1
     }
 
+    var quizValidate by mutableStateOf<String?>(null)
+        private set
+
+    var questionValidate by mutableStateOf<String?>(null)
+        private set
+
     private fun getAllTopic(){
         viewModelScope.launch(Dispatchers.IO){
             _topics.value = ResourceState.Loading
@@ -263,6 +274,11 @@ class CreateQuizViewModel @Inject constructor(
     }
 
     fun createQuiz(){
+        val value = createQuizValidated()
+        if(value != null){
+            quizValidate = value
+            return
+        }
         val data = CreateQuiz(
             thumbnail = quizThumbnailPath,
             summary = summary,
@@ -290,6 +306,7 @@ class CreateQuizViewModel @Inject constructor(
     }
 
     fun resetQuiz(){
+        _imageUri.value = null
         quizThumbnailPath = ""
         summary = ""
         title = ""
@@ -304,5 +321,62 @@ class CreateQuizViewModel @Inject constructor(
         resetQuestion()
         resetAnswer()
         resetQuiz()
+    }
+
+    fun createQuizValidated():String?{
+        if(listQuestion.value.isEmpty()){
+            return "Vui lòng tạo ít nhất 1 câu hỏi"
+        }
+        if(topic == null){
+            return "Vui lòng chọn 1 chủ đề cho quiz"
+        }
+        if(summary.equals("") || summary == null){
+            return "Không được để trống giới thiệu ngắn"
+        }
+        if(description.equals("") || description == null){
+            return "Không được để trống giới thiệu chi tiết"
+        }
+        if(title.equals("") || title == null){
+            return "Không được để trống tên quiz"
+        }
+        if(quizThumbnailPath.equals("") || quizThumbnailPath == null){
+            return "Không được để trống hình ảnh quiz"
+        }
+
+        return null
+    }
+
+    fun createQuestionValidated():String?{
+        if(questionTitle.equals("") || questionTitle == null){
+            return "Không được để trống tên câu hỏi"
+        }
+        if(questionType == null){
+            return "Vui lòng chọn thể loại câu hỏi"
+        }
+
+        val listAnswer = setAnswers()
+        var flag = false
+        for (item in listAnswer){
+            if(item.title.equals("") || item.title == null){
+                return "Không được để trống câu trả lời"
+            }
+            if(item.isCorrect){
+                flag = true
+            }
+        }
+
+        if(flag == false){
+            return "Vui lòng chọn đáp án đúng"
+        }
+
+        return null
+    }
+
+    fun resetCreateQuizValidate(){
+        quizValidate = null
+    }
+
+    fun resetAddQuestionValidate(){
+        questionValidate = null
     }
 }

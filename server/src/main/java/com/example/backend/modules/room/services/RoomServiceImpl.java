@@ -19,6 +19,7 @@ import com.example.backend.modules.user.constant.UserConstants;
 import com.example.backend.modules.user.exceptions.UserNotFoundException;
 import com.example.backend.modules.user.models.User;
 import com.example.backend.modules.user.services.UserService;
+import com.example.backend.modules.user.viewmodels.UserVm;
 import com.example.backend.utils.Utilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -145,6 +146,10 @@ public class RoomServiceImpl implements RoomService{
             throw new UserNotFoundException(UserConstants.USER_NOT_FOUND);
         }
 
+        if(foundedUser.get().equals(user)){
+            throw new CannotKickYourselfException(RoomConstants.CANNOT_KICK_YOURSELF);
+        }
+
         var isOwner = this.isRoomOwner(user,foundedRoom.get().getId());
         if(!isOwner){
             throw new RoomOwnerException(RoomConstants.NOT_ROOM_OWNER);
@@ -156,6 +161,27 @@ public class RoomServiceImpl implements RoomService{
         roomRepository.save(foundedRoom.get());
 
         return new ResponseSuccess<>("Đuổi người chơi thành công",true);
+    }
+
+    @Override
+    public ResponseSuccess<ResponsePaging<List<UserVm>>> getUsersInRoom(int roomId,int pageIndex) {
+        var foundedRoom = roomRepository.findById(roomId);
+        if(foundedRoom.isEmpty()){
+            throw new RoomNotFoundException(RoomConstants.ROOM_NOT_FOUND);
+        }
+
+        Pageable paging = PageRequest.of(pageIndex, AppConstants.PAGE_SIZE, Sort.by(Sort.Direction.DESC,"createdAt"));
+
+        Page<User> pagingResult = roomRepository.getUsersInRoom(foundedRoom.get(),paging);
+        List<UserVm> userVmList = pagingResult.stream().map(Utilities::getUserVm).toList();
+
+        ResponsePaging result = ResponsePaging.builder()
+                .data(userVmList)
+                .totalPage(pagingResult.getTotalPages())
+                .totalRecord((int) pagingResult.getTotalElements())
+                .build();
+
+        return new ResponseSuccess<>("Thành công",result);
     }
 
     @Override
@@ -287,11 +313,11 @@ public class RoomServiceImpl implements RoomService{
         room.get()
                 .setRoomName(dto.getRoomName());
         room.get()
-                        .setClosed(dto.isClosed());
+                .setClosed(dto.isClosed());
         room.get()
-                        .setMaxUser(dto.getMaxUser());
+                .setMaxUser(dto.getMaxUser());
         room.get()
-                        .setPlayAgain(dto.isPlayAgain());
+                .setPlayAgain(dto.isPlayAgain());
 
         roomRepository.save(room.get());
 

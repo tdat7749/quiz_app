@@ -46,4 +46,12 @@ class RoomRepository @Inject constructor(
         roomService.getJoinedRoom(pageIndex)
     }
 
+    suspend fun getUsersInRoom(roomId:Int,pageIndex:Int) = ApiHelper.safeCallApi {
+        roomService.getUsersInRoom(roomId,pageIndex)
+    }
+
+    suspend fun kickUser(roomId:Int,userId: Int) = ApiHelper.safeCallApi {
+        roomService.kickUser(roomId,userId)
+    }
+
 }

@@ -7,6 +7,7 @@ import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.models.Room;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.models.User;
+import com.example.backend.modules.user.viewmodels.UserVm;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface RoomService {
 
     ResponseSuccess<ResponsePaging<List<RoomVm>>> getJoinedRoom(User user,int pageIndex);
     ResponseSuccess<Boolean> kickUser(User user, int roomId, int userId);
+
+    ResponseSuccess<ResponsePaging<List<UserVm>>> getUsersInRoom(int roomId,int pageIndex);
 }

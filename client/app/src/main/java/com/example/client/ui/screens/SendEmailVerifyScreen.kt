@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +41,16 @@ fun SendEmailVerifyScreen(
         ShowMessage((send as ResourceState.Success<ApiResponse<Boolean>>).value.message)
         LaunchedEffect(Unit){
             navController.navigate("${Routes.VERIFY_SCREEN}/${sendEmailVerifyViewModel.email}")
+        }
+    }
+
+    if(sendEmailVerifyViewModel.validate != null){
+        ShowMessage(sendEmailVerifyViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            sendEmailVerifyViewModel.resetValidate()
         }
     }
 

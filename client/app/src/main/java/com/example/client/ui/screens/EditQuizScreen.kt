@@ -121,6 +121,16 @@ fun EditQuizScreen(
         }
     }
 
+    if(editQuizViewModel.editQuizValidate != null){
+        ShowMessage(editQuizViewModel.editQuizValidate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            editQuizViewModel.resetEditQuizValidate()
+        }
+    }
+
 
     val context = LocalContext.current
 

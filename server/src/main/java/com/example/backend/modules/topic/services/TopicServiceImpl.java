@@ -24,6 +24,20 @@ public class TopicServiceImpl implements TopicService{
     private final TopicRepository topicRepository;
     private final FileStorageService fileStorageService;
 
+
+    @Override
+    public ResponseSuccess<List<TopicVm>> getAllTopic() {
+        var listTopics = topicRepository.findAll();
+        var result = listTopics.stream().map(Utilities::getTopicVm).toList();
+
+        return new ResponseSuccess<>("Thành công",result);
+    }
+
+    @Override
+    public Optional<Topic> findById(int topicId) {
+        return topicRepository.findById(topicId);
+    }
+
     public TopicServiceImpl(
             TopicRepository topicRepository,
             FileStorageService fileStorageService
@@ -31,8 +45,6 @@ public class TopicServiceImpl implements TopicService{
         this.topicRepository = topicRepository;
         this.fileStorageService = fileStorageService;
     }
-
-
 
     @Override
     @Transactional
@@ -58,31 +70,7 @@ public class TopicServiceImpl implements TopicService{
 
         return new ResponseSuccess<>(TopicConstants.CREATE_TOPIC,topicVm);
     }
-    @Override
-    public ResponseSuccess<List<TopicVm>> getAllTopic() {
-        var listTopics = topicRepository.findAll();
-        var result = listTopics.stream().map(Utilities::getTopicVm).toList();
 
-        return new ResponseSuccess<>("Thành công",result);
-    }
-
-    @Override
-    public Optional<Topic> findById(int topicId) {
-        return topicRepository.findById(topicId);
-    }
-
-
-    @Override
-    public ResponseSuccess<Boolean> deleteTopic(int topicId) {
-        var topic = topicRepository.findById(topicId);
-        if(topic.isEmpty()){
-            throw new TopicNotFoundException(TopicConstants.TOPIC_NOT_FOUND);
-        }
-
-        topicRepository.delete(topic.get());
-
-        return new ResponseSuccess<>(TopicConstants.DELETE_TOPIC,true);
-    }
 
     @Override
     public ResponseSuccess<TopicVm> editTopic(EditTopicDTO dto) throws IOException {
@@ -119,5 +107,16 @@ public class TopicServiceImpl implements TopicService{
 
         return new ResponseSuccess<>(TopicConstants.EDIT_TOPIC,result);
 
+    }
+    @Override
+    public ResponseSuccess<Boolean> deleteTopic(int topicId) {
+        var topic = topicRepository.findById(topicId);
+        if(topic.isEmpty()){
+            throw new TopicNotFoundException(TopicConstants.TOPIC_NOT_FOUND);
+        }
+
+        topicRepository.delete(topic.get());
+
+        return new ResponseSuccess<>(TopicConstants.DELETE_TOPIC,true);
     }
 }

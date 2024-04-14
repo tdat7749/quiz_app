@@ -32,6 +32,8 @@ class VerifyViewModel @Inject constructor(
         email = newValue
     }
 
+    var validate by mutableStateOf<String?>(null)
+        private set
 
     var code by mutableStateOf("")
         private set
@@ -40,6 +42,12 @@ class VerifyViewModel @Inject constructor(
         private set
 
     fun verify(){
+        val value = validated()
+        if(value != null){
+            validate = value
+            return
+        }
+
         val data = Verify(
             code,
             email
@@ -50,5 +58,20 @@ class VerifyViewModel @Inject constructor(
             val response =  authRepository.verify(data)
             _verify.value = response
         }
+    }
+
+    fun validated():String?{
+        if(code.equals("") || code == null){
+            return "Không được để trống mã xác minh"
+        }
+        if(email.equals("") || email == null){
+            return "Không được để trống mã xác minh"
+        }
+
+        return null;
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 }

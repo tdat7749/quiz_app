@@ -44,4 +44,10 @@ public class RoomExceptionHandler {
     public ResponseError userIsNotInRoomExceptionHandler(UserIsNotInRoomException ex){
         return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
     }
+
+    @ExceptionHandler(CannotKickYourselfException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError cannotKickYourselExceptionHandler(UserIsNotInRoomException ex){
+        return new ResponseError(HttpStatus.BAD_REQUEST,400,ex.getMessage());
+    }
 }

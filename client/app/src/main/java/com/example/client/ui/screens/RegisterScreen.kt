@@ -52,6 +52,16 @@ fun RegisterScreen(
         (register as ResourceState.Error).errorBody?.let { ShowMessage(it.message) }
     }
 
+    if(registerViewModel.validate != null){
+        ShowMessage(registerViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            registerViewModel.resetValidate()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBar(
