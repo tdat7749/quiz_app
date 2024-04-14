@@ -38,12 +38,20 @@ class ForgotPasswordViewModel @Inject constructor(
     var email by  mutableStateOf("")
         private set
 
+    var validate by  mutableStateOf<String?>(null)
+        private set
+
     fun onChangeNewPassword(newValue: String) { newPassword = newValue }
     fun onChangeConfirmPassword(newValue: String) { confirmPassword = newValue }
     fun onChangeToken(newValue: String) { token = newValue }
     fun onChangeEmail(newValue: String) { email = newValue }
 
     fun forgotPassword(){
+        val value = validated()
+        if(value != null){
+            validate = value
+            return
+        }
         val data = ForgotPassword(
             token, email, newPassword, confirmPassword
         )
@@ -53,5 +61,26 @@ class ForgotPasswordViewModel @Inject constructor(
             val response = userRepository.forgotPassword(data)
             _forgot.value = response
         }
+    }
+
+    fun validated():String?{
+        if(newPassword.equals("") || newPassword == null){
+            return "Không được để trống mật khẩu mới"
+        }
+        if(confirmPassword.equals("") || confirmPassword == null){
+            return "Không được để trống xác nhận mật khẩu mới"
+        }
+        if(token.equals("") || token == null){
+            return "Không được để trống mã"
+        }
+        if(!newPassword.equals(confirmPassword)){
+            return "Mật khẩu mới và xác nhận mật khẩu không trùng khớp"
+        }
+
+        return null
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 }

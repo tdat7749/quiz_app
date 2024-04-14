@@ -60,6 +60,9 @@ class EditRoomViewModel @Inject constructor(
     var isPlayAgain by mutableStateOf<Boolean>(false)
         private set
 
+    var validate by mutableStateOf<String?>(null)
+        private set
+
     fun onChangeTimeStart(newValue:LocalDate?){ timeStart = newValue}
 
     fun onChangeTimeStartClock(newValue:LocalTime?) {timeStartClock = newValue}
@@ -77,6 +80,13 @@ class EditRoomViewModel @Inject constructor(
 
 
     fun onEditRoom(roomId:Int){
+        val value = validated()
+        if(value != null){
+            validate = value
+
+            return
+        }
+
         val data = EditRoom(
             roomId = roomId,
             timeStart = combineDateTime(timeStart,timeStartClock),
@@ -84,7 +94,7 @@ class EditRoomViewModel @Inject constructor(
             roomName = roomName,
             isClosed = isClosed,
             maxUser = maxUser,
-            isPlayAgain = isPlayAgain
+            playAgain = isPlayAgain
         )
 
         _edit.value = ResourceState.Loading
@@ -92,6 +102,21 @@ class EditRoomViewModel @Inject constructor(
             val response = roomRepository.editRoom(data)
             _edit.value = response
         }
+    }
+
+    fun validated():String?{
+        if(roomName.equals("") || roomName == null){
+            return "Không được để trống tên phòng"
+        }
+        if(maxUser <= 0){
+            return "Phòng chơi phải cần ít nhất 1 người"
+        }
+
+        return null
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 
     fun getRoom(id:Int){

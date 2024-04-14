@@ -10,10 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -71,6 +68,16 @@ fun EditRoomScreen(
         }
         else -> {
 
+        }
+    }
+
+    if(editRoomViewModel.validate != null){
+        ShowMessage(editRoomViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            editRoomViewModel.resetValidate()
         }
     }
 

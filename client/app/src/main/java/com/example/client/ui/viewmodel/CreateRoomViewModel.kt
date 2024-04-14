@@ -53,6 +53,9 @@ class CreateRoomViewModel @Inject constructor(
     var isPlayAgain by mutableStateOf<Boolean>(false)
         private set
 
+    var validate by mutableStateOf<String?>(null)
+        private set
+
     fun onChangeTimeStart(newValue:LocalDate?){ timeStart = newValue}
 
     fun onChangeTimeStartClock(newValue:LocalTime?) {timeStartClock = newValue}
@@ -69,13 +72,19 @@ class CreateRoomViewModel @Inject constructor(
 
 
     fun onCreateRoom(quizId:Int){
+        val value = validated()
+        if(value != null){
+            validate = value
+
+            return
+        }
         val data = CreateRoom(
             quizId = quizId,
             timeStart = combineDateTime(timeStart,timeStartClock),
             timeEnd = combineDateTime(timeEnd,timeEndClock),
             roomName = roomName,
             maxUser = maxUser,
-            isPlayAgain = isPlayAgain
+            playAgain = isPlayAgain
         )
 
         _create.value = ResourceState.Loading
@@ -83,6 +92,21 @@ class CreateRoomViewModel @Inject constructor(
             val response = roomRepository.createRoom(data)
             _create.value = response
         }
+    }
+
+    fun resetValidate(){
+        validate = null
+    }
+
+    fun validated():String?{
+        if(roomName.equals("") || roomName == null){
+            return "Không được để trống tên phòng"
+        }
+        if(maxUser <= 0){
+            return "Phòng chơi phải cần ít nhất 1 người"
+        }
+
+        return null
     }
 
     private fun combineDateTime(localDate: LocalDate?,localTime:LocalTime?):LocalDateTime?{

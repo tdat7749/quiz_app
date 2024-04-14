@@ -76,6 +76,16 @@ fun CreateRoomScreen(
         }
     }
 
+    if(createRoomViewModel.validate != null){
+        ShowMessage(createRoomViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            createRoomViewModel.resetValidate()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopBar(

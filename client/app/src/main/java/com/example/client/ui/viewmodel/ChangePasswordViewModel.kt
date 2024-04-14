@@ -24,6 +24,9 @@ class ChangePasswordViewModel @Inject constructor(
     private val _changePassword : MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
     val changePassword: MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = _changePassword
 
+    var validate by mutableStateOf<String?>(null)
+        private set
+
     var oldPassword by mutableStateOf("")
         private set
     var newPassword by mutableStateOf("")
@@ -37,6 +40,11 @@ class ChangePasswordViewModel @Inject constructor(
 
 
     fun changePassword(){
+        val value = validated()
+        if(value != null){
+            validate = value
+            return
+        }
         val data = ChangePassword(
             newPassword,
             confirmPassword,
@@ -48,5 +56,25 @@ class ChangePasswordViewModel @Inject constructor(
 
             _changePassword.value = response
         }
+    }
+
+    fun validated():String?{
+        if(newPassword.equals("") || newPassword == null){
+            return "Không được để trống mật khẩu mới"
+        }
+        if(oldPassword.equals("") || oldPassword == null){
+            return "Không được để trống mật khẩu hiện tại"
+        }
+        if(confirmPassword.equals("") || confirmPassword == null){
+            return "Không được để trống xác nhận mật khẩu"
+        }
+        if(!newPassword.equals(confirmPassword)){
+            return "Mật khẩu mới và mật khẩu xác nhận không trùng khớp"
+        }
+        return null
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 }

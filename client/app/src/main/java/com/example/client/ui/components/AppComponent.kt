@@ -654,20 +654,12 @@ fun EmailDisplay(email:String){
 @Composable
 fun BottomBar(navController:NavController){
 
-    val selected = remember {
-        mutableStateOf(Icons.Default.Home)
-    }
-
-    var showBottomSheet by remember {
-        mutableStateOf(false)
-    }
-
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         IconButton(
             onClick = {
-                selected.value = Icons.Default.Home
+                Icons.Default.Home
                 navController.navigate(Routes.HOME_SCREEN) {
                     popUpTo(0)
                 }
@@ -678,14 +670,12 @@ fun BottomBar(navController:NavController){
                 Icons.Default.Home,
                 contentDescription = null,
                 modifier = Modifier.size(26.dp),
-                tint = if (selected.value == Icons.Default.Home) MaterialTheme.colorScheme.primary else Color.DarkGray
-            )
-
+          )
         }
 
         IconButton(
             onClick = {
-                selected.value = Icons.Default.Search
+                Icons.Default.Search
                 navController.navigate(Routes.FIND_ROOM_SCREEN)
             },
             modifier = Modifier.weight(1f)
@@ -694,25 +684,14 @@ fun BottomBar(navController:NavController){
                 Icons.Default.Search,
                 contentDescription = null,
                 modifier = Modifier.size(26.dp),
-                tint = if (selected.value == Icons.Default.Search) MaterialTheme.colorScheme.primary else Color.DarkGray
             )
-
         }
 
-//        Box(modifier = Modifier
-//            .weight(1f)
-//            .padding(16.dp),
-//            contentAlignment = Alignment.Center){
-//            FloatingActionButton(
-//                onClick = { showBottomSheet = true },) {
-//                Icon(Icons.Default.Search,contentDescription = null,tint = MaterialTheme.colorScheme.primary)
-//            }
-//        }
 
 
         IconButton(
             onClick = {
-                selected.value = Icons.Default.Person
+                Icons.Default.Person
                 navController.navigate(Routes.PROFILE_SCREEN)
             },
             modifier = Modifier.weight(1f)
@@ -721,7 +700,7 @@ fun BottomBar(navController:NavController){
                 Icons.Default.Person,
                 contentDescription = null,
                 modifier = Modifier.size(26.dp),
-                tint = if (selected.value == Icons.Default.Person) MaterialTheme.colorScheme.primary else Color.DarkGray
+//                tint = if (selected.value == Icons.Default.Person) MaterialTheme.colorScheme.primary else Color.DarkGray
             )
 
         }

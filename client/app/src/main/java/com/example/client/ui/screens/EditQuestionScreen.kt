@@ -181,10 +181,23 @@ fun EditQuestionScreen(
         coroutineScope.launch { sheetState.hide() }
     }
 
+    if(editQuizViewModel.editQuestionValidate != null){
+        ShowMessage(editQuizViewModel.editQuestionValidate!!)
+    }
+    if(editQuizViewModel.createQuestionValidate != null){
+        ShowMessage(editQuizViewModel.createQuestionValidate!!)
+    }
+    if(editQuizViewModel.editAnswerValidate != null){
+        ShowMessage(editQuizViewModel.editAnswerValidate!!)
+    }
+
     DisposableEffect(Unit){
         onDispose {
             editQuizViewModel.resetQuestion()
             editQuizViewModel.resetAnswer()
+            editQuizViewModel.resetEditQuestionValidate()
+            editQuizViewModel.resetEditAnswerValidate()
+            editQuizViewModel.resetCreateQuestionValidate()
         }
     }
 

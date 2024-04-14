@@ -8,9 +8,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.client.datasource.HistoryRankRoomDataSource
 import com.example.client.datasource.RoomJoinedDataSource
+import com.example.client.datasource.UsersInRoomDataSource
 import com.example.client.model.HistoryAnswer
 import com.example.client.model.HistoryRank
 import com.example.client.model.Room
+import com.example.client.model.User
 import com.example.client.repositories.HistoryRepository
 import com.example.client.repositories.RoomRepository
 import com.example.client.utils.ApiResponse
@@ -36,6 +38,9 @@ class WaitingRoomViewModel @Inject constructor(
     private val _answer: MutableStateFlow<ResourceState<ApiResponse<List<HistoryAnswer>>>> = MutableStateFlow(ResourceState.Nothing)
     val answer = _answer.asStateFlow()
 
+    private val _kick:MutableStateFlow<ResourceState<ApiResponse<Boolean>>> = MutableStateFlow(ResourceState.Nothing)
+    val kick = _kick.asStateFlow()
+
     private val _keywordStateFlow = MutableStateFlow("")
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -45,6 +50,16 @@ class WaitingRoomViewModel @Inject constructor(
         .flatMapLatest {keyword ->
             Pager(PagingConfig(pageSize = 10,prefetchDistance = 1)){
                 HistoryRankRoomDataSource(historyRepository,roomId)
+            }.flow
+        }.cachedIn(viewModelScope)
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    fun getUsersInRoom(roomId:Int): Flow<PagingData<User>> = _keywordStateFlow
+        .debounce(700)
+        .distinctUntilChanged()
+        .flatMapLatest {keyword ->
+            Pager(PagingConfig(pageSize = 10,prefetchDistance = 1)){
+                UsersInRoomDataSource(roomId, roomRepository)
             }.flow
         }.cachedIn(viewModelScope)
 
@@ -64,7 +79,22 @@ class WaitingRoomViewModel @Inject constructor(
         }
     }
 
+    fun kickUser(roomId:Int,userId:Int){
+        _kick.value = ResourceState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = roomRepository.kickUser(roomId,userId)
+            _kick.value = response
+            if(response is ResourceState.Success){
+
+            }
+        }
+    }
+
     fun resetState(){
         _join.value = ResourceState.Nothing
+    }
+
+    fun resetKickState(){
+        _kick.value = ResourceState.Nothing
     }
 }

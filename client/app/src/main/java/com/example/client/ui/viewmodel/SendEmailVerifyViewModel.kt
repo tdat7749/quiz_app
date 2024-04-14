@@ -9,6 +9,7 @@ import com.example.client.model.ResendEmail
 import com.example.client.repositories.AuthRepository
 import com.example.client.utils.ApiResponse
 import com.example.client.utils.ResourceState
+import com.example.client.utils.Utilities
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,11 +28,20 @@ class SendEmailVerifyViewModel @Inject constructor(
     var email by mutableStateOf("")
         private set
 
+    var validate by mutableStateOf<String?>(null)
+        private set
+
     fun onChangeEmail(newValue: String) {
         email = newValue
     }
 
     fun resendEmail(){
+        val value = validated()
+        if(value != null){
+            validate = value
+            return
+        }
+
         val data = ResendEmail(
             email
         )
@@ -40,6 +50,21 @@ class SendEmailVerifyViewModel @Inject constructor(
             val response = authRepository.resendEmail(data)
             _send.value = response
         }
+    }
+
+    fun validated():String?{
+        if(email.equals("") || email == null){
+            return "Không được để trống email"
+        }
+        if(Utilities.isValidEmail(email)){
+            return "Email không hợp lệ"
+        }
+
+        return null
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 
 }

@@ -141,7 +141,7 @@ fun PlayQuizScreen(
                                                 }?.correct == true) true else false,
                                             score = if(currentQuestion.answers.find { item ->
                                                     item.id == selectedAnswerId
-                                                }?.correct == true) currentQuestion.score else 0
+                                                }?.correct == true) currentQuestion.score + timer.value else 0
                                         )
                                     )
                                     selectedAnswerId = -1

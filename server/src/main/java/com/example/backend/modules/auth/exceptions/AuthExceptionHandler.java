@@ -52,4 +52,16 @@ public class AuthExceptionHandler {
     public ResponseError loginExceptionHandler(LoginException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST, 400, ex.getMessage());
     }
+
+    @ExceptionHandler(VerifiedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError verifiedExceptionHandler(VerifiedException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST, 400, ex.getMessage());
+    }
+
+    @ExceptionHandler(PasswordDoNotMatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError passwordDoNotMatchExceptionHandler(PasswordDoNotMatchException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST, 400, ex.getMessage());
+    }
 }

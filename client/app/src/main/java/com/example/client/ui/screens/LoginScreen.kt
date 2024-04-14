@@ -71,6 +71,16 @@ fun LoginScreen(
         loginViewModel.checkLogin(navController)
     }
 
+    if(loginViewModel.validate != null){
+        ShowMessage(loginViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            loginViewModel.resetValidate()
+        }
+    }
+
     BackHandler(enabled = true){
 
     }
@@ -200,6 +210,10 @@ fun LoginScreen(
                                 authGoogle !is ResourceState.Loading
                             )
 
+                            Spacer(
+                                modifier = Modifier
+                                    .height(dimensionResource(id = R.dimen.space_app_normal))
+                            )
 
                             SmallText(
                                 stringResource(id = R.string.havent_account),

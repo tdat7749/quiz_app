@@ -8,6 +8,7 @@ import com.example.backend.modules.room.dtos.EditRoomDTO;
 import com.example.backend.modules.room.services.RoomService;
 import com.example.backend.modules.room.viewmodels.RoomVm;
 import com.example.backend.modules.user.models.User;
+import com.example.backend.modules.user.viewmodels.UserVm;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,17 @@ public class RoomController {
             @AuthenticationPrincipal User user
     ) {
         var result = roomService.getMyListRooms(keyword,sortBy,pageIndex,user);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/{roomId}/users")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccess<ResponsePaging<List<UserVm>>>> getUsersInRoom(
+            @RequestParam(name = "pageIndex", required = true, defaultValue = "0") Integer pageIndex,
+            @PathVariable("roomId") int roomId
+    ) {
+        var result = roomService.getUsersInRoom(roomId,pageIndex);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

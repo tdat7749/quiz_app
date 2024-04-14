@@ -46,6 +46,9 @@ class LoginViewModel @Inject constructor(
     val _googleState:MutableStateFlow<ResourceState<AuthResult>> = MutableStateFlow(ResourceState.Nothing)
     val googleState = _googleState.asStateFlow()
 
+    var validate by mutableStateOf<String?>(null)
+        private set
+
     var userName by  mutableStateOf("")
         private set
 
@@ -58,6 +61,11 @@ class LoginViewModel @Inject constructor(
  
 
     fun login(){
+        val value = validated()
+        if(value != null){
+            validate = value
+            return
+        }
         val login:Login = Login(
             userName,
             password
@@ -119,6 +127,20 @@ fun checkLogin(navController: NavController){
                 _checkLogin.value = response
             }
         }
+    }
+
+    fun validated():String?{
+        if(userName.equals("") || userName == null){
+            return "Không được để trống tên đăng nhập"
+        }
+        if(password.equals("") || password == null){
+            return "Không được để trống mật khẩu"
+        }
+        return null
+    }
+
+    fun resetValidate(){
+        validate = null
     }
 
     fun resetState() {

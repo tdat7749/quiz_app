@@ -59,6 +59,16 @@ fun ForgotPasswordScreen(
         }
     }
 
+    if(forgotPasswordViewModel.validate != null){
+        ShowMessage(forgotPasswordViewModel.validate!!)
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            forgotPasswordViewModel.resetValidate()
+        }
+    }
+
     Scaffold(
         content = {
             Column (

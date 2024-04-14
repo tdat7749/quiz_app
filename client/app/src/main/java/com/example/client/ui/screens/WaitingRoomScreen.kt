@@ -1,10 +1,13 @@
 package com.example.client.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +33,7 @@ import com.example.client.R
 import com.example.client.model.HistoryAnswer
 import com.example.client.model.HistoryRank
 import com.example.client.model.Room
+import com.example.client.model.User
 import com.example.client.ui.components.ButtonNavigate
 import com.example.client.ui.components.Loading
 import com.example.client.ui.components.LoadingCircle
@@ -50,11 +55,38 @@ fun WaitingRoomScreen(
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    val tabs = listOf("Xếp Hạng", "Đáp Án Của Bạn")
+    val tabs = listOf("Xếp Hạng", "Đáp Án Của Bạn","Người Chơi")
 
     val history = waitingRoomViewModel.getHistoryRankRoom(roomId).collectAsLazyPagingItems()
+    val users = waitingRoomViewModel.getUsersInRoom(roomId).collectAsLazyPagingItems()
     val room by waitingRoomViewModel.join.collectAsState()
     val answers by waitingRoomViewModel.answer.collectAsState()
+    val kick by waitingRoomViewModel.kick.collectAsState()
+
+    when(kick){
+        is ResourceState.Success -> {
+            ShowMessage(
+                message = (kick as ResourceState.Success<ApiResponse<Boolean>>).value.message,
+                onReset = {
+                    waitingRoomViewModel.resetKickState()
+                }
+            )
+            users.refresh()
+        }
+        is ResourceState.Error -> {
+            (kick as ResourceState.Error).errorBody?.let {
+                ShowMessage(
+                    message = it.message,
+                    onReset = {
+                        waitingRoomViewModel.resetKickState()
+                    }
+                )
+            }
+        }
+        else -> {
+
+        }
+    }
 
     LaunchedEffect(key1 = roomPin,key2 = roomId){
         waitingRoomViewModel.getRoomForParticipants(roomPin)
@@ -121,6 +153,12 @@ fun WaitingRoomScreen(
                     when (selectedTabIndex) {
                         0 -> RankContent(history)
                         1 -> AnswerContent(listAnswers)
+                        2 -> UsersContent(
+                            users = users,
+                            isHost = roomDetail.onwer ?: false,
+                            roomId = roomId,
+                            viewModel = waitingRoomViewModel
+                        )
                     }
                 }
             }
@@ -148,6 +186,93 @@ fun RankContent(history: LazyPagingItems<HistoryRank>){
         item{
             if(history.loadState.append is LoadState.Loading){
                 LoadingCircle()
+            }
+        }
+    }
+}
+
+@Composable
+fun UsersContent(users: LazyPagingItems<User>,viewModel: WaitingRoomViewModel,isHost:Boolean,roomId: Int){
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(users.itemCount){ index ->
+            val item = users[index]
+            if (item != null) {
+                UserItem(
+                    user = item,
+                    index = index,
+                    viewModel = viewModel,
+                    isHost = isHost,
+                    roomId = roomId
+                )
+            }
+        }
+        item{
+            if(users.loadState.append is LoadState.Loading){
+                LoadingCircle()
+            }
+        }
+    }
+}
+
+@Composable
+fun UserItem(index:Int,user:User,viewModel: WaitingRoomViewModel,isHost: Boolean,roomId: Int){
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.crowns))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+    Card (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Row (
+            modifier =  Modifier.fillMaxSize()
+                .padding(start = 10.dp,end = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+
+        ) {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                if(index == 0){
+                    LottieAnimation(
+                        composition = composition,
+                        progress = { progress },
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(bottom = 1.dp)
+                    )
+                }else{
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 35.dp, end = 35.dp),
+                        text = "${index + 1}",
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = user.displayName
+                )
+            }
+            if(isHost){
+                IconButton(
+                    onClick = {
+                        viewModel.kickUser(roomId,user.id)
+                    }
+                ){
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                    )
+                }
             }
         }
     }
@@ -360,49 +485,21 @@ fun AnswerContent(history: List<HistoryAnswer>){
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(history){index, item ->
-//            val item = history[index]
             Answerd(index,item)
         }
-//        item{
-//            if(history.loadState.append is LoadState.Loading){
-//                LoadingCircle()
-//            }
-//        }
     }
 }
 
 
-
-//when(room){
-//    is ResourceState.Loading -> {
-//        Loading()
-//    }
-//    is ResourceState.Success -> {
-//        val roomDetail = (room as ResourceState.Success<ApiResponse<Room>>).value.data
-//        WaitingImage(roomDetail.quiz.thumbnail)
-//
-//        Spacer(
-//            modifier = Modifier.height(dimensionResource(id = R.dimen.space_app_normal))
-//        )
-//
-//        CardHeading(roomDetail.quiz.title,roomDetail.maxUser,roomDetail.maxUser)
-//
-//        TabRow(selectedTabIndex) {
-//            tabs.forEachIndexed { index, title ->
-//                Tab(
-//                    selected = selectedTabIndex == index,
-//                    onClick = { selectedTabIndex = index },
-//                    text = { Text(title) }
-//                )
-//            }
-//        }
-//
-//        when (selectedTabIndex) {
-//            0 -> RankContent(history)
-////                            1 -> AnswerContent()
-//        }
-//    }
-//    else -> {
-//
-//    }
-//}
+@Composable
+private fun ShowMessage(
+    message: String,
+    onReset: () -> Unit = {}
+) {
+    Toast.makeText(
+        LocalContext.current,
+        message,
+        Toast.LENGTH_LONG
+    ).show()
+    onReset()
+}

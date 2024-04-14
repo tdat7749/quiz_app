@@ -17,6 +17,7 @@ data class Room(
     val maxUser:Int,
     val playAgain:Boolean,
     val totalUser:Int,
+    val onwer:Boolean?
 )
 
 
@@ -26,7 +27,7 @@ data class CreateRoom(
     val timeEnd: LocalDateTime?,
     val roomName:String,
     val maxUser:Int,
-    val isPlayAgain:Boolean
+    val playAgain:Boolean
 )
 
 data class EditRoom(
@@ -36,5 +37,5 @@ data class EditRoom(
     val roomName:String,
     val isClosed:Boolean,
     val maxUser:Int,
-    val isPlayAgain:Boolean
+    val playAgain:Boolean
 )
