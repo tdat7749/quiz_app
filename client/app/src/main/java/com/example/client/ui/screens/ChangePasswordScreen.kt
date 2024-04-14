@@ -1,5 +1,16 @@
 package com.example.client.ui.screens
 
+
+import com.example.client.R
+import com.example.client.ui.components.ButtonComponent
+import com.example.client.ui.components.HeaderApp
+import com.example.client.ui.components.PasswordFieldOutlined
+import com.example.client.ui.components.TopBar
+import com.example.client.ui.navigation.Routes
+import com.example.client.ui.viewmodel.ChangePasswordViewModel
+import com.example.client.ui.viewmodel.LoginViewModel
+import com.example.client.utils.ApiResponse
+import com.example.client.utils.ResourceState
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -22,27 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.client.R
-import com.example.client.ui.components.ButtonComponent
-import com.example.client.ui.components.HeaderApp
-import com.example.client.ui.components.PasswordFieldOutlined
-import com.example.client.ui.components.TopBar
-import com.example.client.ui.navigation.Routes
-import com.example.client.ui.viewmodel.ChangePasswordViewModel
-import com.example.client.ui.viewmodel.LoginViewModel
-import com.example.client.utils.ApiResponse
-import com.example.client.utils.ResourceState
 
-@Composable
-private fun ShowMessage(
-        message: String,
-) {
-    Toast.makeText(
-            LocalContext.current,
-            message,
-            Toast.LENGTH_LONG
-    ).show()
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -92,6 +83,7 @@ fun ChangePasswordScreen (
                        stringResource(id = R.string.app_name),
                        stringResource(id = R.string.change_password)
                    )
+
                    PasswordFieldOutlined(
                        value = changePasswordViewModel.oldPassword,
                        onChangeValue = {
@@ -100,10 +92,12 @@ fun ChangePasswordScreen (
                        label = stringResource(id = R.string.old_password),
                        painterResource = painterResource(id = R.drawable.password)
                    )
+
                    Spacer(
                        modifier = Modifier
                            .height(dimensionResource(id = R.dimen.space_app_normal))
                    )
+
                    PasswordFieldOutlined(
                        value = changePasswordViewModel.newPassword,
                        onChangeValue = {
@@ -112,10 +106,12 @@ fun ChangePasswordScreen (
                        label = stringResource(id = R.string.new_password),
                        painterResource = painterResource(id = R.drawable.password)
                    )
+
                    Spacer(
                        modifier = Modifier
                            .height(dimensionResource(id = R.dimen.space_app_normal))
                    )
+
                    PasswordFieldOutlined(
                        value = changePasswordViewModel.confirmPassword,
                        onChangeValue = {
@@ -124,10 +120,12 @@ fun ChangePasswordScreen (
                        label = stringResource(id = R.string.confirm_password),
                        painterResource = painterResource(id = R.drawable.password)
                    )
+
                    Spacer(
                        modifier = Modifier
                            .height(dimensionResource(id = R.dimen.space_app_normal))
                    )
+
 
                    ButtonComponent(
                        onClick = {
@@ -143,3 +141,15 @@ fun ChangePasswordScreen (
    )
 }
 
+
+
+@Composable
+private fun ShowMessage(
+        message: String,
+) {
+    Toast.makeText(
+            LocalContext.current,
+            message,
+            Toast.LENGTH_LONG
+    ).show()
+}
